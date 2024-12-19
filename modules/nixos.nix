@@ -8,7 +8,7 @@
   inherit (lib.options) mkOption mkEnableOption;
   inherit (lib.strings) hasPrefix concatStringsSep;
   inherit (lib.lists) filter map;
-  inherit (lib.attrsets) filterAttrs mapAttrs' attrValues;
+  inherit (lib.attrsets) filterAttrs mapAttrs' attrValues mapAttrsToList;
   inherit (lib.types) bool submodule str path attrsOf nullOr lines;
 
   usrCfg = config.users.users;
@@ -29,7 +29,6 @@
             files to be disabled.
           '';
         };
-
         target = mkOption {
           type = str;
           apply = p:
@@ -164,6 +163,37 @@ in {
         in
           concatStringsSep " " ruleString
       ) (filter (f: f.enable && f.source != null) (attrValues files));
+    }) (filterAttrs (_: u: u.files != {}) config.homes);
+    systemd.services = mapAttrs' (name: {files, ...}: {
+      name = "hjem-monitor-" + name;
+      value.enable = true;
+      value.wants = ["systemd-tmpfiles-setup.service" "nix-daemon.socket"];
+      value.after = ["nix-daemon.socket"];
+      value.wantedBy = ["default.target"];
+      value.description = "Monitoring for Hjem files";
+      value.serviceConfig = {
+        Type = "exec";
+        ExecStart = let
+          serviceScript = pkgs.writeScript "hjem-monitor-script" ''
+            #! ${pkgs.runtimeShell} -e
+            code=0
+            for var in "$@"
+            do
+              if [ ! -L "$var" ] ; then
+                echo "$var is not controlled by hjem due to a file conflict"
+                code=1
+              fi
+            done
+            if [ "$code" -eq "0" ] ; then
+              exit 0
+            else
+              exit 1
+            fi
+          '';
+        in "${serviceScript} ${toString (map (
+          file: file.target
+        ) (filter (f: f.enable && f.source != null) (attrValues files)))}";
+      };
     }) (filterAttrs (_: u: u.files != {}) config.homes);
   };
 }
