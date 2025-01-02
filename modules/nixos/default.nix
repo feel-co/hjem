@@ -12,6 +12,7 @@
   inherit (lib.types) bool attrsOf submoduleWith listOf raw attrs;
 
   cfg = config.hjem;
+  enabledUsers = filterAttrs (_: u: u.enable) cfg.users;
 
   hjemModule = submoduleWith {
     description = "Hjem NixOS module";
@@ -88,7 +89,7 @@ in {
       users.users = mapAttrs' (name: {packages, ...}: {
         inherit name;
         value.packages = packages;
-      }) (filterAttrs (_: u: (u.enable && u.packages != [])) cfg.users);
+      }) (filterAttrs (_: u: u.packages != []) enabledUsers);
 
       systemd.user.tmpfiles.users = mapAttrs' (name: {files, ...}: {
         inherit name;
@@ -105,16 +106,16 @@ in {
             # is constructed.
             "${mode} '${file.target}' - - - - ${file.source}"
         ) (filter (f: f.enable && f.source != null) (attrValues files));
-      }) (filterAttrs (_: u: (u.enable && u.files != {})) cfg.users);
+      }) (filterAttrs (_: u: u.files != {}) enabledUsers);
     }
 
-    (mkIf (cfg.users != {}) {
-      warnings = flatten (flip mapAttrsToList cfg.users (user: config:
+    (mkIf (enabledUsers != {}) {
+      warnings = flatten (flip mapAttrsToList enabledUsers (user: config:
         flip map config.warnings (
           warning: "${user} profile: ${warning}"
         )));
 
-      assertions = flatten (flip mapAttrsToList cfg.users (user: config:
+      assertions = flatten (flip mapAttrsToList enabledUsers (user: config:
         flip map config.assertions (assertion: {
           inherit (assertion) assertion;
           message = "${user} profile: ${assertion.message}";
