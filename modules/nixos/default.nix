@@ -21,7 +21,7 @@
     modules = concatLists [
       [
         ({name, ...}: {
-          imports = [../common.nix];
+          imports = [../common/user.nix];
 
           config = {
             user = config.users.users.${name}.name;
