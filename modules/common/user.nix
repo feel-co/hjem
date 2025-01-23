@@ -11,7 +11,7 @@
   inherit (lib.modules) mkIf mkDefault mkDerivedConfig;
   inherit (lib.options) mkOption mkEnableOption literalExpression;
   inherit (lib.strings) hasPrefix;
-  inherit (lib.types) bool submodule str path attrsOf nullOr lines listOf package;
+  inherit (lib.types) attrsOf bool lines listOf nullOr package path str submodule;
 
   clobberOpt = config.clobberFiles;
 
