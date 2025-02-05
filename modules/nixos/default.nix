@@ -7,9 +7,10 @@
   inherit (lib.modules) mkIf mkMerge;
   inherit (lib.options) mkOption literalExpression;
   inherit (lib.lists) filter map flatten concatLists;
-  inherit (lib.attrsets) filterAttrs mapAttrs' attrValues mapAttrsToList;
+  inherit (lib.attrsets) filterAttrs mapAttrs' attrValues mapAttrsToList attrNames;
   inherit (lib.trivial) flip;
   inherit (lib.types) bool attrsOf submoduleWith listOf raw attrs;
+  inherit (lib.strings) concatMapStrings concatMapStringsSep;
 
   cfg = config.hjem;
 
@@ -20,7 +21,10 @@
     modules = concatLists [
       [
         ({name, ...}: {
-          imports = [../common.nix];
+          imports = [
+            ../common.nix
+            ./environment.nix
+          ];
 
           config = {
             user = config.users.users.${name}.name;
@@ -123,6 +127,21 @@ in {
           inherit (assertion) assertion;
           message = "${user} profile: ${assertion.message}";
         })));
+    })
+
+    (mkIf (cfg.users != {}) {
+      environment.extraInit = concatMapStringsSep "\n" (
+        name: let
+          user = cfg.users.${name};
+          vars = user.environment.sessionVariables or {};
+        in
+          if user.environment.forceOverride
+          then
+            concatMapStrings (var: ''
+              unset -v ${var}
+            '') (attrNames vars)
+          else ""
+      ) (attrNames cfg.users);
     })
   ];
 }
