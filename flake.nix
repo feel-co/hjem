@@ -23,6 +23,22 @@
       hjem-special-args = import ./tests/special-args.nix checkArgs;
     });
 
+    devShells = forAllSystems (system: let
+      inherit (builtins) attrValues;
+      pkgs = nixpkgs.legacyPackages.${system};
+    in {
+      default = pkgs.mkShell {
+        packages = attrValues {
+          inherit
+            (pkgs)
+            # cue validator
+            cue
+            go
+            ;
+        };
+      };
+    });
+
     formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.alejandra);
   };
 }
