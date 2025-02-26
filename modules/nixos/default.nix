@@ -16,11 +16,16 @@
   hjemModule = submoduleWith {
     description = "Hjem NixOS module";
     class = "hjem";
-    specialArgs = {inherit pkgs lib;} // cfg.specialArgs;
+    specialArgs =
+      {
+        inherit pkgs lib;
+        systemConfig = config;
+      }
+      // cfg.specialArgs;
     modules = concatLists [
       [
         ({name, ...}: {
-          imports = [../common.nix];
+          imports = [../common.nix ./systemd.nix];
 
           config = {
             user = config.users.users.${name}.name;
