@@ -9,9 +9,10 @@
   inherit (lib.lists) filter map flatten concatLists;
   inherit (lib.attrsets) filterAttrs mapAttrs' attrValues mapAttrsToList;
   inherit (lib.trivial) flip;
-  inherit (lib.types) bool attrsOf submoduleWith listOf raw attrs;
+  inherit (lib.types) attrs attrsOf bool listOf nullOr package raw submoduleWith;
 
   cfg = config.hjem;
+  enabledUsers = filterAttrs (_: u: u.enable) cfg.users;
 
   hjemModule = submoduleWith {
     description = "Hjem NixOS module";
@@ -25,7 +26,7 @@
     modules = concatLists [
       [
         ({name, ...}: {
-          imports = [../common.nix];
+          imports = [../common/user.nix];
 
           config = {
             user = config.users.users.${name}.name;
@@ -79,6 +80,24 @@ in {
         to be passed down to to all imported modules.
       '';
     };
+
+    linker = mkOption {
+      default = null;
+      description = ''
+        Method to use to link files.
+
+        `null` will use `systemd-tmpfiles`, which is only supported on Linux.
+        This is the default file linker on Linux, as it is the more mature linker, but it has the downside of leaving
+        behind symlinks that may not get invalidated until the next GC, if an entry is removed from {option}`hjem.<user>.files`.
+
+        Specifying a package will use a custom file linker that uses an internally-generated manifest.
+        The custom file linker must use this manifest to create or remove links as needed, by comparing the
+        manifest of the currently activated system with that of the new system.
+        This prevents dangling symlinks when an entry is removed from {option}`hjem.<user>.files`.
+        This linker is currently experimental; once it matures, it may become the default in the future.
+      '';
+      type = nullOr package;
+    };
   };
 
   config = mkMerge [
@@ -86,8 +105,10 @@ in {
       users.users = mapAttrs' (name: {packages, ...}: {
         inherit name;
         value.packages = packages;
-      }) (filterAttrs (_: u: (u.enable && u.packages != [])) cfg.users);
+      }) (filterAttrs (_: u: u.packages != []) enabledUsers);
+    }
 
+    (mkIf (cfg.linker == null) {
       systemd.user.tmpfiles.users = mapAttrs' (name: {files, ...}: {
         inherit name;
         value.rules = map (
@@ -103,16 +124,19 @@ in {
             # is constructed.
             "${mode} '${file.target}' - - - - ${file.source}"
         ) (filter (f: f.enable && f.source != null) (attrValues files));
-      }) (filterAttrs (_: u: (u.enable && u.files != {})) cfg.users);
-    }
+      }) (filterAttrs (_: u: u.files != {}) enabledUsers);
+    })
 
-    (mkIf (cfg.users != {}) {
-      warnings = flatten (flip mapAttrsToList cfg.users (user: config:
+    (mkIf (cfg.linker != null) {
+      })
+
+    (mkIf (enabledUsers != {}) {
+      warnings = flatten (flip mapAttrsToList enabledUsers (user: config:
         flip map config.warnings (
           warning: "${user} profile: ${warning}"
         )));
 
-      assertions = flatten (flip mapAttrsToList cfg.users (user: config:
+      assertions = flatten (flip mapAttrsToList enabledUsers (user: config:
         flip map config.assertions (assertion: {
           inherit (assertion) assertion;
           message = "${user} profile: ${assertion.message}";
