@@ -25,7 +25,7 @@
     modules = concatLists [
       [
         ({name, ...}: {
-          imports = [../common.nix];
+          imports = [../common.nix ./systemd.nix];
 
           config = {
             user = config.users.users.${name}.name;
