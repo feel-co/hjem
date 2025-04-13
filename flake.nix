@@ -1,12 +1,16 @@
 {
-  inputs.nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-unstable";
+    systems.url = "github:nix-systems/default-linux";
+  };
 
   outputs = {
     self,
     nixpkgs,
+    systems,
     ...
   }: let
-    forAllSystems = nixpkgs.lib.genAttrs ["x86_64-linux" "aarch64-linux"];
+    forAllSystems = nixpkgs.lib.genAttrs (import systems);
   in {
     nixosModules = {
       hjem = ./modules/nixos;
