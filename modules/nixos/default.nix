@@ -6,7 +6,7 @@
 }: let
   inherit (lib.modules) mkIf mkMerge;
   inherit (lib.options) mkOption literalExpression;
-  inherit (lib.lists) filter map flatten concatLists;
+  inherit (lib.lists) filter map flatten concatLists optionals;
   inherit (lib.attrsets) filterAttrs mapAttrs' attrValues mapAttrsToList;
   inherit (lib.trivial) flip;
   inherit (lib.types) bool attrsOf submoduleWith listOf raw attrs;
@@ -25,7 +25,7 @@
     modules = concatLists [
       [
         ({name, ...}: {
-          imports = [../common.nix];
+          imports = [../common.nix ../xdg.nix];
 
           config = {
             user = config.users.users.${name}.name;
@@ -88,22 +88,35 @@ in {
         value.packages = packages;
       }) (filterAttrs (_: u: (u.enable && u.packages != [])) cfg.users);
 
-      systemd.user.tmpfiles.users = mapAttrs' (name: {files, ...}: {
-        inherit name;
-        value.rules = map (
-          file: let
-            # L+ will recreate, i.e., clobber existing files.
-            mode =
-              if file.clobber
-              then "L+"
-              else "L";
-          in
-            # Constructed rule string that consists of the type, target, and source
-            # of a tmpfile. Files with 'null' sources are filtered before the rule
-            # is constructed.
-            "${mode} '${file.target}' - - - - ${file.source}"
-        ) (filter (f: f.enable && f.source != null) (attrValues files));
-      }) (filterAttrs (_: u: (u.enable && u.files != {})) cfg.users);
+      systemd.user.tmpfiles.users = mapAttrs' (
+        name: {
+          files,
+          xdg,
+          ...
+        }: {
+          inherit name;
+          value.rules =
+            map (
+              file: let
+                # L+ will recreate, i.e., clobber existing files.
+                mode =
+                  if file.clobber
+                  then "L+"
+                  else "L";
+              in
+                # Constructed rule string that consists of the type, target, and source
+                # of a tmpfile. Files with 'null' sources are filtered before the rule
+                # is constructed.
+                "${mode} '${file.target}' - - - - ${file.source}"
+            ) (filter (f: f.enable && f.source != null) (attrValues files))
+            ++ (optionals xdg.enable [
+              "d '${xdg.dataDirectory}'"
+              "d '${xdg.stateDirectory}'"
+              "d '${xdg.cacheDirectory}'"
+              "d '${xdg.configDirectory}'"
+            ]);
+        }
+      ) (filterAttrs (_: u: u.enable) cfg.users);
     }
 
     (mkIf (cfg.users != {}) {
