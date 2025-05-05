@@ -51,5 +51,9 @@ in
       # Test regular files, created by systemd-tmpfiles
       machine.succeed("[ -d ~alice/user_tmpfiles_created ]")
       machine.succeed("[ -d ~alice/only_alice ]")
+
+
+      # Test user packages functioning
+      machine.succeed("su alice --login --command hello")
     '';
   }
