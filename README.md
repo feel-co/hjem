@@ -49,6 +49,15 @@ may use to manage individual users' homes by leveraging the module system.
       # This can be used to generate config files with various
       # formats expected by different programs.
       ".config/bar".source = pkgs.writeTextFile "file-foo" "file contents";
+
+      # You can also use generators to transform Nix values
+      ".config/baz" = {
+        # Works with `pkgs.formats` too!
+        generator = lib.generators.toJSON { };
+        value = {
+          some = "contents";
+        };
+      };
     };
   };
 }

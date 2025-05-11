@@ -6,6 +6,7 @@ in
     nodes = {
       node1 = {
         self,
+        lib,
         pkgs,
         ...
       }: {
@@ -22,8 +23,20 @@ in
           alice = {
             enable = true;
             packages = [pkgs.hello];
-            files.".config/foo" = {
-              text = "Hello world!";
+            files = {
+              ".config/foo" = {
+                text = "Hello world!";
+              };
+
+              ".config/bar.json" = {
+                generator = lib.generators.toJSON {};
+                value = {bar = true;};
+              };
+
+              ".config/baz.toml" = {
+                generator = (pkgs.formats.toml {}).generate "baz.toml";
+                value = {baz = true;};
+              };
             };
           };
         };
@@ -47,6 +60,8 @@ in
 
       # Test file created by Hjem
       machine.succeed("[ -L ~alice/.config/foo ]")
+      machine.succeed("[ -L ~alice/.config/bar.json ]")
+      machine.succeed("[ -L ~alice/.config/baz.toml ]")
 
       # Test regular files, created by systemd-tmpfiles
       machine.succeed("[ -d ~alice/user_tmpfiles_created ]")
