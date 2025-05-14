@@ -37,8 +37,10 @@
         target = mkOption {
           type = str;
           apply = p:
-            if hasPrefix "/" p
-            then throw "This option cannot handle absolute paths yet!"
+            if hasPrefix "/" p && !hasPrefix config.relativeTo p
+            then throw "This path is outside the user's home directory!"
+            else if hasPrefix config.relativeTo p
+            then p
             else "${config.relativeTo}/${p}";
           defaultText = "name";
           description = ''
