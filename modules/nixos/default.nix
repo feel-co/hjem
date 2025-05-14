@@ -4,15 +4,16 @@
   lib,
   ...
 }: let
-  inherit (lib.modules) mkIf;
-  inherit (lib.options) mkOption literalExpression;
-  inherit (lib.trivial) pipe;
+  inherit (lib.attrsets) filterAttrs mapAttrsToList;
+  inherit (lib.modules) mkIf mkMerge;
+  inherit (lib.options) literalExpression mkOption;
   inherit (lib.strings) optionalString;
-  inherit (lib.attrsets) mapAttrsToList;
-  inherit (lib.types) bool attrsOf submoduleWith listOf raw attrs submodule;
+  inherit (lib.trivial) pipe;
+  inherit (lib.types) attrs attrsOf bool listOf nullOr package raw submoduleWith;
   inherit (builtins) filter attrValues mapAttrs getAttr concatLists;
 
   cfg = config.hjem;
+  enabledUsers = filterAttrs (_: u: u.enable) cfg.users;
 
   hjemModule = submoduleWith {
     description = "Hjem NixOS module";
@@ -27,7 +28,7 @@
       concatLists
       [
         [
-          ../common.nix
+          ../common/user.nix
           ({name, ...}: let
             user = getAttr name config.users.users;
           in {
@@ -80,59 +81,81 @@ in {
         to be passed down to to all imported modules.
       '';
     };
+
+    linker = mkOption {
+      default = null;
+      description = ''
+        Method to use to link files.
+        `null` will use `systemd-tmpfiles`, which is only supported on Linux.
+        This is the default file linker on Linux, as it is the more mature linker, but it has the downside of leaving
+        behind symlinks that may not get invalidated until the next GC, if an entry is removed from {option}`hjem.<user>.files`.
+        Specifying a package will use a custom file linker that uses an internally-generated manifest.
+        The custom file linker must use this manifest to create or remove links as needed, by comparing the
+        manifest of the currently activated system with that of the new system.
+        This prevents dangling symlinks when an entry is removed from {option}`hjem.<user>.files`.
+        This linker is currently experimental; once it matures, it may become the default in the future.
+      '';
+      type = nullOr package;
+    };
   };
 
-  config = {
-    users.users = (mapAttrs (_: v: mkIf v.enable {inherit (v) packages;})) cfg.users;
+  config = mkMerge [
+    {
+      users.users = (mapAttrs (_: v: {inherit (v) packages;})) enabledUsers;
+      assertions =
+        concatLists
+        (mapAttrsToList (user: config:
+          map ({
+            assertion,
+            message,
+            ...
+          }: {
+            inherit assertion;
+            message = "${user} profile: ${message}";
+          })
+          config.assertions)
+        enabledUsers);
+
+      warnings =
+        concatLists
+        (mapAttrsToList (
+            user: v:
+              map (
+                warning: "${user} profile: ${warning}"
+              )
+              v.warnings
+          )
+          enabledUsers);
+    }
 
     # Constructed rule string that consists of the type, target, and source
     # of a tmpfile. Files with 'null' sources are filtered before the rule
     # is constructed.
-    systemd.user.tmpfiles.users =
-      mapAttrs (_: {
-        enable,
-        files,
-        ...
-      }: {
-        rules =
-          mkIf enable
-          (
-            pipe files [
-              attrValues
-              (filter (f: f.enable && f.source != null))
-              (map (
-                file:
-                # L+ will recreate, i.e., clobber existing files.
-                "L${optionalString file.clobber "+"} '${file.target}' - - - - ${file.source}"
-              ))
-            ]
-          );
-      })
-      cfg.users;
+    (mkIf (cfg.linker == null) {
+      assertions = [
+        {
+          assertion = pkgs.stdenv.hostPlatform.isLinux;
+          message = "The systemd-tmpfiles linker is only supported on Linux; on other platforms, use the manifest linker.";
+        }
+      ];
 
-    warnings =
-      concatLists
-      (mapAttrsToList (
-          user: v:
-            map (
-              warning: "${user} profile: ${warning}"
-            )
-            v.warnings
-        )
-        cfg.users);
-
-    assertions =
-      concatLists
-      (mapAttrsToList (user: config:
-        map ({
-          assertion,
-          message,
-          ...
-        }: {
-          inherit assertion;
-          message = "${user} profile: ${message}";
+      systemd.user.tmpfiles.users =
+        mapAttrs (_: u: {
+          rules = pipe u.files [
+            attrValues
+            (filter (f: f.enable && f.source != null))
+            (map (
+              file:
+              # L+ will recreate, i.e., clobber existing files.
+              "L${optionalString file.clobber "+"} '${file.target}' - - - - ${file.source}"
+            ))
+          ];
         })
-        config.assertions)
-      cfg.users);
-  };
+        enabledUsers;
+    })
+
+    (mkIf (cfg.linker != null) {
+      # TODO
+    })
+  ];
 }
