@@ -28,6 +28,7 @@
       [
         [
           ../common.nix
+          ../xdg.nix
           ({name, ...}: let
             user = getAttr name config.users.users;
           in {
@@ -99,11 +100,15 @@ in {
           (
             pipe files [
               attrValues
-              (filter (f: f.enable && f.source != null))
+              (filter (f: f.enable && (f.source != null || f.type == "directory")))
               (map (
                 file:
-                # L+ will recreate, i.e., clobber existing files.
-                "L${optionalString file.clobber "+"} '${file.target}' - - - - ${file.source}"
+                  if file.type == "symlink"
+                  # L+ will recreate, i.e., clobber existing files.
+                  then "L${optionalString file.clobber "+"} '${file.target}' - - - - ${file.source}"
+                  else if file.type == "directory"
+                  then "d '${file.target}'"
+                  else throw "Invalid file type: ${file.type}"
               ))
             ]
           );

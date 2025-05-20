@@ -13,7 +13,8 @@
   inherit (lib.modules) mkIf mkDefault mkDerivedConfig;
   inherit (lib.options) mkOption literalExpression mkEnableOption;
   inherit (lib.strings) hasPrefix;
-  inherit (lib.types) bool submodule str path attrsOf nullOr lines listOf package oneOf int;
+  inherit (lib.types) bool submodule str path attrsOf nullOr lines listOf package oneOf int enum;
+  inherit (lib.trivial) xor;
   inherit (builtins) isList;
 
   cfg = config;
@@ -37,8 +38,10 @@
         target = mkOption {
           type = str;
           apply = p:
-            if hasPrefix "/" p
-            then throw "This option cannot handle absolute paths yet!"
+            if hasPrefix "/" p && !hasPrefix "${config.relativeTo}/" p
+            then throw "This path is outside the user's home directory!"
+            else if hasPrefix "${config.relativeTo}/" p
+            then p
             else "${config.relativeTo}/${p}";
           defaultText = "name";
           description = ''
@@ -88,11 +91,21 @@
           apply = x:
             assert (hasPrefix "/" x || abort "Relative path ${x} cannot be used for files.<file>.relativeTo"); x;
         };
+
+        type = mkOption {
+          type = enum ["directory" "symlink"];
+          default = "symlink";
+          description = ''
+            The type of file to create.
+
+            If you want to create a directory, set this field to 'directory' and unset source/text.
+          '';
+        };
       };
 
       config = {
         target = mkDefault name;
-        source = mkIf (config.text != null) (mkDerivedConfig options.text (text:
+        source = mkIf (config.text != null && config.type == "symlink") (mkDerivedConfig options.text (text:
           pkgs.writeTextFile {
             inherit name text;
             inherit (config) executable;
@@ -195,15 +208,23 @@ in {
         (pkgs.writeShellScript "load-env")
       ];
 
-    assertions = [
-      {
-        assertion = cfg.user != "";
-        message = "A user must be configured in 'hjem.users.<user>.name'";
-      }
-      {
-        assertion = cfg.directory != "";
-        message = "A home directory must be configured in 'hjem.users.<user>.directory'";
-      }
-    ];
+    assertions =
+      [
+        {
+          assertion = cfg.user != "";
+          message = "A user must be configured in 'hjem.users.<user>.name'";
+        }
+        {
+          assertion = cfg.directory != "";
+          message = "A home directory must be configured in 'hjem.users.<user>.directory'";
+        }
+      ]
+      ++ (mapAttrsToList (
+          _target: file: {
+            assertion = file.type == "symlink" || (file.type == "directory" && file.text == null && file.source == null);
+            message = "Provided a file/text to link when trying to create a directory at ${file.target}.";
+          }
+        )
+        cfg.files);
   };
 }
