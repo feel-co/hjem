@@ -13,7 +13,40 @@
   inherit (builtins) filter attrValues mapAttrs getAttr concatLists;
 
   cfg = config.hjem;
+
   enabledUsers = filterAttrs (_: u: u.enable) cfg.users;
+
+  manifests = let
+    defaultFilePerms = "644";
+
+    mapFiles = username: files:
+      lib.attrsets.foldlAttrs (
+        accum: _: value:
+          if value.enable -> value.source == null
+          then accum
+          else
+            accum
+            ++ lib.singleton {
+              type = "symlink";
+              inherit (value) source target;
+              inherit (config.users.users."${username}") uid;
+              permissions = defaultFilePerms;
+            }
+      ) []
+      files;
+
+    writeManifest = username:
+      pkgs.writeTextDir "manifest-${username}.json" (builtins.toJSON {
+        clobber_by_default = cfg.users."${username}".clobberFiles;
+        version = 1;
+        files = mapFiles username cfg.users."${username}".files;
+      });
+  in
+    pkgs.symlinkJoin
+    {
+      name = "hjem-manifests";
+      paths = map writeManifest (builtins.attrNames enabledUsers);
+    };
 
   hjemModule = submoduleWith {
     description = "Hjem NixOS module";
@@ -154,8 +187,18 @@ in {
         enabledUsers;
     })
 
-    (mkIf (cfg.linker != null) {
-      # TODO
-    })
+    (
+      mkIf (cfg.linker != null)
+      {
+        systemd.services.hjem-activate = {
+          requiredBy = ["sysinit-reactivation.target"];
+          before = ["sysinit-reactivation.target"];
+          script = ''
+            mkdir -p /var/lib/hjem
+            cp -rT ${manifests} /var/lib/hjem
+          '';
+        };
+      }
+    )
   ];
 }
