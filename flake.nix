@@ -21,12 +21,13 @@
 
     checks = forAllSystems (system: let
       checkArgs = {
-        inherit self;
+        inherit self inputs;
         pkgs = nixpkgs.legacyPackages.${system};
       };
     in {
       hjem-basic = import ./tests/basic.nix checkArgs;
       hjem-special-args = import ./tests/special-args.nix checkArgs;
+      hjem-linker = import ./tests/linker.nix checkArgs;
 
       # Build smfh as a part of 'nix flake check'
       smfh = inputs.smfh.packages.${system}.smfh;
