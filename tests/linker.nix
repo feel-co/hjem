@@ -2,6 +2,7 @@ let
   userHome = "/home/alice";
 in
   (import ./lib) {
+<<<<<<< HEAD
     name = "hjem-linker";
     nodes = {
       node1 = {
