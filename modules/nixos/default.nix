@@ -10,11 +10,14 @@
   inherit (lib.strings) optionalString;
   inherit (lib.trivial) pipe;
   inherit (lib.types) attrs attrsOf bool listOf nullOr package raw submoduleWith;
+  inherit (lib.meta) getExe;
   inherit (builtins) filter attrValues mapAttrs getAttr concatLists;
 
   cfg = config.hjem;
 
   enabledUsers = filterAttrs (_: u: u.enable) cfg.users;
+
+  linker = getExe cfg.linker;
 
   manifests = let
     defaultFilePerms = "644";
@@ -195,6 +198,16 @@ in {
           before = ["sysinit-reactivation.target"];
           script = ''
             mkdir -p /var/lib/hjem
+
+            for manifest in ${manifests}/*; do
+              if [ ! -f /var/lib/hjem/$(basename $manifest) ]; then
+                ${linker} activate $manifest
+                continue
+              fi
+
+              ${linker} diff $manifest /var/lib/hjem/$(basename $manifest)
+            done
+
             cp -rT ${manifests} /var/lib/hjem
           '';
         };
