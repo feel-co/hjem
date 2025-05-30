@@ -38,12 +38,27 @@
       ) []
       files;
 
-    writeManifest = username:
-      pkgs.writeTextDir "manifest-${username}.json" (builtins.toJSON {
-        clobber_by_default = cfg.users."${username}".clobberFiles;
-        version = 1;
-        files = mapFiles username cfg.users."${username}".files;
-      });
+    writeManifest = username: let
+      name = "manifest-${username}.json";
+    in
+      pkgs.writeTextFile {
+        inherit name;
+        destination = "/${name}";
+        text = builtins.toJSON {
+          clobber_by_default = cfg.users."${username}".clobberFiles;
+          version = 1;
+          files = mapFiles username cfg.users."${username}".files;
+        };
+        checkPhase = ''
+          set -e
+          # This is needed because cue expects HOME and XDG_CACHE_HOME to be set
+          ls -al
+          HOME="/home/${username}"
+          XDG_CACHE_HOME="$HOME/.cache"
+
+          env HOME=$HOME XDG_CACHE_HOME=$XDG_CACHE_HOME ${lib.getExe pkgs.cue} vet -c ${../../manifest/v1.cue} $target
+        '';
+      };
   in
     pkgs.symlinkJoin
     {
