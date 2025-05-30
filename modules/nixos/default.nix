@@ -214,6 +214,15 @@ in {
             mkdir -p /var/lib/hjem
 
             for manifest in ${manifests}/*; do
+              # This is needed because cue expects HOME and XDG_CACHE_HOME to be set
+              user="$(basename $manifest | cut -d'-' -f2 | cut -d'.' -f1)"
+              HOME="/home/$user"
+              XDG_CACHE_HOME="$HOME/.cache"
+
+              env HOME=$HOME XDG_CACHE_HOME=$XDG_CACHE_HOME ${pkgs.cue}/bin/cue vet -c ${../../manifest/v1.cue} $manifest
+            done
+
+            for manifest in ${manifests}/*; do
               if [ ! -f /var/lib/hjem/$(basename $manifest) ]; then
                 ${linker} activate $manifest
                 continue
