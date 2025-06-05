@@ -8,8 +8,8 @@
   inherit (lib.options) mkOption literalExpression;
   inherit (lib.trivial) pipe;
   inherit (lib.strings) optionalString;
-  inherit (lib.attrsets) mapAttrsToList;
-  inherit (lib.types) bool attrsOf submoduleWith listOf raw attrs submodule;
+  inherit (lib.attrsets) mapAttrsToList filterAttrs;
+  inherit (lib.types) bool attrsOf submoduleWith listOf raw attrs;
   inherit (builtins) filter attrValues mapAttrs getAttr concatLists;
 
   cfg = config.hjem;
@@ -24,22 +24,19 @@
         osConfig = config;
       };
     modules =
-      concatLists
       [
-        [
-          ../common.nix
-          ({name, ...}: let
-            user = getAttr name config.users.users;
-          in {
-            user = user.name;
-            directory = user.home;
-            clobberFiles = cfg.clobberByDefault;
-          })
-        ]
-        # Evaluate additional modules under 'hjem.users.<name>' so that
-        # module systems built on Hjem are more ergonomic.
-        cfg.extraModules
-      ];
+        ../common.nix
+        ({name, ...}: let
+          user = getAttr name config.users.users;
+        in {
+          user = user.name;
+          directory = user.home;
+          clobberFiles = cfg.clobberByDefault;
+        })
+      ]
+      # Evaluate additional modules under 'hjem.users.<name>' so that
+      # module systems built on Hjem are more ergonomic.
+      ++ cfg.extraModules;
   };
 in {
   options.hjem = {
@@ -83,32 +80,32 @@ in {
   };
 
   config = {
-    users.users = (mapAttrs (_: v: mkIf v.enable {inherit (v) packages;})) cfg.users;
+    users.users = pipe cfg.users [
+      (filterAttrs (_: user: user.enable))
+      (mapAttrs (_: user: {
+        inherit (user) packages;
+      }))
+    ];
 
-    # Constructed rule string that consists of the type, target, and source
-    # of a tmpfile. Files with 'null' sources are filtered before the rule
-    # is constructed.
-    systemd.user.tmpfiles.users =
-      mapAttrs (_: {
-        enable,
-        files,
-        ...
-      }: {
-        rules =
-          mkIf enable
-          (
-            pipe files [
-              attrValues
-              (filter (f: f.enable && f.source != null))
-              (map (
-                file:
-                # L+ will recreate, i.e., clobber existing files.
-                "L${optionalString file.clobber "+"} '${file.target}' - - - - ${file.source}"
-              ))
-            ]
-          );
-      })
-      cfg.users;
+    systemd.user.tmpfiles.users = let
+      # Constructs a rule string for each tmpfile that consists of the type,
+      # target, and source.
+      filesToRules = files:
+        pipe files [
+          attrValues
+          # Filter files with 'null' sources before we construct rules
+          (filter (f: f.enable && f.source != null))
+          (map (
+            file: "L${optionalString file.clobber "+"} '${file.target}' - - - - ${file.source}"
+          ))
+        ];
+    in
+      pipe cfg.users [
+        (filterAttrs (_: user: user.enable))
+        (mapAttrs (_: user: {
+          rules = filesToRules user.files;
+        }))
+      ];
 
     warnings =
       concatLists
@@ -121,9 +118,8 @@ in {
         )
         cfg.users);
 
-    assertions =
-      concatLists
-      (mapAttrsToList (user: config:
+    assertions = let
+      mkUserAssertions = user: config:
         map ({
           assertion,
           message,
@@ -132,7 +128,9 @@ in {
           inherit assertion;
           message = "${user} profile: ${message}";
         })
-        config.assertions)
-      cfg.users);
+        config.assertions;
+    in
+      concatLists
+      (mapAttrsToList mkUserAssertions cfg.users);
   };
 }
