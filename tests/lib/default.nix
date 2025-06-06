@@ -2,6 +2,7 @@
 test: {
   pkgs,
   self,
+  inputs,
 }: let
   inherit (pkgs) lib;
   nixos-lib = import (pkgs.path + "/nixos/lib") {};
@@ -10,7 +11,7 @@ in
     hostPkgs = pkgs;
     defaults.documentation.enable = lib.mkDefault false;
 
-    node.specialArgs = {inherit self;};
+    node.specialArgs = {inherit self inputs;};
     imports = [test];
   })
   .config
