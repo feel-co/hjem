@@ -10,10 +10,10 @@
 }: let
   inherit (lib.attrsets) mapAttrsToList;
   inherit (lib.strings) concatMapStringsSep concatLines;
-  inherit (lib.modules) mkIf mkDefault mkDerivedConfig;
+  inherit (lib.modules) mkIf mkDefault mkDerivedConfig mkMerge;
   inherit (lib.options) mkOption literalExpression mkEnableOption;
   inherit (lib.strings) hasPrefix;
-  inherit (lib.types) bool submodule str path attrsOf nullOr lines listOf package oneOf int;
+  inherit (lib.types) bool submodule str path attrsOf nullOr lines listOf package oneOf int functionTo anything either;
   inherit (builtins) isList;
 
   cfg = config;
@@ -58,6 +58,22 @@
           description = "Path of the source file or directory";
         };
 
+        generator = lib.mkOption {
+          type = nullOr (functionTo (either options.source.type options.text.type));
+          default = null;
+          description = "Function that when applied to `value` will create the `text` of the file.";
+          example = literalExpression "lib.generators.toGitINI";
+        };
+
+        value = lib.mkOption {
+          type = nullOr (attrsOf anything);
+          default = null;
+          description = "Value passed to the `generator`.";
+          example = {
+            user.email = "me@example.com";
+          };
+        };
+
         executable = mkOption {
           type = bool;
           default = false;
@@ -90,14 +106,27 @@
         };
       };
 
-      config = {
-        target = mkDefault name;
-        source = mkIf (config.text != null) (mkDerivedConfig options.text (text:
-          pkgs.writeTextFile {
-            inherit name text;
-            inherit (config) executable;
-          }));
-      };
+      config = let
+        generatedValue = config.generator config.value;
+      in
+        mkMerge [
+          {
+            target = mkDefault name;
+            source = mkIf (config.text != null) (mkDerivedConfig options.text (text:
+              pkgs.writeTextFile {
+                inherit name text;
+                inherit (config) executable;
+              }));
+          }
+
+          (lib.mkIf (config.generator != null && options.source.type.check generatedValue) {
+            source = mkDefault generatedValue;
+          })
+
+          (lib.mkIf (config.generator != null && options.text.type.check generatedValue) {
+            text = mkDefault generatedValue;
+          })
+        ];
     });
 in {
   imports = [
