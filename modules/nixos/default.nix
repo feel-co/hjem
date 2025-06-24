@@ -226,8 +226,9 @@ in {
       mkIf (cfg.linker != null)
       {
         systemd.services.hjem-activate = {
-          requiredBy = ["sysinit-reactivation.target"];
-          before = ["sysinit-reactivation.target"];
+          after = ["local-fs.target"];
+          requiredBy = ["multi-user.target"];
+          before = ["multi-user.target"];
           script = let
             linkerOpts =
               if (typeOf cfg.linkerOptions == "set")
