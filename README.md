@@ -40,22 +40,40 @@ may use to manage individual users' homes by leveraging the module system.
 ```nix
 {
   hjem.users = {
-    alice.files = {
-      # Write a text file in `/homes/alice/.config/foo`
-      # with the contents bar
-      ".config/foo".text = "bar";
+    alice = {
+      files = {
+        # Write a text file in `/homes/alice/.config/foo`
+        # with the contents bar
+        ".config/foo".text = "bar";
 
-      # Alternatively, create the file source using a writer.
-      # This can be used to generate config files with various
-      # formats expected by different programs.
-      ".config/bar".source = pkgs.writeTextFile "file-foo" "file contents";
+        # Alternatively, create the file source using a writer.
+        # This can be used to generate config files with various
+        # formats expected by different programs.
+        ".config/bar".source = pkgs.writeTextFile "file-foo" "file contents";
 
-      # You can also use generators to transform Nix values
-      ".config/baz" = {
-        # Works with `pkgs.formats` too!
-        generator = lib.generators.toJSON { };
-        value = {
-          some = "contents";
+        # You can also use generators to transform Nix values
+        ".config/baz" = {
+          # Works with `pkgs.formats` too!
+          generator = lib.generators.toJSON { };
+          value = {
+            some = "contents";
+          };
+        };
+      };
+
+      wrappers = {
+        # Creates a wrapper around `baz` with the environment variable
+        # `BAZ_CONFIG` set to a nix-store path.
+        "baz" = {
+          basePackage = pkgs.baz;
+          environment."BAZ_CONFIG".value = self + "/path/to/baz.config";
+        };
+
+        # Creates a wrapper around `buz` with the command line flag `--config`
+        # pointing to a path in the nix-store.
+        "buz" = {
+          basePackage = pkgs.baz;
+          args.suffix = [ "--config ${self + "/path/to/buz.config"}" ];
         };
       };
     };
