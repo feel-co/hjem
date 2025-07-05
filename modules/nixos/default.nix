@@ -11,11 +11,12 @@
   inherit (lib.trivial) pipe;
   inherit (lib.types) attrs attrsOf bool listOf nullOr package raw submoduleWith either singleLineStr;
   inherit (lib.meta) getExe;
-  inherit (builtins) filter attrValues mapAttrs getAttr concatLists concatStringsSep typeOf toJSON;
+  inherit (builtins) filter attrNames attrValues mapAttrs getAttr concatLists concatStringsSep typeOf toJSON concatMap;
 
   cfg = config.hjem;
 
   enabledUsers = filterAttrs (_: u: u.enable) cfg.users;
+  disabledUsers = filterAttrs (_: u: !u.enable) cfg.users;
 
   linker = getExe cfg.linker;
 
@@ -222,33 +223,114 @@ in {
         enabledUsers;
     })
 
-    (
-      mkIf (cfg.linker != null)
-      {
-        systemd.services.hjem-activate = {
-          requiredBy = ["sysinit-reactivation.target"];
-          before = ["sysinit-reactivation.target"];
+    (mkIf (cfg.linker != null) {
+      /*
+      The different Hjem services expect the manifest to be generated under `/var/lib/hjem/manifest-{user}.json`.
+      */
+      systemd.targets.hjem = {
+        description = "Hjem File Management";
+        requiredBy = ["sysinit-reactivation.target"];
+        before = ["sysinit-reactivation.target"];
+        requires = let
+          requiredUserServices = name: [
+            "hjem-activate@${name}.service"
+            "hjem-copy@${name}.service"
+          ];
+        in
+          concatMap requiredUserServices (attrNames enabledUsers)
+          ++ ["hjem-cleanup.service"];
+      };
+
+      systemd.services = let
+        manifestsDir = "/var/lib/hjem";
+        checkEnabledUsers = ''
+          case "$1" in
+            ${concatStringsSep "|" (attrNames enabledUsers)}) ;;
+            *) echo "User '%i' is not configured for Hjem" >&2; exit 1 ;;
+          esac
+        '';
+      in {
+        hjem-prepare = {
+          description = "Prepare Hjem manifests directory";
+          script = "mkdir -p ${manifestsDir}";
+          serviceConfig.Type = "oneshot";
+          unitConfig.RefuseManualStart = true;
+        };
+
+        "hjem-activate@" = {
+          description = "Link files for %i from their manifest";
+          serviceConfig = {
+            User = "%i";
+            Type = "oneshot";
+          };
+          requires = [
+            "hjem-prepare.service"
+            "hjem-copy@%i.service"
+          ];
+          after = ["hjem-prepare.service"];
+          scriptArgs = "%i";
           script = let
             linkerOpts =
               if (typeOf cfg.linkerOptions == "set")
               then ''--linker-opts "${toJSON cfg.linkerOptions}"''
               else concatStringsSep " " cfg.linkerOptions;
           in ''
-            mkdir -p /var/lib/hjem
+            ${checkEnabledUsers}
+            new_manifest=${manifests}/manifest-$1.json
 
-            for manifest in ${manifests}/*; do
-              if [ ! -f /var/lib/hjem/$(basename $manifest) ]; then
-                ${linker} ${linkerOpts} activate $manifest
-                continue
-              fi
+            if [ ! -f ${manifestsDir}/manifest-$1.json ]; then
+              ${linker} ${linkerOpts} activate $new_manifest
+              exit 0
+            fi
 
-              ${linker} ${linkerOpts} diff $manifest /var/lib/hjem/$(basename $manifest)
-            done
-
-            cp -rT ${manifests} /var/lib/hjem
+            ${linker} ${linkerOpts} diff $new_manifest ${manifestsDir}/manifest-$1.json
           '';
         };
-      }
-    )
+
+        "hjem-copy@" = {
+          description = "Copy the manifest into Hjem's state directory for %i";
+          serviceConfig.Type = "oneshot";
+          after = ["hjem-activate@%i.service"];
+          scriptArgs = "%i";
+          /*
+          TODO: remove the if condition in a while, this is in place because the first iteration of the
+          manifest used to simply point /var/lib/hjem to the aggregate symlinkJoin directory. Since
+          per-user manifest services have now been implemented, trying to copy singular files into
+          /var/lib/hjem will fail if the user was using the previous manifest handling.
+          */
+          script = ''
+            ${checkEnabledUsers}
+            new_manifest=${manifests}/manifest-$1.json
+
+            if ! cp $new_manifest ${manifestsDir}; then
+              echo "Copying the manifest for $1 failed. This is likely due to using the previous\
+              version of the manifest handling. The manifest directory has been recreated and repopulated with\
+              %i's manifest. Please re-run the activation services for your other users, if you have ran this one manually."
+
+              rm -rf ${manifestsDir}
+              mkdir -p ${manifestsDir}
+
+              cp $new_manifest ${manifestsDir}
+            fi
+          '';
+        };
+
+        hjem-cleanup = {
+          description = "Cleanup disabled users' manifests";
+          serviceConfig.Type = "oneshot";
+          after = ["hjem.target"];
+          unitConfig.RefuseManualStart = false;
+          script = let
+            manifestsToDelete =
+              map
+              (user: "${manifestsDir}/manifest-${user}.json")
+              (attrNames disabledUsers);
+          in
+            if disabledUsers != {}
+            then "rm ${concatStringsSep " " manifestsToDelete}"
+            else "true";
+        };
+      };
+    })
   ];
 }
