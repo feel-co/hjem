@@ -227,7 +227,7 @@ in {
       {
         systemd.services.hjem-activate = {
           after = ["local-fs.target"];
-          requiredBy = ["sysinit-reactivation.target" "multi-user.target"];
+          wantedBy = ["sysinit-reactivation.target" "multi-user.target"];
           before = ["multi-user.target"];
           script = let
             linkerOpts =
