@@ -9,11 +9,11 @@
   ...
 }: let
   inherit (lib.attrsets) mapAttrsToList;
-  inherit (lib.strings) concatMapStringsSep concatLines;
-  inherit (lib.modules) mkIf mkDefault mkDerivedConfig;
-  inherit (lib.options) mkOption literalExpression mkEnableOption;
+  inherit (lib.strings) concatLines concatMapStringsSep;
+  inherit (lib.modules) mkDefault mkDerivedConfig mkIf mkMerge;
+  inherit (lib.options) literalExpression mkEnableOption mkOption;
   inherit (lib.strings) hasPrefix;
-  inherit (lib.types) attrsOf bool lines listOf nullOr package path str submodule oneOf int;
+  inherit (lib.types) addCheck anything attrsOf bool either functionTo int lines listOf nullOr package path str submodule oneOf;
   inherit (builtins) isList;
 
   cfg = config;
@@ -58,6 +58,32 @@
           description = "Path of the source file or directory";
         };
 
+        generator = lib.mkOption {
+          # functionTo doesn't actually check the return type, so do that ourselves
+          type = addCheck (nullOr (functionTo (either options.source.type options.text.type))) (x: let
+            generatedValue = x config.value;
+            generatesDrv = options.source.type.check generatedValue;
+            generatesStr = options.text.type.check generatedValue;
+          in
+            x != null -> (generatesDrv || generatesStr));
+          default = null;
+          description = ''
+            Function that when applied to `value` will create the `source` or `text` of the file.
+
+            Detection is automatic, as we check if the `generator` generates a derivation or a string after applying to `value`.
+          '';
+          example = literalExpression "lib.generators.toGitINI";
+        };
+
+        value = lib.mkOption {
+          type = nullOr (attrsOf anything);
+          default = null;
+          description = "Value passed to the `generator`.";
+          example = {
+            user.email = "me@example.com";
+          };
+        };
+
         executable = mkOption {
           type = bool;
           default = false;
@@ -90,14 +116,30 @@
         };
       };
 
-      config = {
-        target = mkDefault name;
-        source = mkIf (config.text != null) (mkDerivedConfig options.text (text:
-          pkgs.writeTextFile {
-            inherit name text;
-            inherit (config) executable;
-          }));
-      };
+      config = let
+        generatedValue = config.generator config.value;
+        hasGenerator = config.generator != null;
+        generatesDrv = options.source.type.check generatedValue;
+        generatesStr = options.text.type.check generatedValue;
+      in
+        mkMerge [
+          {
+            target = mkDefault name;
+            source = mkIf (config.text != null) (mkDerivedConfig options.text (text:
+              pkgs.writeTextFile {
+                inherit name text;
+                inherit (config) executable;
+              }));
+          }
+
+          (lib.mkIf (hasGenerator && generatesDrv) {
+            source = mkDefault generatedValue;
+          })
+
+          (lib.mkIf (hasGenerator && generatesStr) {
+            text = mkDefault generatedValue;
+          })
+        ];
     });
 in {
   imports = [
