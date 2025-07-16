@@ -170,7 +170,10 @@ in {
 
   config = mkMerge [
     {
-      users.users = (mapAttrs (_: v: {inherit (v) packages;})) enabledUsers;
+      users.users = let
+        wrapperPackages = user: attrValues (mapAttrs (_: v: v.finalPackage) user.wrappers);
+      in mapAttrs (_: v: { packages = v.packages ++ wrapperPackages v; }) enabledUsers;
+
       assertions =
         concatLists
         (mapAttrsToList (user: config:
