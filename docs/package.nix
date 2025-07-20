@@ -105,7 +105,10 @@
     pkgs.runCommandLocal "hjem-docs" {
       nativeBuildInputs = [ndg];
     } ''
-      mkdir -p $out
+      mkdir -p $out/share/doc
+
+      # Copy the markdown sources to be processed by ndg
+      cp -rvf ${./inputs} ./inputs
 
       ndg --verbose html \
         --jobs $NIX_BUILD_CORES --title "Hjem" \
@@ -113,7 +116,8 @@
         --manpage-urls ${pkgs.path}/doc/manpage-urls.json \
         --options-depth 2 \
         --generate-search true \
-        --output-dir "$out"
+        --input-dir ./inputs \
+        --output-dir "$out/share/doc"
     '';
 in {
   html = hjemDocsWeb;
