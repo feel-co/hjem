@@ -189,6 +189,92 @@ in {
       description = "Files to be managed by Hjem";
     };
 
+    xdg = {
+      cache = {
+        directory = mkOption {
+          type = path;
+          default = "${cfg.directory}/.cache";
+          defaultText = "~/.cache";
+          description = ''
+            The XDG cache directory for the user, to which files configured in
+            {option}`hjem.users.<name>.xdg.cache.files` will be relative to by default.
+
+            Adds {env}`XDG_CACHE_HOME` to {option}`environment.sessionVariables` for
+            this user if changed.
+          '';
+        };
+        files = mkOption {
+          default = {};
+          type = attrsOf (fileType cfg.xdg.cache.directory);
+          example = {"foo.txt".source = "Hello World";};
+          description = "Cache files to be managed by Hjem";
+        };
+      };
+
+      config = {
+        directory = mkOption {
+          type = path;
+          default = "${cfg.directory}/.config";
+          defaultText = "~/.config";
+          description = ''
+            The XDG config directory for the user, to which files configured in
+            {option}`hjem.users.<name>.xdg.config.files` will be relative to by default.
+
+            Adds {env}`XDG_CONFIG_HOME` to {option}`environment.sessionVariables` for
+            this user if changed.
+          '';
+        };
+        files = mkOption {
+          default = {};
+          type = attrsOf (fileType cfg.xdg.config.directory);
+          example = {"foo.txt".source = "Hello World";};
+          description = "Config files to be managed by Hjem";
+        };
+      };
+
+      data = {
+        directory = mkOption {
+          type = path;
+          default = "${cfg.directory}/.local/share";
+          defaultText = "~/.local/share";
+          description = ''
+            The XDG data directory for the user, to which files configured in
+            {option}`hjem.users.<name>.xdg.data.files` will be relative to by default.
+
+            Adds {env}`XDG_DATA_HOME` to {option}`environment.sessionVariables` for
+            this user if changed.
+          '';
+        };
+        files = mkOption {
+          default = {};
+          type = attrsOf (fileType cfg.xdg.data.directory);
+          example = {"foo.txt".source = "Hello World";};
+          description = "data files to be managed by Hjem";
+        };
+      };
+
+      state = {
+        directory = mkOption {
+          type = path;
+          default = "${cfg.directory}/.local/state";
+          defaultText = "~/.local/share";
+          description = ''
+            The XDG state directory for the user, to which files configured in
+            {option}`hjem.users.<name>.xdg.state.files` will be relative to by default.
+
+            Adds {env}`XDG_STATE_HOME` to {option}`environment.sessionVariables` for
+            this user if changed.
+          '';
+        };
+        files = mkOption {
+          default = {};
+          type = attrsOf (fileType cfg.xdg.state.directory);
+          example = {"foo.txt".source = "Hello World";};
+          description = "state files to be managed by Hjem";
+        };
+      };
+    };
+
     packages = mkOption {
       type = listOf package;
       default = [];
@@ -225,18 +311,25 @@ in {
   };
 
   config = {
-    environment.loadEnv = let
-      toEnv = env:
-        if isList env
-        then concatMapStringsSep ":" toString env
-        else toString env;
-    in
-      lib.pipe cfg.environment.sessionVariables [
-        (mapAttrsToList (name: value: "export ${name}=\"${toEnv value}\""))
-        concatLines
-        (pkgs.writeShellScript "load-env")
-      ];
-
+    environment = {
+      sessionVariables = {
+        XDG_CACHE_HOME = mkIf (cfg.xdg.cache.directory != "${cfg.directory}/.cache") cfg.xdg.cache.directory;
+        XDG_CONFIG_HOME = mkIf (cfg.xdg.config.directory != "${cfg.directory}/.config") cfg.xdg.config.directory;
+        XDG_DATA_HOME = mkIf (cfg.xdg.data.directory != "${cfg.directory}/.local/share") cfg.xdg.data.directory;
+        XDG_STATE_HOME = mkIf (cfg.xdg.state.directory != "${cfg.directory}/.local/state") cfg.xdg.state.directory;
+      };
+      loadEnv = let
+        toEnv = env:
+          if isList env
+          then concatMapStringsSep ":" toString env
+          else toString env;
+      in
+        lib.pipe cfg.environment.sessionVariables [
+          (mapAttrsToList (name: value: "export ${name}=\"${toEnv value}\""))
+          concatLines
+          (pkgs.writeShellScript "load-env")
+        ];
+    };
     assertions = [
       {
         assertion = cfg.user != "";
