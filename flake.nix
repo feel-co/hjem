@@ -46,6 +46,8 @@
       hjem-basic = import ./tests/basic.nix checkArgs;
       hjem-special-args = import ./tests/special-args.nix checkArgs;
       hjem-linker = import ./tests/linker.nix checkArgs;
+      hjem-xdg = import ./tests/xdg.nix checkArgs;
+      hjem-xdg-linker = import ./tests/xdg-linker.nix checkArgs;
     });
 
     devShells = forAllSystems (system: let

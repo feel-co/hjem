@@ -18,10 +18,18 @@
   enabledUsers = filterAttrs (_: u: u.enable) cfg.users;
   disabledUsers = filterAttrs (_: u: !u.enable) cfg.users;
 
+  userFiles = user: [
+    user.files
+    user.xdg.cache.files
+    user.xdg.config.files
+    user.xdg.data.files
+    user.xdg.state.files
+  ];
+
   linker = getExe cfg.linker;
 
   manifests = let
-    mapFiles = _: files:
+    mapFiles = files:
       lib.attrsets.foldlAttrs (
         accum: _: value:
           if value.enable -> value.source == null
@@ -44,7 +52,9 @@
         text = builtins.toJSON {
           clobber_by_default = cfg.users."${username}".clobberFiles;
           version = 1;
-          files = mapFiles username cfg.users."${username}".files;
+          files = concatMap mapFiles (
+            userFiles cfg.users."${username}"
+          );
         };
         checkPhase = ''
           set -e
@@ -210,8 +220,8 @@ in {
 
       systemd.user.tmpfiles.users =
         mapAttrs (_: u: {
-          rules = pipe u.files [
-            attrValues
+          rules = pipe (userFiles u) [
+            (concatMap attrValues)
             (filter (f: f.enable && f.source != null))
             (map (
               file:
