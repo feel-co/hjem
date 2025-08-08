@@ -4,16 +4,17 @@
 # be avoided here.
 {
   config,
+  options,
   pkgs,
   lib,
   ...
 }: let
   inherit (lib.attrsets) mapAttrsToList;
-  inherit (lib.strings) concatMapStringsSep concatLines;
-  inherit (lib.modules) mkIf mkDefault mkDerivedConfig;
-  inherit (lib.options) mkOption literalExpression mkEnableOption;
+  inherit (lib.strings) concatLines concatMapStringsSep;
+  inherit (lib.modules) mkDefault mkDerivedConfig mkIf mkMerge;
+  inherit (lib.options) literalExpression mkEnableOption mkOption;
   inherit (lib.strings) hasPrefix;
-  inherit (lib.types) attrsOf bool lines listOf nullOr package path str submodule oneOf int;
+  inherit (lib.types) addCheck anything attrsOf bool either functionTo int lines listOf nullOr package path str submodule oneOf;
   inherit (builtins) isList;
 
   cfg = config;
@@ -58,6 +59,32 @@
           description = "Path of the source file or directory";
         };
 
+        generator = lib.mkOption {
+          # functionTo doesn't actually check the return type, so do that ourselves
+          type = addCheck (nullOr (functionTo (either options.source.type options.text.type))) (x: let
+            generatedValue = x config.value;
+            generatesDrv = options.source.type.check generatedValue;
+            generatesStr = options.text.type.check generatedValue;
+          in
+            x != null -> (generatesDrv || generatesStr));
+          default = null;
+          description = ''
+            Function that when applied to `value` will create the `source` or `text` of the file.
+
+            Detection is automatic, as we check if the `generator` generates a derivation or a string after applying to `value`.
+          '';
+          example = literalExpression "lib.generators.toGitINI";
+        };
+
+        value = lib.mkOption {
+          type = nullOr (attrsOf anything);
+          default = null;
+          description = "Value passed to the `generator`.";
+          example = {
+            user.email = "me@example.com";
+          };
+        };
+
         executable = mkOption {
           type = bool;
           default = false;
@@ -90,14 +117,30 @@
         };
       };
 
-      config = {
-        target = mkDefault name;
-        source = mkIf (config.text != null) (mkDerivedConfig options.text (text:
-          pkgs.writeTextFile {
-            inherit name text;
-            inherit (config) executable;
-          }));
-      };
+      config = let
+        generatedValue = config.generator config.value;
+        hasGenerator = config.generator != null;
+        generatesDrv = options.source.type.check generatedValue;
+        generatesStr = options.text.type.check generatedValue;
+      in
+        mkMerge [
+          {
+            target = mkDefault name;
+            source = mkIf (config.text != null) (mkDerivedConfig options.text (text:
+              pkgs.writeTextFile {
+                inherit name text;
+                inherit (config) executable;
+              }));
+          }
+
+          (lib.mkIf (hasGenerator && generatesDrv) {
+            source = mkDefault generatedValue;
+          })
+
+          (lib.mkIf (hasGenerator && generatesStr) {
+            text = mkDefault generatedValue;
+          })
+        ];
     });
 in {
   imports = [
@@ -147,6 +190,92 @@ in {
       description = "Files to be managed by Hjem";
     };
 
+    xdg = {
+      cache = {
+        directory = mkOption {
+          type = path;
+          default = "${cfg.directory}/.cache";
+          defaultText = "$HOME/.cache";
+          description = ''
+            The XDG cache directory for the user, to which files configured in
+            {option}`hjem.users.<name>.xdg.cache.files` will be relative to by default.
+
+            Adds {env}`XDG_CACHE_HOME` to {option}`environment.sessionVariables` for
+            this user if changed.
+          '';
+        };
+        files = mkOption {
+          default = {};
+          type = attrsOf (fileType cfg.xdg.cache.directory);
+          example = {"foo.txt".source = "Hello World";};
+          description = "Cache files to be managed by Hjem";
+        };
+      };
+
+      config = {
+        directory = mkOption {
+          type = path;
+          default = "${cfg.directory}/.config";
+          defaultText = "$HOME/.config";
+          description = ''
+            The XDG config directory for the user, to which files configured in
+            {option}`hjem.users.<name>.xdg.config.files` will be relative to by default.
+
+            Adds {env}`XDG_CONFIG_HOME` to {option}`environment.sessionVariables` for
+            this user if changed.
+          '';
+        };
+        files = mkOption {
+          default = {};
+          type = attrsOf (fileType cfg.xdg.config.directory);
+          example = {"foo.txt".source = "Hello World";};
+          description = "Config files to be managed by Hjem";
+        };
+      };
+
+      data = {
+        directory = mkOption {
+          type = path;
+          default = "${cfg.directory}/.local/share";
+          defaultText = "$HOME/.local/share";
+          description = ''
+            The XDG data directory for the user, to which files configured in
+            {option}`hjem.users.<name>.xdg.data.files` will be relative to by default.
+
+            Adds {env}`XDG_DATA_HOME` to {option}`environment.sessionVariables` for
+            this user if changed.
+          '';
+        };
+        files = mkOption {
+          default = {};
+          type = attrsOf (fileType cfg.xdg.data.directory);
+          example = {"foo.txt".source = "Hello World";};
+          description = "data files to be managed by Hjem";
+        };
+      };
+
+      state = {
+        directory = mkOption {
+          type = path;
+          default = "${cfg.directory}/.local/state";
+          defaultText = "$HOME/.local/share";
+          description = ''
+            The XDG state directory for the user, to which files configured in
+            {option}`hjem.users.<name>.xdg.state.files` will be relative to by default.
+
+            Adds {env}`XDG_STATE_HOME` to {option}`environment.sessionVariables` for
+            this user if changed.
+          '';
+        };
+        files = mkOption {
+          default = {};
+          type = attrsOf (fileType cfg.xdg.state.directory);
+          example = {"foo.txt".source = "Hello World";};
+          description = "state files to be managed by Hjem";
+        };
+      };
+    };
+
     packages = mkOption {
       type = listOf package;
       default = [];
@@ -183,18 +312,25 @@ in {
   };
 
   config = {
-    environment.loadEnv = let
-      toEnv = env:
-        if isList env
-        then concatMapStringsSep ":" toString env
-        else toString env;
-    in
-      lib.pipe cfg.environment.sessionVariables [
-        (mapAttrsToList (name: value: "export ${name}=\"${toEnv value}\""))
-        concatLines
-        (pkgs.writeShellScript "load-env")
-      ];
-
+    environment = {
+      sessionVariables = {
+        XDG_CACHE_HOME = mkIf (cfg.xdg.cache.directory != options.xdg.cache.directory.default) cfg.xdg.cache.directory;
+        XDG_CONFIG_HOME = mkIf (cfg.xdg.config.directory != options.xdg.config.directory.default) cfg.xdg.config.directory;
+        XDG_DATA_HOME = mkIf (cfg.xdg.data.directory != options.xdg.data.directory.default) cfg.xdg.data.directory;
+        XDG_STATE_HOME = mkIf (cfg.xdg.state.directory != options.xdg.state.directory.default) cfg.xdg.state.directory;
+      };
+      loadEnv = let
+        toEnv = env:
+          if isList env
+          then concatMapStringsSep ":" toString env
+          else toString env;
+      in
+        lib.pipe cfg.environment.sessionVariables [
+          (mapAttrsToList (name: value: "export ${name}=\"${toEnv value}\""))
+          concatLines
+          (pkgs.writeShellScript "load-env")
+        ];
+    };
     assertions = [
       {
         assertion = cfg.user != "";
