@@ -12,7 +12,7 @@
 
   configJSON =
     (pkgs.nixosOptionsDoc {
-      variablelistId = "hjen-options";
+      variablelistId = "hjem-options";
       warningsAreErrors = true;
 
       inherit
@@ -114,7 +114,7 @@
         --jobs $NIX_BUILD_CORES --title "Hjem" \
         --module-options ${configJSON}/share/doc/nixos/options.json \
         --manpage-urls ${pkgs.path}/doc/manpage-urls.json \
-        --options-depth 2 \
+        --options-depth 3 \
         --generate-search true \
         --input-dir ./inputs \
         --output-dir "$out/share/doc"
