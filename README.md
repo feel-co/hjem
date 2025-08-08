@@ -2,7 +2,7 @@
 
 <div id="doc-begin" align="center">
   <h1 id="header">
-    <pre>Hjem</pre>
+    <pre>Hjem [ˈjɛmˀ]</pre>
   </h1>
   <p>
     A streamlined way to manage your <code>$HOME</code> with Nix.
