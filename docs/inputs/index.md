@@ -9,7 +9,7 @@ We also provide a short option reference. Hjem does not vendor any modules
 similar to Home-Manager and Nix-Darwin, but there exists a companion project
 that aims to bridge the gap between Hjem and per-program modules. If you are
 interested in such a setup, we encourage you to take a look at
-[Hjem-Rum](https://github.com/snugnug/hjem-rum)
+[Hjem Rum](https://github.com/snugnug/hjem-rum)
 
 :::
 
@@ -56,18 +56,16 @@ import it from inside the `nixosSystem` call.
 
 ## Usage
 
-The user interface for Hjem is incredibly simple. At the same time, it is also
-very robust. Hjem shaves off the unnecessary complexity by exposing a simple
-interface used to link files. Namely, you are interested in the
-{option}`hjem.users.<user>.files` submodule as it is the main feature of Hjem;
-it links files in place.
+Hjem achieves both simplicity and robustness by shaving off the unnecessary
+complexity and exposing a simple interface used to link files:
+{option}`hjem.users.<user>.files`. This is the core of Hjem―file linking.
 
 ### `hjem.users`
 
 {option}`hjem.users` is the main entry point used to declare individual users
 for Hjem. It contains several sub-options that may be used to control Hjem's
 behaviour per user. You may refer to the option documentation for more details
-on each bell and whistle. Important options to be aware of are as follows.
+on each bell and whistle. Important options to be aware of are as follows:
 
 - {option}`hjem.users.<name>.enable` allows toggling file linking for individual
   users. Set to `true` by default, but can be used to toggle off file linking
@@ -84,9 +82,9 @@ on each bell and whistle. Important options to be aware of are as follows.
 
 #### Example
 
-Now, let's go over an example. In this case we have a user named "alice" whom we
-want to manage the home directory of. Alice's home directory is `/home/alice`,
-so we should first tell Hjem to look there. Since defined users are enabled by
+Now, let's go over an example. In this case we have a user named "alice" whose
+home directory we want to manage. Alice's home directory is `/home/alice`, so we
+should first tell Hjem to look there. Since defined users are enabled by
 default, no need to set `enable` explicitly.
 
 Once the user's home is defined, we'll want to give Hjem some files to manage.
