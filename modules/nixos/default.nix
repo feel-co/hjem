@@ -239,7 +239,8 @@ in {
       */
       systemd.targets.hjem = {
         description = "Hjem File Management";
-        requiredBy = ["sysinit-reactivation.target"];
+        after = ["local-fs.target"];
+        wantedBy = ["sysinit-reactivation.target" "multi-user.target"];
         before = ["sysinit-reactivation.target"];
         requires = let
           requiredUserServices = name: [
