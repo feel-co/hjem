@@ -1,7 +1,8 @@
 {
   config,
-  pkgs,
   lib,
+  pkgs,
+  utils,
   ...
 }: let
   inherit (lib.attrsets) filterAttrs mapAttrsToList;
@@ -77,7 +78,7 @@
     specialArgs =
       cfg.specialArgs
       // {
-        inherit pkgs;
+        inherit pkgs utils;
         osConfig = config;
       };
     modules =
@@ -85,6 +86,7 @@
       [
         [
           ../common/user.nix
+          ./systemd.nix
           ({name, ...}: let
             user = getAttr name config.users.users;
           in {
