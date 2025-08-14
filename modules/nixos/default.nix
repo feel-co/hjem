@@ -4,6 +4,7 @@
   lib,
   options,
   pkgs,
+  utils,
   ...
 }: let
   inherit (lib.attrsets) filterAttrs mapAttrsToList;
@@ -79,7 +80,7 @@
     specialArgs =
       cfg.specialArgs
       // {
-        inherit hjem-lib pkgs;
+        inherit hjem-lib pkgs utils;
         osConfig = config;
         osOptions = options;
       };
@@ -88,6 +89,7 @@
       [
         [
           ../common/user.nix
+          ./systemd.nix
           ({name, ...}: let
             inherit (lib.modules) mkDefault;
             user = config.users.users.${name};
