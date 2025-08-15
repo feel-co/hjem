@@ -1,0 +1,3 @@
+# Codeowners should be used to distinguish the maintainers of the project
+# and not contributors of specific modules to Hjem.
+* @NotAShelf @eclairevoyant
