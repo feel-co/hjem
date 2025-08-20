@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  options,
   pkgs,
   utils,
   ...
@@ -80,6 +81,7 @@
       // {
         inherit pkgs utils;
         osConfig = config;
+        osOptions = options;
       };
     modules =
       concatLists
@@ -88,11 +90,12 @@
           ../common/user.nix
           ./systemd.nix
           ({name, ...}: let
+            inherit (lib.modules) mkDefault;
             user = getAttr name config.users.users;
           in {
-            user = user.name;
-            directory = user.home;
-            clobberFiles = cfg.clobberByDefault;
+            user = mkDefault user.name;
+            directory = mkDefault user.home;
+            clobberFiles = mkDefault cfg.clobberByDefault;
           })
         ]
         # Evaluate additional modules under 'hjem.users.<name>' so that
