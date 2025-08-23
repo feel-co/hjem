@@ -57,11 +57,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1759381078,
-        "narHash": "sha256-gTrEEp5gEspIcCOx9PD8kMaF1iEmfBcTbO0Jag2QhQs=",
+        "lastModified": 1760038930,
+        "narHash": "sha256-Oncbh0UmHjSlxO7ErQDM3KM0A5/Znfofj2BSzlHLeVw=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "7df7ff7d8e00218376575f0acdcc5d66741351ee",
+        "rev": "0b4defa2584313f3b781240b29d61f6f9f7e0df3",
         "type": "github"
       },
       "original": {
@@ -123,12 +123,13 @@
         "systems": "systems"
       },
       "locked": {
-        "lastModified": 1759458325,
-        "narHash": "sha256-NY9sQlRPVVY7JWcZHtrK0T0RlH676NhaqR7Lco+FhTQ=",
-        "owner": "feel-co",
-        "repo": "smfh",
-        "rev": "c29b22c328d6b03acaa6b879bf7f3c8ff82ca2d3",
-        "type": "github"
+        "lastModified": 1760152713,
+        "narHash": "sha256-8/mBnSM3U9PdSBx3+Cmq5OybN5W2URCVUFC/U6xur2M=",
+        "ref": "refs/heads/manifest-v2",
+        "rev": "3871b1f9429496ad9d9f7e0f6886eecfc5a24d00",
+        "revCount": 74,
+        "type": "git",
+        "url": "file:///mnt/scratch/smfh"
       },
       "original": {
         "owner": "feel-co",
