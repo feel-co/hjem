@@ -12,6 +12,11 @@ in {
   # using osOptions precludes using hjem (or this type) standalone
   envVarType = attrsOf (nullOr (oneOf [(listOf (oneOf [int str path])) int str path]));
 
+  fileToJson = f:
+    if (elem f.type ["symlink" "copy"])
+    then {inherit (f) source target type;}
+    else {inherit (f) source type;};
+
   fileTypeRelativeTo = {
     rootDir,
     clobberDefault,
@@ -31,6 +36,14 @@ in {
             default = true;
             example = false;
           };
+
+        type = mkOption {
+          type = enum ["symlink" "copy" "delete" "directory" "modify"];
+          default = "symlink";
+          description = ''
+            Type of path to create.
+          '';
+        };
 
         target = mkOption {
           type = str;
