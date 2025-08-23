@@ -6,14 +6,15 @@
   pkgs,
   ...
 }: let
+  inherit (builtins) attrNames attrValues concatLists concatMap concatStringsSep filter getAttr mapAttrs toJSON typeOf;
+  inherit (hjem-lib) fileToJson;
   inherit (lib.attrsets) filterAttrs mapAttrsToList;
   inherit (lib.modules) mkIf mkMerge;
   inherit (lib.options) literalExpression mkOption;
   inherit (lib.strings) optionalString;
-  inherit (lib.trivial) pipe;
+  inherit (lib.trivial) flip pipe;
   inherit (lib.types) attrs attrsOf bool either listOf nullOr package raw singleLineStr submoduleWith;
   inherit (lib.meta) getExe;
-  inherit (builtins) filter attrNames attrValues mapAttrs getAttr concatLists concatStringsSep typeOf toJSON concatMap;
 
   cfg = config.hjem;
 
@@ -31,32 +32,21 @@
   linker = getExe cfg.linker;
 
   manifests = let
-    mapFiles = files:
-      lib.attrsets.foldlAttrs (
-        accum: _: value:
-          if value.enable -> value.source == null
-          then accum
-          else
-            accum
-            ++ lib.singleton {
-              type = "symlink";
-              inherit (value) source target;
-            }
-      ) []
-      files;
-
     writeManifest = username: let
       name = "manifest-${username}.json";
     in
       pkgs.writeTextFile {
         inherit name;
         destination = "/${name}";
-        text = builtins.toJSON {
-          clobber_by_default = cfg.users."${username}".clobberFiles;
+        text = toJSON {
           version = 1;
-          files = concatMap mapFiles (
-            userFiles cfg.users."${username}"
-          );
+          files = concatMap (
+            flip pipe [
+              attrValues
+              (filter (x: x.enable))
+              (map fileToJson)
+            ]
+          ) (userFiles cfg.users.${username});
         };
         checkPhase = ''
           set -e
@@ -70,7 +60,7 @@
     pkgs.symlinkJoin
     {
       name = "hjem-manifests";
-      paths = map writeManifest (builtins.attrNames enabledUsers);
+      paths = map writeManifest (attrNames enabledUsers);
     };
 
   hjemModule = submoduleWith {
