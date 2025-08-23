@@ -2,15 +2,42 @@
   lib,
   pkgs,
 }: let
-  inherit (builtins) isList;
+  inherit (builtins) elem isList match toJSON;
+  inherit (lib.attrsets) filterAttrs optionalAttrs;
   inherit (lib.modules) mkDefault mkDerivedConfig mkIf mkMerge;
   inherit (lib.options) literalExpression mkEnableOption mkOption;
   inherit (lib.strings) concatMapStringsSep hasPrefix;
-  inherit (lib.types) addCheck anything attrsOf bool either functionTo int lines listOf nullOr oneOf path str submodule;
-in {
+  inherit (lib.types) addCheck anything attrsOf bool either enum functionTo int lines listOf nullOr oneOf path str submodule;
+in rec {
+  addCheckForTypes = {
+    baseType,
+    allowedFileTypes,
+    isRequiredForFileTypes,
+    config,
+    name,
+    valName,
+  }:
+    addCheck baseType (val: let
+      nonNull = val != null;
+      permitsSource = elem config.type allowedFileTypes;
+      fileTypeStrings = toJSON allowedFileTypes;
+    in
+      if nonNull && !permitsSource
+      then throw "'${name}.${valName}' is set, but '${valName}' is only permitted for the following types: ${fileTypeStrings}"
+      else if !nonNull && permitsSource && isRequiredForFileTypes
+      then throw "'${name}.${valName}' is required for the following types: ${fileTypeStrings}"
+      else true);
+
   # inlined from https://github.com/NixOS/nixpkgs/tree/master/nixos/modules/config/shells-environment.nix
   # using osOptions precludes using hjem (or this type) standalone
   envVarType = attrsOf (nullOr (oneOf [(listOf (oneOf [int str path])) int str path]));
+
+  fileToJson = f:
+    {inherit (f) clobber target type;}
+    // (optionalAttrs (elem f.type ["symlink" "copy"]) {inherit (f) source;})
+    // (optionalAttrs
+      (elem f.type ["copy" "delete" "directory" "modify"])
+      (filterAttrs (_: v: v != null) {inherit (f) permissions uid gid;}));
 
   fileTypeRelativeTo = {
     rootDir,
@@ -23,13 +50,45 @@ in {
       options,
       ...
     }: {
-      options = {
+      options = let
+        fileAttrType = baseType: valName:
+          addCheckForTypes {
+            inherit config name baseType valName;
+            allowedFileTypes = ["copy" "delete" "directory" "modify"];
+            isRequiredForFileTypes = false;
+          };
+
+        sourceType = {
+          baseType,
+          isRequiredForFileTypes,
+          valName,
+        }:
+          addCheckForTypes {
+            inherit config name baseType isRequiredForFileTypes valName;
+            allowedFileTypes = ["copy" "symlink"];
+          };
+      in {
         enable =
           mkEnableOption "creation of this file"
           // {
             default = true;
             example = false;
           };
+
+        type = mkOption {
+          type = enum [
+            "symlink"
+            "copy"
+            "delete"
+            "directory"
+            # TODO: uncomment after https://github.com/feel-co/smfh/issues/20 is fixed
+            #"modify"
+          ];
+          default = "symlink";
+          description = ''
+            Type of path to create.
+          '';
+        };
 
         target = mkOption {
           type = str;
@@ -45,17 +104,43 @@ in {
 
         text = mkOption {
           default = null;
-          type = nullOr lines;
+          type = sourceType {
+            baseType = nullOr lines;
+            valName = "text";
+            isRequiredForFileTypes = false;
+          };
           description = "Text of the file.";
         };
 
         source = mkOption {
-          type = nullOr path;
+          type = sourceType {
+            baseType = nullOr path;
+            valName = "source";
+            isRequiredForFileTypes = true;
+          };
           default = null;
           description = "Path of the source file or directory.";
         };
 
-        generator = lib.mkOption {
+        permissions = mkOption {
+          type = addCheck (fileAttrType (nullOr str) "permissions") (val: val != null -> match "[0-7]{3,4}" val == []);
+          default = null;
+          description = "Permissions (in octal) to set on the target path.";
+        };
+
+        uid = mkOption {
+          type = fileAttrType (nullOr str) "uid";
+          default = null;
+          description = "User ID to set as owner on the target path.";
+        };
+
+        gid = mkOption {
+          type = fileAttrType (nullOr str) "gid";
+          default = null;
+          description = "Group ID to set as owner on the target path.";
+        };
+
+        generator = mkOption {
           # functionTo doesn't actually check the return type, so do that ourselves
           type = addCheck (nullOr (functionTo (either options.source.type options.text.type))) (x: let
             generatedValue = x config.value;
@@ -72,7 +157,7 @@ in {
           example = literalExpression "lib.generators.toGitINI";
         };
 
-        value = lib.mkOption {
+        value = mkOption {
           type = nullOr (attrsOf anything);
           default = null;
           description = "Value passed to the `generator`.";
