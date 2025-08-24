@@ -1,147 +1,160 @@
 {
-  config,
   lib,
-  osOptions,
   pkgs,
-  ...
 }: let
   inherit (builtins) isList;
   inherit (lib.modules) mkDefault mkDerivedConfig mkIf mkMerge;
   inherit (lib.options) literalExpression mkEnableOption mkOption;
   inherit (lib.strings) concatMapStringsSep hasPrefix;
-  inherit (lib.types) addCheck anything attrsOf bool either functionTo lines nullOr path str submodule;
-  cfg = config;
+  inherit (lib.types) addCheck anything attrsOf bool either enum functionTo int lines listOf nullOr oneOf path str submodule;
 in {
-  _module.args.hjem = {
-    envVarType = osOptions.environment.variables.type;
+  # inlined from https://github.com/NixOS/nixpkgs/tree/master/nixos/modules/config/shells-environment.nix
+  # using osOptions precludes using hjem (or this type) standalone
+  envVarType = attrsOf (nullOr (oneOf [(listOf (oneOf [int str path])) int str path]));
 
-    fileTypeRelativeTo = rootDir:
-      submodule ({
-        name,
-        target,
-        config,
-        options,
-        ...
-      }: {
-        options = {
-          enable =
-            mkEnableOption "creation of this file"
-            // {
-              default = true;
-              example = false;
-            };
+  fileToJson = f:
+    if (elem f.type ["symlink" "copy"])
+    then {inherit (f) source target type;}
+    else {inherit (f) source type;};
 
-          target = mkOption {
-            type = str;
-            apply = p:
-              if hasPrefix "/" p
-              then throw "This option cannot handle absolute paths yet!"
-              else "${config.relativeTo}/${p}";
-            defaultText = "name";
-            description = ''
-              Path to target file relative to {option}`hjem.users.<name>.files.<file>.relativeTo`.
-            '';
+  fileTypeRelativeTo = {
+    rootDir,
+    clobberDefault,
+    clobberDefaultText,
+  }:
+    submodule ({
+      name,
+      target,
+      config,
+      options,
+      ...
+    }: {
+      options = {
+        enable =
+          mkEnableOption "creation of this file"
+          // {
+            default = true;
+            example = false;
           };
 
-          text = mkOption {
-            default = null;
-            type = nullOr lines;
-            description = "Text of the file";
-          };
+        type = mkOption {
+          type = enum ["symlink" "copy" "delete" "directory" "modify"];
+          default = "symlink";
+          description = ''
+            Type of path to create.
+          '';
+        };
 
-          source = mkOption {
-            type = nullOr path;
-            default = null;
-            description = "Path of the source file or directory";
-          };
+        target = mkOption {
+          type = str;
+          apply = p:
+            if hasPrefix "/" p
+            then throw "This option cannot handle absolute paths yet!"
+            else "${config.relativeTo}/${p}";
+          defaultText = "name";
+          description = ''
+            Path to target file relative to {option}`hjem.users.<name>.files.<file>.relativeTo`.
+          '';
+        };
 
-          generator = lib.mkOption {
-            # functionTo doesn't actually check the return type, so do that ourselves
-            type = addCheck (nullOr (functionTo (either options.source.type options.text.type))) (x: let
-              generatedValue = x config.value;
-              generatesDrv = options.source.type.check generatedValue;
-              generatesStr = options.text.type.check generatedValue;
-            in
-              x != null -> (generatesDrv || generatesStr));
-            default = null;
-            description = ''
-              Function that when applied to `value` will create the `source` or `text` of the file.
+        text = mkOption {
+          default = null;
+          type = nullOr lines;
+          description = "Text of the file";
+        };
 
-              Detection is automatic, as we check if the `generator` generates a derivation or a string after applying to `value`.
-            '';
-            example = literalExpression "lib.generators.toGitINI";
-          };
+        source = mkOption {
+          type = nullOr path;
+          default = null;
+          description = "Path of the source file or directory";
+        };
 
-          value = lib.mkOption {
-            type = nullOr (attrsOf anything);
-            default = null;
-            description = "Value passed to the `generator`.";
-            example = {
-              user.email = "me@example.com";
-            };
-          };
+        generator = lib.mkOption {
+          # functionTo doesn't actually check the return type, so do that ourselves
+          type = addCheck (nullOr (functionTo (either options.source.type options.text.type))) (x: let
+            generatedValue = x config.value;
+            generatesDrv = options.source.type.check generatedValue;
+            generatesStr = options.text.type.check generatedValue;
+          in
+            x != null -> (generatesDrv || generatesStr));
+          default = null;
+          description = ''
+            Function that when applied to `value` will create the `source` or `text` of the file.
 
-          executable = mkOption {
-            type = bool;
-            default = false;
-            example = true;
-            description = ''
-              Whether to set the execute bit on the target file.
-            '';
-          };
+            Detection is automatic, as we check if the `generator` generates a derivation or a string after applying to `value`.
+          '';
+          example = literalExpression "lib.generators.toGitINI";
+        };
 
-          clobber = mkOption {
-            type = bool;
-            default = cfg.clobberFiles;
-            defaultText = literalExpression "config.hjem.clobberByDefault";
-            description = ''
-              Whether to "clobber" existing target paths.
-
-              - If using the **systemd-tmpfiles** hook (Linux only), tmpfile rules
-                will be constructed with `L+` (*re*create) instead of `L`
-                (create) type while this is set to `true`.
-            '';
-          };
-
-          relativeTo = mkOption {
-            internal = true;
-            type = path;
-            default = rootDir;
-            description = "Path to which symlinks will be relative to";
-            apply = x:
-              assert (hasPrefix "/" x || abort "Relative path ${x} cannot be used for files.<file>.relativeTo"); x;
+        value = lib.mkOption {
+          type = nullOr (attrsOf anything);
+          default = null;
+          description = "Value passed to the `generator`.";
+          example = {
+            user.email = "me@example.com";
           };
         };
 
-        config = let
-          generatedValue = config.generator config.value;
-          hasGenerator = config.generator != null;
-          generatesDrv = options.source.type.check generatedValue;
-          generatesStr = options.text.type.check generatedValue;
-        in
-          mkMerge [
-            {
-              target = mkDefault name;
-              source = mkIf (config.text != null) (mkDerivedConfig options.text (text:
-                pkgs.writeTextFile {
-                  inherit name text;
-                  inherit (config) executable;
-                }));
-            }
+        executable = mkOption {
+          type = bool;
+          default = false;
+          example = true;
+          description = ''
+            Whether to set the execute bit on the target file.
+          '';
+        };
 
-            (lib.mkIf (hasGenerator && generatesDrv) {
-              source = mkDefault generatedValue;
-            })
+        clobber = mkOption {
+          type = bool;
+          default = clobberDefault;
+          defaultText = clobberDefaultText;
+          description = ''
+            Whether to "clobber" existing target paths.
 
-            (lib.mkIf (hasGenerator && generatesStr) {
-              text = mkDefault generatedValue;
-            })
-          ];
-      });
+            - If using the **systemd-tmpfiles** hook (Linux only), tmpfile rules
+              will be constructed with `L+` (*re*create) instead of `L`
+              (create) type while this is set to `true`.
+          '';
+        };
 
-    toEnv = env:
-      if isList env
-      then concatMapStringsSep ":" toString env
-      else toString env;
-  };
+        relativeTo = mkOption {
+          internal = true;
+          type = path;
+          default = rootDir;
+          description = "Path to which symlinks will be relative to";
+          apply = x:
+            assert (hasPrefix "/" x || abort "Relative path ${x} cannot be used for files.<file>.relativeTo"); x;
+        };
+      };
+
+      config = let
+        generatedValue = config.generator config.value;
+        hasGenerator = config.generator != null;
+        generatesDrv = options.source.type.check generatedValue;
+        generatesStr = options.text.type.check generatedValue;
+      in
+        mkMerge [
+          {
+            target = mkDefault name;
+            source = mkIf (config.text != null) (mkDerivedConfig options.text (text:
+              pkgs.writeTextFile {
+                inherit name text;
+                inherit (config) executable;
+              }));
+          }
+
+          (lib.mkIf (hasGenerator && generatesDrv) {
+            source = mkDefault generatedValue;
+          })
+
+          (lib.mkIf (hasGenerator && generatesStr) {
+            text = mkDefault generatedValue;
+          })
+        ];
+    });
+
+  toEnv = env:
+    if isList env
+    then concatMapStringsSep ":" toString env
+    else toString env;
 }
