@@ -21,7 +21,17 @@
     forAllSystems = nixpkgs.lib.genAttrs ["x86_64-linux" "aarch64-linux"];
   in {
     nixosModules = {
-      hjem = ./modules/nixos;
+      hjem = {
+        imports = [
+          ./modules/nixos
+          self.nixosModules.hjem-lib
+        ];
+      };
+      hjem-lib = {
+        lib,
+        pkgs,
+        ...
+      }: {_module.args.hjem-lib = import ./lib.nix {inherit lib pkgs;};};
       default = self.nixosModules.hjem;
     };
 
@@ -85,5 +95,11 @@
           '';
         }
     );
+
+    hjem-lib = forAllSystems (system:
+      import ./lib.nix {
+        inherit (nixpkgs) lib;
+        pkgs = nixpkgs.legacyPackages.${system};
+      });
   };
 }
