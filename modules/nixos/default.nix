@@ -1,5 +1,6 @@
 {
   config,
+  hjem-lib,
   lib,
   options,
   pkgs,
@@ -10,7 +11,7 @@
   inherit (lib.options) literalExpression mkOption;
   inherit (lib.strings) optionalString;
   inherit (lib.trivial) pipe;
-  inherit (lib.types) attrs attrsOf bool listOf nullOr package raw submoduleWith either singleLineStr;
+  inherit (lib.types) attrs attrsOf bool either listOf nullOr package raw singleLineStr submoduleWith;
   inherit (lib.meta) getExe;
   inherit (builtins) filter attrNames attrValues mapAttrs getAttr concatLists concatStringsSep typeOf toJSON concatMap;
 
@@ -78,7 +79,7 @@
     specialArgs =
       cfg.specialArgs
       // {
-        inherit pkgs;
+        inherit hjem-lib pkgs;
         osConfig = config;
         osOptions = options;
       };

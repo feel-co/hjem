@@ -4,13 +4,14 @@
 # be avoided here.
 {
   config,
-  hjem,
+  hjem-lib,
   lib,
+  name,
   options,
   pkgs,
   ...
 }: let
-  inherit (hjem) envVarType fileTypeRelativeTo toEnv;
+  inherit (hjem-lib) envVarType toEnv;
   inherit (lib.attrsets) mapAttrsToList;
   inherit (lib.strings) concatLines;
   inherit (lib.modules) mkIf;
@@ -18,13 +19,17 @@
   inherit (lib.types) attrsOf bool listOf package path str;
 
   cfg = config;
+  fileTypeRelativeTo' = rootDir:
+    hjem-lib.fileTypeRelativeTo {
+      inherit rootDir;
+      clobberDefault = cfg.clobberFiles;
+      clobberDefaultText = literalExpression "config.hjem.users.${name}.clobberFiles";
+    };
 in {
   imports = [
     # Makes "assertions" option available without having to duplicate the work
     # already done in the Nixpkgs module.
     (pkgs.path + "/nixos/modules/misc/assertions.nix")
-
-    ../../lib.nix
   ];
 
   options = {
@@ -63,7 +68,7 @@ in {
 
     files = mkOption {
       default = {};
-      type = attrsOf (fileTypeRelativeTo cfg.directory);
+      type = attrsOf (fileTypeRelativeTo' cfg.directory);
       example = {".config/foo.txt".source = "Hello World";};
       description = "Files to be managed by Hjem";
     };
@@ -84,7 +89,7 @@ in {
         };
         files = mkOption {
           default = {};
-          type = attrsOf (fileTypeRelativeTo cfg.xdg.cache.directory);
+          type = attrsOf (fileTypeRelativeTo' cfg.xdg.cache.directory);
           example = {"foo.txt".source = "Hello World";};
           description = "Cache files to be managed by Hjem";
         };
@@ -105,7 +110,7 @@ in {
         };
         files = mkOption {
           default = {};
-          type = attrsOf (fileTypeRelativeTo cfg.xdg.config.directory);
+          type = attrsOf (fileTypeRelativeTo' cfg.xdg.config.directory);
           example = {"foo.txt".source = "Hello World";};
           description = "Config files to be managed by Hjem";
         };
@@ -126,7 +131,7 @@ in {
         };
         files = mkOption {
           default = {};
-          type = attrsOf (fileTypeRelativeTo cfg.xdg.data.directory);
+          type = attrsOf (fileTypeRelativeTo' cfg.xdg.data.directory);
           example = {"foo.txt".source = "Hello World";};
           description = "data files to be managed by Hjem";
         };
@@ -147,7 +152,7 @@ in {
         };
         files = mkOption {
           default = {};
-          type = attrsOf (fileTypeRelativeTo cfg.xdg.state.directory);
+          type = attrsOf (fileTypeRelativeTo' cfg.xdg.state.directory);
           example = {"foo.txt".source = "Hello World";};
           description = "state files to be managed by Hjem";
         };
