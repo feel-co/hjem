@@ -3,6 +3,7 @@
   lib,
   options,
   pkgs,
+  utils,
   ...
 }: let
   inherit (lib.attrsets) filterAttrs mapAttrsToList;
@@ -78,7 +79,7 @@
     specialArgs =
       cfg.specialArgs
       // {
-        inherit pkgs;
+        inherit pkgs utils;
         osConfig = config;
         osOptions = options;
       };
@@ -87,6 +88,7 @@
       [
         [
           ../common/user.nix
+          ./systemd.nix
           ({name, ...}: let
             inherit (lib.modules) mkDefault;
             user = getAttr name config.users.users;
