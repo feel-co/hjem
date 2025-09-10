@@ -113,7 +113,7 @@ Let's go with some example files to demonstrate Hjem's linking capabilities.
    :::
    
 
-4. The most recent addition to Hjem's file linking interface is the `generator`
+3. The most recent addition to Hjem's file linking interface is the `generator`
    attribute. It allows feeding a generator by which your values will be
    transformed. Consider the following example:
 
