@@ -102,10 +102,15 @@ Let's go with some example files to demonstrate Hjem's linking capabilities.
    ```nix
    ".config/bar".source = pkgs.writeTextFile "file-foo" "file contents";
    ```
-   Note : `.source` also supports directly provided path.
+   ::: {.note}
+   
+   `.source` attribute also supports passing paths directly:
+   
    ```nix
    ".config/bar".source = ./foo;
    ```
+
+   :::
    
 
 4. The most recent addition to Hjem's file linking interface is the `generator`
