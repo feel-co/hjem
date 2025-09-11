@@ -38,9 +38,9 @@ in {
             if hasPrefix "/" p
             then throw "This option cannot handle absolute paths yet!"
             else "${config.relativeTo}/${p}";
-          defaultText = "name";
+          defaultText = name;
           description = ''
-            Path to target file relative to {option}`hjem.users.<name>.files.<file>.relativeTo`.
+            Path to target file relative to ${rootDir}.
           '';
         };
 
