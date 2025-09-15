@@ -1,0 +1,1507 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hjem - Options</title>
+    <script>
+      // Apply sidebar state immediately to prevent flash
+      (function () {
+        if (localStorage.getItem("sidebar-collapsed") === "true") {
+          document.documentElement.classList.add("sidebar-collapsed");
+        }
+      })();
+    </script>
+    <link rel="stylesheet" href="assets/style.css" />
+    <script defer src="assets/main.js"></script>
+    
+    <script defer src="assets/search.js"></script>
+    
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="header-left">
+          <h1 class="site-title"><a href="index.html">Hjem</a></h1>
+        </div>
+        <nav class="header-nav">
+          <ul>
+            <li class="active"><a href="options.html">Options</a></li>
+            
+            <li><a href="search.html">Search</a></li>
+            
+          </ul>
+        </nav>
+        
+        <div class="search-container">
+          <input type="text" id="search-input" placeholder="Search..." />
+          <div id="search-results" class="search-results"></div>
+        </div>
+        
+      </header>
+
+      <div class="layout">
+        <div class="sidebar-toggle" aria-label="Toggle sidebar">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            width="24"
+            height="24"
+          >
+            <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path>
+          </svg>
+        </div>
+        <nav id="sidebar" class="sidebar">
+          <div class="docs-nav">
+            <h2>Documents</h2>
+            <ul>
+              <li><a href="extending.html">Extending Hjem</a></li>
+<li><a href="index.html">Index</a></li>
+<li><a href="search.html">Search</a></li>
+
+            </ul>
+          </div>
+
+          <div class="toc">
+            <h2>Contents</h2>
+            <ul class="toc-list">
+  
+  
+  <li>
+    <a href='#option-hjem-clobberByDefault' title="hjem.clobberByDefault">
+      hjem.clobberByDefault
+      
+      
+    </a>
+  </li>
+  
+  <li>
+    <a href='#option-hjem-extraModules' title="hjem.extraModules">
+      hjem.extraModules
+      
+      
+    </a>
+  </li>
+  
+  <li>
+    <a href='#option-hjem-linker' title="hjem.linker">
+      hjem.linker
+      
+      
+    </a>
+  </li>
+  
+  <li>
+    <a href='#option-hjem-linkerOptions' title="hjem.linkerOptions">
+      hjem.linkerOptions
+      
+      
+    </a>
+  </li>
+  
+  <li>
+    <a href='#option-hjem-specialArgs' title="hjem.specialArgs">
+      hjem.specialArgs
+      
+      
+    </a>
+  </li>
+  
+  <li>
+    <a href='#option-hjem-users' title="hjem.users">
+      hjem.users
+      
+      
+    </a>
+  </li>
+  
+
+  
+  
+  <li>
+    <details class="toc-category">
+      <summary title="hjem.users.&lt;name&gt;">
+        <span>hjem.users.&lt;name&gt;</span>
+        <span class="toc-count">56</span>
+      </summary>
+      <ul>
+        
+
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-clobberFiles' title="hjem.users.&lt;name&gt;.clobberFiles">
+            clobberFiles
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-directory' title="hjem.users.&lt;name&gt;.directory">
+            directory
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-enable' title="hjem.users.&lt;name&gt;.enable">
+            enable
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-environment-loadEnv' title="hjem.users.&lt;name&gt;.environment.loadEnv">
+            environment.loadEnv
+            
+            <span class="toc-readonly">read-only</span>
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-environment-sessionVariables' title="hjem.users.&lt;name&gt;.environment.sessionVariables">
+            environment.sessionVariables
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-files' title="hjem.users.&lt;name&gt;.files">
+            files
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-files-&lt;name&gt;-clobber' title="hjem.users.&lt;name&gt;.files.&lt;name&gt;.clobber">
+            files.&lt;name&gt;.clobber
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-files-&lt;name&gt;-enable' title="hjem.users.&lt;name&gt;.files.&lt;name&gt;.enable">
+            files.&lt;name&gt;.enable
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-files-&lt;name&gt;-executable' title="hjem.users.&lt;name&gt;.files.&lt;name&gt;.executable">
+            files.&lt;name&gt;.executable
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-files-&lt;name&gt;-generator' title="hjem.users.&lt;name&gt;.files.&lt;name&gt;.generator">
+            files.&lt;name&gt;.generator
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-files-&lt;name&gt;-source' title="hjem.users.&lt;name&gt;.files.&lt;name&gt;.source">
+            files.&lt;name&gt;.source
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-files-&lt;name&gt;-target' title="hjem.users.&lt;name&gt;.files.&lt;name&gt;.target">
+            files.&lt;name&gt;.target
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-files-&lt;name&gt;-text' title="hjem.users.&lt;name&gt;.files.&lt;name&gt;.text">
+            files.&lt;name&gt;.text
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-files-&lt;name&gt;-value' title="hjem.users.&lt;name&gt;.files.&lt;name&gt;.value">
+            files.&lt;name&gt;.value
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-packages' title="hjem.users.&lt;name&gt;.packages">
+            packages
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-user' title="hjem.users.&lt;name&gt;.user">
+            user
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-cache-directory' title="hjem.users.&lt;name&gt;.xdg.cache.directory">
+            xdg.cache.directory
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-cache-files' title="hjem.users.&lt;name&gt;.xdg.cache.files">
+            xdg.cache.files
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-cache-files-&lt;name&gt;-clobber' title="hjem.users.&lt;name&gt;.xdg.cache.files.&lt;name&gt;.clobber">
+            xdg.cache.files.&lt;name&gt;.clobber
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-cache-files-&lt;name&gt;-enable' title="hjem.users.&lt;name&gt;.xdg.cache.files.&lt;name&gt;.enable">
+            xdg.cache.files.&lt;name&gt;.enable
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-cache-files-&lt;name&gt;-executable' title="hjem.users.&lt;name&gt;.xdg.cache.files.&lt;name&gt;.executable">
+            xdg.cache.files.&lt;name&gt;.executable
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-cache-files-&lt;name&gt;-generator' title="hjem.users.&lt;name&gt;.xdg.cache.files.&lt;name&gt;.generator">
+            xdg.cache.files.&lt;name&gt;.generator
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-cache-files-&lt;name&gt;-source' title="hjem.users.&lt;name&gt;.xdg.cache.files.&lt;name&gt;.source">
+            xdg.cache.files.&lt;name&gt;.source
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-cache-files-&lt;name&gt;-target' title="hjem.users.&lt;name&gt;.xdg.cache.files.&lt;name&gt;.target">
+            xdg.cache.files.&lt;name&gt;.target
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-cache-files-&lt;name&gt;-text' title="hjem.users.&lt;name&gt;.xdg.cache.files.&lt;name&gt;.text">
+            xdg.cache.files.&lt;name&gt;.text
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-cache-files-&lt;name&gt;-value' title="hjem.users.&lt;name&gt;.xdg.cache.files.&lt;name&gt;.value">
+            xdg.cache.files.&lt;name&gt;.value
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-config-directory' title="hjem.users.&lt;name&gt;.xdg.config.directory">
+            xdg.config.directory
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-config-files' title="hjem.users.&lt;name&gt;.xdg.config.files">
+            xdg.config.files
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-config-files-&lt;name&gt;-clobber' title="hjem.users.&lt;name&gt;.xdg.config.files.&lt;name&gt;.clobber">
+            xdg.config.files.&lt;name&gt;.clobber
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-config-files-&lt;name&gt;-enable' title="hjem.users.&lt;name&gt;.xdg.config.files.&lt;name&gt;.enable">
+            xdg.config.files.&lt;name&gt;.enable
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-config-files-&lt;name&gt;-executable' title="hjem.users.&lt;name&gt;.xdg.config.files.&lt;name&gt;.executable">
+            xdg.config.files.&lt;name&gt;.executable
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-config-files-&lt;name&gt;-generator' title="hjem.users.&lt;name&gt;.xdg.config.files.&lt;name&gt;.generator">
+            xdg.config.files.&lt;name&gt;.generator
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-config-files-&lt;name&gt;-source' title="hjem.users.&lt;name&gt;.xdg.config.files.&lt;name&gt;.source">
+            xdg.config.files.&lt;name&gt;.source
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-config-files-&lt;name&gt;-target' title="hjem.users.&lt;name&gt;.xdg.config.files.&lt;name&gt;.target">
+            xdg.config.files.&lt;name&gt;.target
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-config-files-&lt;name&gt;-text' title="hjem.users.&lt;name&gt;.xdg.config.files.&lt;name&gt;.text">
+            xdg.config.files.&lt;name&gt;.text
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-config-files-&lt;name&gt;-value' title="hjem.users.&lt;name&gt;.xdg.config.files.&lt;name&gt;.value">
+            xdg.config.files.&lt;name&gt;.value
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-data-directory' title="hjem.users.&lt;name&gt;.xdg.data.directory">
+            xdg.data.directory
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-data-files' title="hjem.users.&lt;name&gt;.xdg.data.files">
+            xdg.data.files
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-data-files-&lt;name&gt;-clobber' title="hjem.users.&lt;name&gt;.xdg.data.files.&lt;name&gt;.clobber">
+            xdg.data.files.&lt;name&gt;.clobber
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-data-files-&lt;name&gt;-enable' title="hjem.users.&lt;name&gt;.xdg.data.files.&lt;name&gt;.enable">
+            xdg.data.files.&lt;name&gt;.enable
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-data-files-&lt;name&gt;-executable' title="hjem.users.&lt;name&gt;.xdg.data.files.&lt;name&gt;.executable">
+            xdg.data.files.&lt;name&gt;.executable
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-data-files-&lt;name&gt;-generator' title="hjem.users.&lt;name&gt;.xdg.data.files.&lt;name&gt;.generator">
+            xdg.data.files.&lt;name&gt;.generator
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-data-files-&lt;name&gt;-source' title="hjem.users.&lt;name&gt;.xdg.data.files.&lt;name&gt;.source">
+            xdg.data.files.&lt;name&gt;.source
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-data-files-&lt;name&gt;-target' title="hjem.users.&lt;name&gt;.xdg.data.files.&lt;name&gt;.target">
+            xdg.data.files.&lt;name&gt;.target
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-data-files-&lt;name&gt;-text' title="hjem.users.&lt;name&gt;.xdg.data.files.&lt;name&gt;.text">
+            xdg.data.files.&lt;name&gt;.text
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-data-files-&lt;name&gt;-value' title="hjem.users.&lt;name&gt;.xdg.data.files.&lt;name&gt;.value">
+            xdg.data.files.&lt;name&gt;.value
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-state-directory' title="hjem.users.&lt;name&gt;.xdg.state.directory">
+            xdg.state.directory
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-state-files' title="hjem.users.&lt;name&gt;.xdg.state.files">
+            xdg.state.files
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-state-files-&lt;name&gt;-clobber' title="hjem.users.&lt;name&gt;.xdg.state.files.&lt;name&gt;.clobber">
+            xdg.state.files.&lt;name&gt;.clobber
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-state-files-&lt;name&gt;-enable' title="hjem.users.&lt;name&gt;.xdg.state.files.&lt;name&gt;.enable">
+            xdg.state.files.&lt;name&gt;.enable
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-state-files-&lt;name&gt;-executable' title="hjem.users.&lt;name&gt;.xdg.state.files.&lt;name&gt;.executable">
+            xdg.state.files.&lt;name&gt;.executable
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-state-files-&lt;name&gt;-generator' title="hjem.users.&lt;name&gt;.xdg.state.files.&lt;name&gt;.generator">
+            xdg.state.files.&lt;name&gt;.generator
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-state-files-&lt;name&gt;-source' title="hjem.users.&lt;name&gt;.xdg.state.files.&lt;name&gt;.source">
+            xdg.state.files.&lt;name&gt;.source
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-state-files-&lt;name&gt;-target' title="hjem.users.&lt;name&gt;.xdg.state.files.&lt;name&gt;.target">
+            xdg.state.files.&lt;name&gt;.target
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-state-files-&lt;name&gt;-text' title="hjem.users.&lt;name&gt;.xdg.state.files.&lt;name&gt;.text">
+            xdg.state.files.&lt;name&gt;.text
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;name&gt;-xdg-state-files-&lt;name&gt;-value' title="hjem.users.&lt;name&gt;.xdg.state.files.&lt;name&gt;.value">
+            xdg.state.files.&lt;name&gt;.value
+            
+            
+          </a>
+        </li>
+        
+      </ul>
+    </details>
+  </li>
+  
+</ul>
+
+          </div>
+        </nav>
+
+        <main class="content">
+          <h1>Hjem Options</h1>
+
+          
+          <div class="search-form">
+            <input
+              type="text"
+              id="options-filter"
+              placeholder="Filter options..."
+            />
+          </div>
+          
+
+          <div class="options-container"><div class="option" id="option-hjem-clobberByDefault">
+  <h3 class="option-name">
+    <a href="#option-hjem-clobberByDefault" class="option-anchor">hjem.clobberByDefault</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>boolean</code></div>
+  <div class="option-description"><html><head></head><body><p>The default override behaviour for files managed by Hjem.</p>
+<p>While <code>true</code>, existing files will be overriden with new files on rebuild.
+The behaviour may be modified per-user by setting <a class="option-reference" href="options.html#option-hjem-users-<name>-clobberFiles"><code>hjem.users.&lt;name&gt;.clobberFiles</code></a>
+to the desired value.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>false</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/default.nix" target="_blank">&lt;hjem/modules/nixos/default.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-extraModules">
+  <h3 class="option-name">
+    <a href="#option-hjem-extraModules" class="option-anchor">hjem.extraModules</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>list of raw value</code></div>
+  <div class="option-description"><html><head></head><body><p>Additional modules to be evaluated as a part of the users module
+inside <a class="option-reference" href="options.html#option-config-hjem-users-<name>"><code>config.hjem.users.&lt;name&gt;</code></a>. This can be used to
+extend each user configuration with additional options.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>[ ]</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/default.nix" target="_blank">&lt;hjem/modules/nixos/default.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-linker">
+  <h3 class="option-name">
+    <a href="#option-hjem-linker" class="option-anchor">hjem.linker</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>null or package</code></div>
+  <div class="option-description"><html><head></head><body><p>Method to use to link files.</p>
+<p><code>null</code> will use <code>systemd-tmpfiles</code>, which is only supported on Linux.</p>
+<p>This is the default file linker on Linux, as it is the more mature
+linker, but it has the downside of leaving behind symlinks that may
+not get invalidated until the next GC, if an entry is removed from
+<a class="option-reference" href="options.html#option-hjem-<user>-files"><code>hjem.&lt;user&gt;.files</code></a>.</p>
+<p>Specifying a package will use a custom file linker that uses an
+internally-generated manifest. The custom file linker must use this
+manifest to create or remove links as needed, by comparing the manifest
+of the currently activated system with that of the new system.
+This prevents dangling symlinks when an entry is removed from
+<a class="option-reference" href="options.html#option-hjem-<user>-files"><code>hjem.&lt;user&gt;.files</code></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This linker is currently experimental; once it matures, it may become
+the default in the future.</p>
+</div>
+</body></html></div>
+  <div class="option-default">Default: <code>null</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/default.nix" target="_blank">&lt;hjem/modules/nixos/default.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-linkerOptions">
+  <h3 class="option-name">
+    <a href="#option-hjem-linkerOptions" class="option-anchor">hjem.linkerOptions</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>(list of (optionally newline-terminated) single-line string) or (attribute set)</code></div>
+  <div class="option-description"><html><head></head><body><p>Additional arguments to pass to the linker.</p>
+<p>This is for external linker modules to set, to allow extending the default set of hjem behaviours.
+It accepts either a list of strings, which will be passed directly as arguments, or an attribute set, which will be
+serialized to JSON and passed as <code>--linker-opts options.json</code>.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>[ ]</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/default.nix" target="_blank">&lt;hjem/modules/nixos/default.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-specialArgs">
+  <h3 class="option-name">
+    <a href="#option-hjem-specialArgs" class="option-anchor">hjem.specialArgs</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>attribute set</code></div>
+  <div class="option-description"><html><head></head><body><p>Additional <code>specialArgs</code> are passed to Hjem, allowing extra arguments
+to be passed down to to all imported modules.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>{ }</code></div>
+  <div class="option-example">Example: <code>{ inherit inputs; }</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/default.nix" target="_blank">&lt;hjem/modules/nixos/default.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users">
+  <h3 class="option-name">
+    <a href="#option-hjem-users" class="option-anchor">hjem.users</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>attribute set of (Hjem NixOS module)</code></div>
+  <div class="option-description"><html><head></head><body><p>Home configurations to be managed</p>
+</body></html></div>
+  <div class="option-default">Default: <code>{ }</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/default.nix" target="_blank">&lt;hjem/modules/nixos/default.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-clobberFiles">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-clobberFiles" class="option-anchor">hjem.users.&lt;name&gt;.clobberFiles</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>boolean</code></div>
+  <div class="option-description"><html><head></head><body><p>The default override behaviour for files managed by Hjem for a
+particular user.</p>
+<p>A top level option exists under the Hjem module option
+<a class="option-reference" href="options.html#option-hjem-clobberByDefault"><code>hjem.clobberByDefault</code></a>. Per-file behaviour can be modified
+with <a class="option-reference" href="options.html#option-hjem-users-<name>-files-<file>-clobber"><code>hjem.users.&lt;name&gt;.files.&lt;file&gt;.clobber</code></a>.</p>
+</body></html></div>
+  <div class="option-example">Example: <code>true</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-directory">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-directory" class="option-anchor">hjem.users.&lt;name&gt;.directory</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>absolute path</code></div>
+  <div class="option-description"><html><head></head><body><p>The home directory for the user, to which files configured in
+<a class="option-reference" href="options.html#option-hjem-users-<name>-files"><code>hjem.users.&lt;name&gt;.files</code></a> will be relative to by default.</p>
+</body></html></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-enable">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-enable" class="option-anchor">hjem.users.&lt;name&gt;.enable</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>boolean</code></div>
+  <div class="option-description"><html><head></head><body><p>Whether to enable home management for this user.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>true</code></div>
+  <div class="option-example">Example: <code>false</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-environment-loadEnv">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-environment-loadEnv" class="option-anchor">hjem.users.&lt;name&gt;.environment.loadEnv</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-metadata">read-only</div>
+  <div class="option-type">Type: <code>absolute path</code></div>
+  <div class="option-description"><html><head></head><body><p>A POSIX compliant shell script containing the user session variables needed to bootstrap the session.</p>
+<p>As there is no reliable and agnostic way of setting session variables, Hjem's
+environment module does nothing by itself. Rather, it provides a POSIX compliant shell script
+that needs to be sourced where needed.</p>
+</body></html></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-environment-sessionVariables">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-environment-sessionVariables" class="option-anchor">hjem.users.&lt;name&gt;.environment.sessionVariables</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>attribute set of ((list of (signed integer or string or absolute path)) or signed integer or string or absolute path)</code></div>
+  <div class="option-description"><html><head></head><body><p>A set of environment variables used in the user environment.
+If a list of strings is used, they will be concatenated with colon
+characters.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>{ }</code></div>
+  <div class="option-example">Example: <pre><code>{
+  EDITOR = "nvim";
+  VISUAL = "nvim";
+}</code></pre></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-files">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-files" class="option-anchor">hjem.users.&lt;name&gt;.files</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>attribute set of (submodule)</code></div>
+  <div class="option-description"><html><head></head><body><p>Files to be managed by Hjem</p>
+</body></html></div>
+  <div class="option-default">Default: <code>{ }</code></div>
+  <div class="option-example">Example: <pre><code>{
+  ".config/foo.txt" = {
+    source = "Hello World";
+  };
+}</code></pre></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-files-&lt;name&gt;-clobber">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-files-&lt;name&gt;-clobber" class="option-anchor">hjem.users.&lt;name&gt;.files.&lt;name&gt;.clobber</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>boolean</code></div>
+  <div class="option-description"><html><head></head><body><p>Whether to "clobber" existing target paths.</p>
+<ul>
+<li>If using the <strong>systemd-tmpfiles</strong> hook (Linux only), tmpfile rules
+will be constructed with <code>L+</code> (<em>re</em>create) instead of <code>L</code>
+(create) type while this is set to <code>true</code>.</li>
+</ul>
+</body></html></div>
+  <div class="option-default">Default: <code>config.hjem.clobberByDefault</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-files-&lt;name&gt;-enable">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-files-&lt;name&gt;-enable" class="option-anchor">hjem.users.&lt;name&gt;.files.&lt;name&gt;.enable</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>boolean</code></div>
+  <div class="option-description"><html><head></head><body><p>Whether to enable creation of this file.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>true</code></div>
+  <div class="option-example">Example: <code>false</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-files-&lt;name&gt;-executable">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-files-&lt;name&gt;-executable" class="option-anchor">hjem.users.&lt;name&gt;.files.&lt;name&gt;.executable</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>boolean</code></div>
+  <div class="option-description"><html><head></head><body><p>Whether to set the execute bit on the target file.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>false</code></div>
+  <div class="option-example">Example: <code>true</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-files-&lt;name&gt;-generator">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-files-&lt;name&gt;-generator" class="option-anchor">hjem.users.&lt;name&gt;.files.&lt;name&gt;.generator</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>null or (function that evaluates to a(n) (null or absolute path or null or strings concatenated with "\n"))</code></div>
+  <div class="option-description"><html><head></head><body><p>Function that when applied to <code>value</code> will create the <code>source</code> or <code>text</code> of the file.</p>
+<p>Detection is automatic, as we check if the <code>generator</code> generates a derivation or a string after applying to <code>value</code>.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>null</code></div>
+  <div class="option-example">Example: <code>lib.generators.toGitINI</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-files-&lt;name&gt;-source">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-files-&lt;name&gt;-source" class="option-anchor">hjem.users.&lt;name&gt;.files.&lt;name&gt;.source</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>null or absolute path</code></div>
+  <div class="option-description"><html><head></head><body><p>Path of the source file or directory</p>
+</body></html></div>
+  <div class="option-default">Default: <code>null</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-files-&lt;name&gt;-target">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-files-&lt;name&gt;-target" class="option-anchor">hjem.users.&lt;name&gt;.files.&lt;name&gt;.target</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>string</code></div>
+  <div class="option-description"><html><head></head><body><p>Path to target file relative to <a class="option-reference" href="options.html#option-hjem-users-<name>-files-<file>-relativeTo"><code>hjem.users.&lt;name&gt;.files.&lt;file&gt;.relativeTo</code></a>.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>"name"</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-files-&lt;name&gt;-text">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-files-&lt;name&gt;-text" class="option-anchor">hjem.users.&lt;name&gt;.files.&lt;name&gt;.text</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>null or strings concatenated with "\n"</code></div>
+  <div class="option-description"><html><head></head><body><p>Text of the file</p>
+</body></html></div>
+  <div class="option-default">Default: <code>null</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-files-&lt;name&gt;-value">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-files-&lt;name&gt;-value" class="option-anchor">hjem.users.&lt;name&gt;.files.&lt;name&gt;.value</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>null or (attribute set of anything)</code></div>
+  <div class="option-description"><html><head></head><body><p>Value passed to the <code>generator</code>.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>null</code></div>
+  <div class="option-example">Example: <pre><code>{
+  user = {
+    email = "me@example.com";
+  };
+}</code></pre></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-packages">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-packages" class="option-anchor">hjem.users.&lt;name&gt;.packages</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>list of package</code></div>
+  <div class="option-description"><html><head></head><body><p>Packages to install for this user</p>
+</body></html></div>
+  <div class="option-default">Default: <code>[ ]</code></div>
+  <div class="option-example">Example: <code>[pkgs.hello]</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-user">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-user" class="option-anchor">hjem.users.&lt;name&gt;.user</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>string</code></div>
+  <div class="option-description"><html><head></head><body><p>The owner of a given home directory.</p>
+</body></html></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-cache-directory">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-cache-directory" class="option-anchor">hjem.users.&lt;name&gt;.xdg.cache.directory</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>absolute path</code></div>
+  <div class="option-description"><html><head></head><body><p>The XDG cache directory for the user, to which files configured in
+<a class="option-reference" href="options.html#option-hjem-users-<name>-xdg-cache-files"><code>hjem.users.&lt;name&gt;.xdg.cache.files</code></a> will be relative to by default.</p>
+<p>Adds <code class="env-var">XDG_CACHE_HOME</code> to <a class="option-reference" href="options.html#option-environment-sessionVariables"><code>environment.sessionVariables</code></a> for
+this user if changed.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>"$HOME/.cache"</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-cache-files">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-cache-files" class="option-anchor">hjem.users.&lt;name&gt;.xdg.cache.files</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>attribute set of (submodule)</code></div>
+  <div class="option-description"><html><head></head><body><p>Cache files to be managed by Hjem</p>
+</body></html></div>
+  <div class="option-default">Default: <code>{ }</code></div>
+  <div class="option-example">Example: <pre><code>{
+  "foo.txt" = {
+    source = "Hello World";
+  };
+}</code></pre></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-cache-files-&lt;name&gt;-clobber">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-cache-files-&lt;name&gt;-clobber" class="option-anchor">hjem.users.&lt;name&gt;.xdg.cache.files.&lt;name&gt;.clobber</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>boolean</code></div>
+  <div class="option-description"><html><head></head><body><p>Whether to "clobber" existing target paths.</p>
+<ul>
+<li>If using the <strong>systemd-tmpfiles</strong> hook (Linux only), tmpfile rules
+will be constructed with <code>L+</code> (<em>re</em>create) instead of <code>L</code>
+(create) type while this is set to <code>true</code>.</li>
+</ul>
+</body></html></div>
+  <div class="option-default">Default: <code>config.hjem.clobberByDefault</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-cache-files-&lt;name&gt;-enable">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-cache-files-&lt;name&gt;-enable" class="option-anchor">hjem.users.&lt;name&gt;.xdg.cache.files.&lt;name&gt;.enable</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>boolean</code></div>
+  <div class="option-description"><html><head></head><body><p>Whether to enable creation of this file.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>true</code></div>
+  <div class="option-example">Example: <code>false</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-cache-files-&lt;name&gt;-executable">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-cache-files-&lt;name&gt;-executable" class="option-anchor">hjem.users.&lt;name&gt;.xdg.cache.files.&lt;name&gt;.executable</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>boolean</code></div>
+  <div class="option-description"><html><head></head><body><p>Whether to set the execute bit on the target file.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>false</code></div>
+  <div class="option-example">Example: <code>true</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-cache-files-&lt;name&gt;-generator">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-cache-files-&lt;name&gt;-generator" class="option-anchor">hjem.users.&lt;name&gt;.xdg.cache.files.&lt;name&gt;.generator</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>null or (function that evaluates to a(n) (null or absolute path or null or strings concatenated with "\n"))</code></div>
+  <div class="option-description"><html><head></head><body><p>Function that when applied to <code>value</code> will create the <code>source</code> or <code>text</code> of the file.</p>
+<p>Detection is automatic, as we check if the <code>generator</code> generates a derivation or a string after applying to <code>value</code>.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>null</code></div>
+  <div class="option-example">Example: <code>lib.generators.toGitINI</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-cache-files-&lt;name&gt;-source">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-cache-files-&lt;name&gt;-source" class="option-anchor">hjem.users.&lt;name&gt;.xdg.cache.files.&lt;name&gt;.source</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>null or absolute path</code></div>
+  <div class="option-description"><html><head></head><body><p>Path of the source file or directory</p>
+</body></html></div>
+  <div class="option-default">Default: <code>null</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-cache-files-&lt;name&gt;-target">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-cache-files-&lt;name&gt;-target" class="option-anchor">hjem.users.&lt;name&gt;.xdg.cache.files.&lt;name&gt;.target</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>string</code></div>
+  <div class="option-description"><html><head></head><body><p>Path to target file relative to <a class="option-reference" href="options.html#option-hjem-users-<name>-files-<file>-relativeTo"><code>hjem.users.&lt;name&gt;.files.&lt;file&gt;.relativeTo</code></a>.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>"name"</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-cache-files-&lt;name&gt;-text">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-cache-files-&lt;name&gt;-text" class="option-anchor">hjem.users.&lt;name&gt;.xdg.cache.files.&lt;name&gt;.text</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>null or strings concatenated with "\n"</code></div>
+  <div class="option-description"><html><head></head><body><p>Text of the file</p>
+</body></html></div>
+  <div class="option-default">Default: <code>null</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-cache-files-&lt;name&gt;-value">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-cache-files-&lt;name&gt;-value" class="option-anchor">hjem.users.&lt;name&gt;.xdg.cache.files.&lt;name&gt;.value</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>null or (attribute set of anything)</code></div>
+  <div class="option-description"><html><head></head><body><p>Value passed to the <code>generator</code>.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>null</code></div>
+  <div class="option-example">Example: <pre><code>{
+  user = {
+    email = "me@example.com";
+  };
+}</code></pre></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-config-directory">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-config-directory" class="option-anchor">hjem.users.&lt;name&gt;.xdg.config.directory</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>absolute path</code></div>
+  <div class="option-description"><html><head></head><body><p>The XDG config directory for the user, to which files configured in
+<a class="option-reference" href="options.html#option-hjem-users-<name>-xdg-config-files"><code>hjem.users.&lt;name&gt;.xdg.config.files</code></a> will be relative to by default.</p>
+<p>Adds <code class="env-var">XDG_CONFIG_HOME</code> to <a class="option-reference" href="options.html#option-environment-sessionVariables"><code>environment.sessionVariables</code></a> for
+this user if changed.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>"$HOME/.config"</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-config-files">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-config-files" class="option-anchor">hjem.users.&lt;name&gt;.xdg.config.files</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>attribute set of (submodule)</code></div>
+  <div class="option-description"><html><head></head><body><p>Config files to be managed by Hjem</p>
+</body></html></div>
+  <div class="option-default">Default: <code>{ }</code></div>
+  <div class="option-example">Example: <pre><code>{
+  "foo.txt" = {
+    source = "Hello World";
+  };
+}</code></pre></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-config-files-&lt;name&gt;-clobber">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-config-files-&lt;name&gt;-clobber" class="option-anchor">hjem.users.&lt;name&gt;.xdg.config.files.&lt;name&gt;.clobber</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>boolean</code></div>
+  <div class="option-description"><html><head></head><body><p>Whether to "clobber" existing target paths.</p>
+<ul>
+<li>If using the <strong>systemd-tmpfiles</strong> hook (Linux only), tmpfile rules
+will be constructed with <code>L+</code> (<em>re</em>create) instead of <code>L</code>
+(create) type while this is set to <code>true</code>.</li>
+</ul>
+</body></html></div>
+  <div class="option-default">Default: <code>config.hjem.clobberByDefault</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-config-files-&lt;name&gt;-enable">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-config-files-&lt;name&gt;-enable" class="option-anchor">hjem.users.&lt;name&gt;.xdg.config.files.&lt;name&gt;.enable</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>boolean</code></div>
+  <div class="option-description"><html><head></head><body><p>Whether to enable creation of this file.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>true</code></div>
+  <div class="option-example">Example: <code>false</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-config-files-&lt;name&gt;-executable">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-config-files-&lt;name&gt;-executable" class="option-anchor">hjem.users.&lt;name&gt;.xdg.config.files.&lt;name&gt;.executable</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>boolean</code></div>
+  <div class="option-description"><html><head></head><body><p>Whether to set the execute bit on the target file.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>false</code></div>
+  <div class="option-example">Example: <code>true</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-config-files-&lt;name&gt;-generator">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-config-files-&lt;name&gt;-generator" class="option-anchor">hjem.users.&lt;name&gt;.xdg.config.files.&lt;name&gt;.generator</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>null or (function that evaluates to a(n) (null or absolute path or null or strings concatenated with "\n"))</code></div>
+  <div class="option-description"><html><head></head><body><p>Function that when applied to <code>value</code> will create the <code>source</code> or <code>text</code> of the file.</p>
+<p>Detection is automatic, as we check if the <code>generator</code> generates a derivation or a string after applying to <code>value</code>.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>null</code></div>
+  <div class="option-example">Example: <code>lib.generators.toGitINI</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-config-files-&lt;name&gt;-source">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-config-files-&lt;name&gt;-source" class="option-anchor">hjem.users.&lt;name&gt;.xdg.config.files.&lt;name&gt;.source</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>null or absolute path</code></div>
+  <div class="option-description"><html><head></head><body><p>Path of the source file or directory</p>
+</body></html></div>
+  <div class="option-default">Default: <code>null</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-config-files-&lt;name&gt;-target">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-config-files-&lt;name&gt;-target" class="option-anchor">hjem.users.&lt;name&gt;.xdg.config.files.&lt;name&gt;.target</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>string</code></div>
+  <div class="option-description"><html><head></head><body><p>Path to target file relative to <a class="option-reference" href="options.html#option-hjem-users-<name>-files-<file>-relativeTo"><code>hjem.users.&lt;name&gt;.files.&lt;file&gt;.relativeTo</code></a>.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>"name"</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-config-files-&lt;name&gt;-text">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-config-files-&lt;name&gt;-text" class="option-anchor">hjem.users.&lt;name&gt;.xdg.config.files.&lt;name&gt;.text</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>null or strings concatenated with "\n"</code></div>
+  <div class="option-description"><html><head></head><body><p>Text of the file</p>
+</body></html></div>
+  <div class="option-default">Default: <code>null</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-config-files-&lt;name&gt;-value">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-config-files-&lt;name&gt;-value" class="option-anchor">hjem.users.&lt;name&gt;.xdg.config.files.&lt;name&gt;.value</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>null or (attribute set of anything)</code></div>
+  <div class="option-description"><html><head></head><body><p>Value passed to the <code>generator</code>.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>null</code></div>
+  <div class="option-example">Example: <pre><code>{
+  user = {
+    email = "me@example.com";
+  };
+}</code></pre></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-data-directory">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-data-directory" class="option-anchor">hjem.users.&lt;name&gt;.xdg.data.directory</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>absolute path</code></div>
+  <div class="option-description"><html><head></head><body><p>The XDG data directory for the user, to which files configured in
+<a class="option-reference" href="options.html#option-hjem-users-<name>-xdg-data-files"><code>hjem.users.&lt;name&gt;.xdg.data.files</code></a> will be relative to by default.</p>
+<p>Adds <code class="env-var">XDG_DATA_HOME</code> to <a class="option-reference" href="options.html#option-environment-sessionVariables"><code>environment.sessionVariables</code></a> for
+this user if changed.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>"$HOME/.local/share"</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-data-files">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-data-files" class="option-anchor">hjem.users.&lt;name&gt;.xdg.data.files</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>attribute set of (submodule)</code></div>
+  <div class="option-description"><html><head></head><body><p>data files to be managed by Hjem</p>
+</body></html></div>
+  <div class="option-default">Default: <code>{ }</code></div>
+  <div class="option-example">Example: <pre><code>{
+  "foo.txt" = {
+    source = "Hello World";
+  };
+}</code></pre></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-data-files-&lt;name&gt;-clobber">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-data-files-&lt;name&gt;-clobber" class="option-anchor">hjem.users.&lt;name&gt;.xdg.data.files.&lt;name&gt;.clobber</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>boolean</code></div>
+  <div class="option-description"><html><head></head><body><p>Whether to "clobber" existing target paths.</p>
+<ul>
+<li>If using the <strong>systemd-tmpfiles</strong> hook (Linux only), tmpfile rules
+will be constructed with <code>L+</code> (<em>re</em>create) instead of <code>L</code>
+(create) type while this is set to <code>true</code>.</li>
+</ul>
+</body></html></div>
+  <div class="option-default">Default: <code>config.hjem.clobberByDefault</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-data-files-&lt;name&gt;-enable">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-data-files-&lt;name&gt;-enable" class="option-anchor">hjem.users.&lt;name&gt;.xdg.data.files.&lt;name&gt;.enable</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>boolean</code></div>
+  <div class="option-description"><html><head></head><body><p>Whether to enable creation of this file.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>true</code></div>
+  <div class="option-example">Example: <code>false</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-data-files-&lt;name&gt;-executable">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-data-files-&lt;name&gt;-executable" class="option-anchor">hjem.users.&lt;name&gt;.xdg.data.files.&lt;name&gt;.executable</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>boolean</code></div>
+  <div class="option-description"><html><head></head><body><p>Whether to set the execute bit on the target file.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>false</code></div>
+  <div class="option-example">Example: <code>true</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-data-files-&lt;name&gt;-generator">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-data-files-&lt;name&gt;-generator" class="option-anchor">hjem.users.&lt;name&gt;.xdg.data.files.&lt;name&gt;.generator</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>null or (function that evaluates to a(n) (null or absolute path or null or strings concatenated with "\n"))</code></div>
+  <div class="option-description"><html><head></head><body><p>Function that when applied to <code>value</code> will create the <code>source</code> or <code>text</code> of the file.</p>
+<p>Detection is automatic, as we check if the <code>generator</code> generates a derivation or a string after applying to <code>value</code>.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>null</code></div>
+  <div class="option-example">Example: <code>lib.generators.toGitINI</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-data-files-&lt;name&gt;-source">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-data-files-&lt;name&gt;-source" class="option-anchor">hjem.users.&lt;name&gt;.xdg.data.files.&lt;name&gt;.source</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>null or absolute path</code></div>
+  <div class="option-description"><html><head></head><body><p>Path of the source file or directory</p>
+</body></html></div>
+  <div class="option-default">Default: <code>null</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-data-files-&lt;name&gt;-target">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-data-files-&lt;name&gt;-target" class="option-anchor">hjem.users.&lt;name&gt;.xdg.data.files.&lt;name&gt;.target</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>string</code></div>
+  <div class="option-description"><html><head></head><body><p>Path to target file relative to <a class="option-reference" href="options.html#option-hjem-users-<name>-files-<file>-relativeTo"><code>hjem.users.&lt;name&gt;.files.&lt;file&gt;.relativeTo</code></a>.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>"name"</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-data-files-&lt;name&gt;-text">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-data-files-&lt;name&gt;-text" class="option-anchor">hjem.users.&lt;name&gt;.xdg.data.files.&lt;name&gt;.text</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>null or strings concatenated with "\n"</code></div>
+  <div class="option-description"><html><head></head><body><p>Text of the file</p>
+</body></html></div>
+  <div class="option-default">Default: <code>null</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-data-files-&lt;name&gt;-value">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-data-files-&lt;name&gt;-value" class="option-anchor">hjem.users.&lt;name&gt;.xdg.data.files.&lt;name&gt;.value</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>null or (attribute set of anything)</code></div>
+  <div class="option-description"><html><head></head><body><p>Value passed to the <code>generator</code>.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>null</code></div>
+  <div class="option-example">Example: <pre><code>{
+  user = {
+    email = "me@example.com";
+  };
+}</code></pre></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-state-directory">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-state-directory" class="option-anchor">hjem.users.&lt;name&gt;.xdg.state.directory</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>absolute path</code></div>
+  <div class="option-description"><html><head></head><body><p>The XDG state directory for the user, to which files configured in
+<a class="option-reference" href="options.html#option-hjem-users-<name>-xdg-state-files"><code>hjem.users.&lt;name&gt;.xdg.state.files</code></a> will be relative to by default.</p>
+<p>Adds <code class="env-var">XDG_STATE_HOME</code> to <a class="option-reference" href="options.html#option-environment-sessionVariables"><code>environment.sessionVariables</code></a> for
+this user if changed.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>"$HOME/.local/share"</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-state-files">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-state-files" class="option-anchor">hjem.users.&lt;name&gt;.xdg.state.files</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>attribute set of (submodule)</code></div>
+  <div class="option-description"><html><head></head><body><p>state files to be managed by Hjem</p>
+</body></html></div>
+  <div class="option-default">Default: <code>{ }</code></div>
+  <div class="option-example">Example: <pre><code>{
+  "foo.txt" = {
+    source = "Hello World";
+  };
+}</code></pre></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-state-files-&lt;name&gt;-clobber">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-state-files-&lt;name&gt;-clobber" class="option-anchor">hjem.users.&lt;name&gt;.xdg.state.files.&lt;name&gt;.clobber</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>boolean</code></div>
+  <div class="option-description"><html><head></head><body><p>Whether to "clobber" existing target paths.</p>
+<ul>
+<li>If using the <strong>systemd-tmpfiles</strong> hook (Linux only), tmpfile rules
+will be constructed with <code>L+</code> (<em>re</em>create) instead of <code>L</code>
+(create) type while this is set to <code>true</code>.</li>
+</ul>
+</body></html></div>
+  <div class="option-default">Default: <code>config.hjem.clobberByDefault</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-state-files-&lt;name&gt;-enable">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-state-files-&lt;name&gt;-enable" class="option-anchor">hjem.users.&lt;name&gt;.xdg.state.files.&lt;name&gt;.enable</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>boolean</code></div>
+  <div class="option-description"><html><head></head><body><p>Whether to enable creation of this file.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>true</code></div>
+  <div class="option-example">Example: <code>false</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-state-files-&lt;name&gt;-executable">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-state-files-&lt;name&gt;-executable" class="option-anchor">hjem.users.&lt;name&gt;.xdg.state.files.&lt;name&gt;.executable</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>boolean</code></div>
+  <div class="option-description"><html><head></head><body><p>Whether to set the execute bit on the target file.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>false</code></div>
+  <div class="option-example">Example: <code>true</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-state-files-&lt;name&gt;-generator">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-state-files-&lt;name&gt;-generator" class="option-anchor">hjem.users.&lt;name&gt;.xdg.state.files.&lt;name&gt;.generator</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>null or (function that evaluates to a(n) (null or absolute path or null or strings concatenated with "\n"))</code></div>
+  <div class="option-description"><html><head></head><body><p>Function that when applied to <code>value</code> will create the <code>source</code> or <code>text</code> of the file.</p>
+<p>Detection is automatic, as we check if the <code>generator</code> generates a derivation or a string after applying to <code>value</code>.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>null</code></div>
+  <div class="option-example">Example: <code>lib.generators.toGitINI</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-state-files-&lt;name&gt;-source">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-state-files-&lt;name&gt;-source" class="option-anchor">hjem.users.&lt;name&gt;.xdg.state.files.&lt;name&gt;.source</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>null or absolute path</code></div>
+  <div class="option-description"><html><head></head><body><p>Path of the source file or directory</p>
+</body></html></div>
+  <div class="option-default">Default: <code>null</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-state-files-&lt;name&gt;-target">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-state-files-&lt;name&gt;-target" class="option-anchor">hjem.users.&lt;name&gt;.xdg.state.files.&lt;name&gt;.target</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>string</code></div>
+  <div class="option-description"><html><head></head><body><p>Path to target file relative to <a class="option-reference" href="options.html#option-hjem-users-<name>-files-<file>-relativeTo"><code>hjem.users.&lt;name&gt;.files.&lt;file&gt;.relativeTo</code></a>.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>"name"</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-state-files-&lt;name&gt;-text">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-state-files-&lt;name&gt;-text" class="option-anchor">hjem.users.&lt;name&gt;.xdg.state.files.&lt;name&gt;.text</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>null or strings concatenated with "\n"</code></div>
+  <div class="option-description"><html><head></head><body><p>Text of the file</p>
+</body></html></div>
+  <div class="option-default">Default: <code>null</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;name&gt;-xdg-state-files-&lt;name&gt;-value">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;name&gt;-xdg-state-files-&lt;name&gt;-value" class="option-anchor">hjem.users.&lt;name&gt;.xdg.state.files.&lt;name&gt;.value</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>null or (attribute set of anything)</code></div>
+  <div class="option-description"><html><head></head><body><p>Value passed to the <code>generator</code>.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>null</code></div>
+  <div class="option-example">Example: <pre><code>{
+  user = {
+    email = "me@example.com";
+  };
+}</code></pre></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+</div>
+
+          <div class="footnotes-container">
+            <!-- Footnotes will be appended here -->
+          </div>
+        </main>
+      </div>
+
+      <footer>
+        <p></p>
+      </footer>
+    </div>
+
+    
+  </body>
+</html>
