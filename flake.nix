@@ -10,9 +10,8 @@
     };
 
     # Our in-house, super-fast documentation generator.
-    # FIXME: Uses the development branch, switch back to main before merge!
     ndg = {
-      url = "github:feel-co/ndg?ref=colmark";
+      url = "github:feel-co/ndg";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
