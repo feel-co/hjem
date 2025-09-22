@@ -2,6 +2,11 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-unstable";
 
+    darwin = {
+      url = "github:lnl7/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Sleek, manifest based file handler.
     # Our awesome atomic file linker.
     smfh = {
@@ -13,12 +18,15 @@
   outputs = {
     self,
     nixpkgs,
+    darwin,
     ...
   } @ inputs: let
     # We should only specify the modules Hjem explicitly supports, or we risk
     # allowing not-so-defined behaviour. For example, adding nix-systems should
     # be avoided, because it allows specifying Hjem is not tested on.
-    forAllSystems = nixpkgs.lib.genAttrs ["x86_64-linux" "aarch64-linux"];
+    forAllLinux = nixpkgs.lib.genAttrs ["x86_64-linux" "aarch64-linux"];
+    forAllDarwin = nixpkgs.lib.genAttrs [ "x86_64-darwin" "aarch64-darwin" ];
+    forAllSystems = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
   in {
     nixosModules = {
       hjem = {
@@ -35,6 +43,22 @@
         _module.args.hjem-lib = import ./lib.nix {inherit lib pkgs;};
       };
       default = self.nixosModules.hjem;
+    };
+    darwinModules = {
+      hjem = {
+        imports = [
+          self.darwinModules.hjem-lib
+          ./modules/darwin
+        ];
+      };
+      hjem-lib = {
+        lib,
+        pkgs,
+        ...
+      }: {
+        _module.args.hjem-lib = import ./lib.nix {inherit lib pkgs;};
+      };
+      default = self.darwinModules.hjem;
     };
 
     packages = forAllSystems (system: {
