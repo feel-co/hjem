@@ -116,6 +116,7 @@
         --manpage-urls ${pkgs.path}/doc/manpage-urls.json \
         --options-depth 3 \
         --generate-search true \
+        --highlight-code true \
         --input-dir ./inputs \
         --output-dir "$out/share/doc"
     '';
