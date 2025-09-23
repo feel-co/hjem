@@ -3,16 +3,10 @@ test: {
   pkgs,
   self,
   inputs,
-}: let
-  inherit (pkgs) lib;
-  nixos-lib = import (pkgs.path + "/nixos/lib") {};
-in
-  (nixos-lib.runTest {
-    hostPkgs = pkgs;
-    defaults.documentation.enable = lib.mkDefault false;
+}:
+(pkgs.testers.runNixOSTest {
+  node.specialArgs = {inherit self inputs;};
+  defaults.documentation.enable = pkgs.lib.mkDefault false;
 
-    node.specialArgs = {inherit self inputs;};
-    imports = [test];
-  })
-  .config
-  .result
+  imports = [test];
+}).config.result

@@ -1,7 +1,9 @@
 {
   config,
-  pkgs,
+  hjem-lib,
   lib,
+  options,
+  pkgs,
   ...
 }: let
   inherit (lib.attrsets) filterAttrs mapAttrsToList;
@@ -9,7 +11,7 @@
   inherit (lib.options) literalExpression mkOption;
   inherit (lib.strings) optionalString;
   inherit (lib.trivial) pipe;
-  inherit (lib.types) attrs attrsOf bool listOf nullOr package raw submoduleWith either singleLineStr;
+  inherit (lib.types) attrs attrsOf bool either listOf nullOr package raw singleLineStr submoduleWith;
   inherit (lib.meta) getExe;
   inherit (builtins) filter attrNames attrValues mapAttrs getAttr concatLists concatStringsSep typeOf toJSON concatMap;
 
@@ -77,8 +79,9 @@
     specialArgs =
       cfg.specialArgs
       // {
-        inherit pkgs;
+        inherit hjem-lib pkgs;
         osConfig = config;
+        osOptions = options;
       };
     modules =
       concatLists
@@ -86,11 +89,12 @@
         [
           ../common/user.nix
           ({name, ...}: let
+            inherit (lib.modules) mkDefault;
             user = getAttr name config.users.users;
           in {
-            user = user.name;
-            directory = user.home;
-            clobberFiles = cfg.clobberByDefault;
+            user = mkDefault user.name;
+            directory = mkDefault user.home;
+            clobberFiles = mkDefault cfg.clobberByDefault;
           })
         ]
         # Evaluate additional modules under 'hjem.users.<name>' so that
@@ -239,7 +243,8 @@ in {
       */
       systemd.targets.hjem = {
         description = "Hjem File Management";
-        requiredBy = ["sysinit-reactivation.target"];
+        after = ["local-fs.target"];
+        wantedBy = ["sysinit-reactivation.target" "multi-user.target"];
         before = ["sysinit-reactivation.target"];
         requires = let
           requiredUserServices = name: [
