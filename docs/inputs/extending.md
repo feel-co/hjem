@@ -127,7 +127,7 @@ may also choose to export your defined modules as `hjemModules` in your
   inputs = { /* ... */ };
   outputs = {self, ...}: {
     hjemModules = {
-      my-fzf-module = ./modules/fzf.nix; # The name is once again arbitary.
+      my-fzf-module = ./modules/fzf.nix; # The name is once again arbitrary.
       default = self.hjemModules.my-fzf-module; # You can set a default.
     };
   };
