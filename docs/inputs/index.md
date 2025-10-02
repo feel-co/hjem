@@ -21,7 +21,7 @@ explained, or find bugs in the site please report them
 [Nix Flakes]: https://nix.dev/concepts/flakes.html
 
 The primary method of installing Hjem is through [Nix Flakes]. To get started,
-you must first Hjem as a flake input in your `flake.nix`.
+you must first add Hjem as a flake input in your `flake.nix`.
 
 ```nix
 # flake.nix

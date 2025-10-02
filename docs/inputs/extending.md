@@ -11,7 +11,7 @@ upon Hjem, and just how robust it is.
 
 You may freely consume the APIs exposed by Hjem to write your own modules,
 primarily to fill the gap between a comprehensive (and clunky) module system
-like Home-Manager and something as quick and streamlined as Hjem.
+like Home Manager and something as quick and streamlined as Hjem.
 
 To do so, you must write your own Hjem modules. Those modules will be evaluated
 by Hjem to make more options, such as `programs.foo` or `services.bar` as you

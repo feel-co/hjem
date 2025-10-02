@@ -157,7 +157,7 @@ abstracting files into modules.
 [Gerg-l]: https://github.com/gerg-l
 
 Hjem previously utilized systemd-tmpfiles to ensure files are linked in place.
-This has served us well for the short duration that we relied on them, but we
+This served us well for the short duration that we relied on them, but we
 have ultimately decided to go with our in-house file linker developed by
 [Gerg-l]. The new linker is, of course, infinitely more powerful and while we
 are _not_ looking back, we understand that some users might be interested in
@@ -177,7 +177,7 @@ module system exposes the files configuration to a package user provides.
 
 [Nixpkgs]: https://github.com/nixOS/nixpkgs
 [Home Manager]: https://github.com/nix-community/home-manager
-[Hjem-Rum]: https://github.com/snugnug/hjem-rum
+[Hjem Rum]: https://github.com/snugnug/hjem-rum
 [@Lunarnovaa]: https://github.com/lunarnovaa
 [@nezia1]: https://github.com/nezia1
 
@@ -187,7 +187,7 @@ Special thanks to [Nixpkgs] and [Home Manager]. The interface of the
 addition to Nixpkgs' `users.users`. Hjem would not be possible without any of
 those projects, thank you!
 
-A project worthy of note is [Hjem-Rum], by [@Lunarnovaa] and [@nezia1], which
+A project worthy of note is [Hjem Rum], by [@Lunarnovaa] and [@nezia1], which
 establishes a Home Manager-like module system for users less comfortable with
 manually linking files in place. If you wish to utilize the power of Hjem, but
 want an easier interface, we encourage you to take a look at Hjem Rum.

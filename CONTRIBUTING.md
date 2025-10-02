@@ -10,11 +10,11 @@
 
 [LICENSE]: ../LICENSE
 
-We are glad you are thinking about contributing to Hjem! The project is large
+We are glad you are thinking about contributing to Hjem! The project is largely
 shaped by contributors and user feedback, and all contributions are appreciated.
 
 If you are unsure about anything, whether a change is necessary or if it would
-be accepted _had_ you created a PR, please just ask! Or submit the issue or pull
+be accepted _were_ you to create a PR, please just ask! Or, submit the issue or pull
 request anyway, the worst that can happen is that you will be politely asked to
 change something. Friendly contributions are _always_ welcome.
 
@@ -99,4 +99,4 @@ That said, everyone who partakes around Hjem and Hjem-adjacent communities or
 contributes to Hjem must be allowed to feel welcome and safe. As such, any
 parties that disrupt the project or engage in negative behaviour will be dealt
 with swiftly and appropriately. You are invited to share any concerns that you
-have with the projects moderation, be it over public or public spaces. T
+have with the projects moderation, be it over public or public spaces.
