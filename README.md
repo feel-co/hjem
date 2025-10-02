@@ -30,7 +30,7 @@ We have learned from the mistakes made in the ecosystem.
 
 1. Powerful `$HOME` management functionality and potential
 2. Small and simple codebase with minimal abstraction
-3. Robust, safe and _manfiest based_ file handling with [smfh]
+3. Robust, safe and _manifest based_ file handling with [smfh]
 4. Multi-user by design, works with any number of users
 5. Designed for ease of extensibility and integration
 
@@ -38,28 +38,54 @@ No compromises, only comfort.
 
 ### Implementation
 
-Hjem exposes a very basic interface with multi-tenant capabilities, which you
+Hjem exposes a streamlined interface with multi-tenant capabilities, which you
 may use to manage individual users' homes by leveraging the module system.
 
 ```nix
+{ inputs, lib, pkgs, ... }:
 {
-  hjem.users = {
-    alice.files = {
-      # Write a text file in `/homes/alice/.config/foo`
-      # with the contents bar
-      ".config/foo".text = "bar";
+  /*
+    other NixOS configuration here...
+  */
 
-      # Alternatively, create the file source using a writer.
-      # This can be used to generate config files with various
-      # formats expected by different programs.
-      ".config/bar".source = pkgs.writeTextFile "file-foo" "file contents";
+  hjem = {
+    # use our custom file handler
+    linker = inputs.hjem.packages.${pkgs.stdenv.hostPlatform.system}.smfh;
 
-      # You can also use generators to transform Nix values
-      ".config/baz" = {
-        # Works with `pkgs.formats` too!
-        generator = lib.generators.toJSON { };
-        value = {
-          some = "contents";
+    users = {
+      alice = {
+        enable = true;
+
+        files = {
+          # Write a text file in `/home/alice/.foo`
+          # with the contents bar
+          ".foo".text = "bar";
+
+          # Alternatively, create the file source using a writer.
+          # This can be used to generate config files with various
+          # formats expected by different programs.
+          ".bar".source = pkgs.writeText "file-foo" "file contents";
+
+          # You can also use generators to transform Nix values
+          ".baz" = {
+            # Works with `pkgs.formats` too!
+            generator = lib.generators.toJSON { };
+            value = {
+              some = "contents";
+            };
+          };
+        };
+
+        # this will write into `/home/alice/.config/test/bar.json`
+        xdg.config.files."test/bar.json" = {
+          generator = lib.generators.toJSON { };
+          value = {
+            foo = 1;
+            bar = "Hello world!";
+            baz = false;
+          };
+          # overwrite existing unmanaged file, if present
+          clobber = true;
         };
       };
     };
@@ -77,41 +103,27 @@ may use to manage individual users' homes by leveraging the module system.
 
 [already does!]: https://github.com/snugnug/hjem-rum
 
-The interface for the `homes` module is conceptually very similar to prior art
+The interface for the `hjem` module is conceptually very similar to prior art
 (e.g., Home Manager), but it does not act as a collection of modules like Home
-Manager. Instead, we only implement basic features, and leave abstraction to the
-user to do as they see fit. This, of course, does not mean that a module
-collection cannot exist. In fact, one [already does!]
+Manager. Instead, we implement minimal features, and leave
+application-specific abstractions to the user to do as they see fit.
+This, of course, does not mean that a module collection cannot exist.
+In fact, one [already does!]
 
 Below is a live implementation of the module.
 
-```nix
-nix-repl> :p nixosConfigurations."nixos".config.hjem.users
+```sh
+$ nix eval .#nixosConfigurations.test.config.hjem.users.alice.files.'".foo"' --json | jq
 {
-  alice = {
-    # Whether to overwrite target files if they exist
-    clobberFiles = false;
-    directory = "/home/alice";
-    enable = true;
-    environment = {
-      # A loadable script to prepare shell environments
-      loadEnv = «derivation /nix/store/gvbjmalyxl4jd0i4paz6nnhvszg01823-load-env.drv»;
-      sessionVariables = { };
-    };
-    files = {
-      ".config/foo" = {
-        clobber = false;
-        enable = true;
-        executable = false;
-        relativeTo = "/home/alice";
-        source = «derivation /nix/store/lwrnp6js4925kfzybrcyvx4m7gilq02w-config-foo.drv»;
-        target = "/home/alice/.config/foo";
-        text = "Hello world!";
-      };
-    };
-    packages = [ ];
-    user = "alice";
-  };
+  "clobber": false,
+  "enable": true,
+  "executable": false,
+  "generator": null,
+  "relativeTo": "/home/alice",
+  "source": "/nix/store/22yfhzhk0w5mgaq6c943vimsg6qlr1sh-foo",
+  "target": "/home/alice/.foo",
+  "text": "bar",
+  "value": null
 }
 ```
 
