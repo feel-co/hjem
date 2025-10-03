@@ -25,8 +25,8 @@ For the sake of brevity, we will only cover the basics required to write a valid
 Hjem module, and how you may integrate it with Hjem as a separate module system.
 
 The anatomy of a Hjem module is simple. You want to define `options`, and you
-want to set `config` based on those options. Here is an example from Hjem Rum's
-FZF module:
+want to set `config` based on those options. Here is an example from 
+[Hjem Rum's FZF module]:
 
 ```nix
 {
