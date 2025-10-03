@@ -14,9 +14,9 @@ We are glad you are thinking about contributing to Hjem! The project is largely
 shaped by contributors and user feedback, and all contributions are appreciated.
 
 If you are unsure about anything, whether a change is necessary or if it would
-be accepted _were_ you to create a PR, please just ask! Or, submit the issue or pull
-request anyway, the worst that can happen is that you will be politely asked to
-change something. Friendly contributions are _always_ welcome.
+be accepted _were_ you to create a PR, please just ask! Or, submit the issue or
+pull request anyway, the worst that can happen is that you will be politely
+asked to change something. Friendly contributions are _always_ welcome.
 
 Before you contribute, I encourage you to read the rest of this document for our
 contributing policy and guidelines, followed by the [LICENSE] to understand how
@@ -28,8 +28,8 @@ Discussions tab is also available for less formal discussions.
 
 ## Contributing
 
-**TODO: when to contribute, when to consider a standalone project. What will be
-accepted and what will not.**
+Anything that benefits all Hjem users are eligible for inclusion. If you have a
+really good idea that you think everyone would appreciate, then let's discuss!
 
 ### General Guidelines
 
@@ -79,16 +79,20 @@ template:
 {long description}
 ```
 
-- `component` refers to the module or file you are editing.
+- `component` refers to the module or file you are editing. This is your
+  "scope".
 - `description` is a short description of your change
 - `long description` is the optional addition that should be appended if the
   short description cannot sufficiently convey the motive for the change
 
-In rare cases where a PR affects multiple unrelated components, then the
-`component` part can be replaced with a generic scope such as `treewide` or
-`various.`
+> [!TIP]
+> In rare cases where a PR affects multiple unrelated components, then the
+> `component` part can be replaced with a generic scope such as `treewide` or
+> `various.` Maintainers might also use `meta` as a scope for commits that
+> affect the repository or the project itself, without direct changes to the
+> codebase. `ci` is reserved for CI/CD workflows.
 
-### Code of Conduct
+## Code of Conduct
 
 Hjem does not have a formal Code of Conduct yet, and we are sincerely hoping
 that we will ever need one. This project is not expected to be a hotbed of
