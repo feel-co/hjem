@@ -80,7 +80,7 @@
           ../common/user.nix
           ({name, ...}: let
             inherit (lib.modules) mkDefault;
-            user = getAttr name config.users.users;
+            user = config.users.users.${name};
           in {
             user = mkDefault user.name;
             directory = mkDefault user.home;

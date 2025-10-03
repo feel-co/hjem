@@ -8,6 +8,12 @@
       url = "github:feel-co/smfh";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Our in-house, super-fast documentation generator.
+    ndg = {
+      url = "github:feel-co/ndg";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -17,7 +23,7 @@
   } @ inputs: let
     # We should only specify the modules Hjem explicitly supports, or we risk
     # allowing not-so-defined behaviour. For example, adding nix-systems should
-    # be avoided, because it allows specifying Hjem is not tested on.
+    # be avoided, because it allows specifying systems Hjem is not tested on.
     forAllSystems = nixpkgs.lib.genAttrs ["x86_64-linux" "aarch64-linux"];
   in {
     nixosModules = {
@@ -37,10 +43,19 @@
       default = self.nixosModules.hjem;
     };
 
-    packages = forAllSystems (system: {
+    packages = forAllSystems (system: let
+      pkgs = nixpkgs.legacyPackages.${system};
+      docs = pkgs.callPackage ./docs/package.nix {inherit inputs;};
+    in {
       # Expose the 'smfh' instance used by Hjem as a package in the Hjem flake
       # outputs. This allows consuming the exact copy of smfh used by Hjem.
       inherit (inputs.smfh.packages.${system}) smfh;
+
+      # Hjem documentation. 'docs-html' contains the HTML document created by ndg
+      # and docs-json contains a standalone 'options.json' that is also fed to ndg
+      # for third party consumption.
+      docs-html = docs.html;
+      docs-json = docs.options.json;
     });
 
     checks = forAllSystems (system: let

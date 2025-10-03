@@ -141,7 +141,7 @@ in {
         directory = mkOption {
           type = path;
           default = "${cfg.directory}/.local/state";
-          defaultText = "$HOME/.local/share";
+          defaultText = "$HOME/.local/state";
           description = ''
             The XDG state directory for the user, to which files configured in
             {option}`hjem.users.<name>.xdg.state.files` will be relative to by default.
