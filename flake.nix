@@ -45,9 +45,7 @@
 
     packages = forAllSystems (system: let
       pkgs = nixpkgs.legacyPackages.${system};
-      docs = pkgs.callPackage ./docs/package.nix {
-        inherit (inputs.ndg.packages.${system}) ndg;
-      };
+      docs = pkgs.callPackage ./docs/package.nix {inherit inputs;};
     in {
       # Expose the 'smfh' instance used by Hjem as a package in the Hjem flake
       # outputs. This allows consuming the exact copy of smfh used by Hjem.

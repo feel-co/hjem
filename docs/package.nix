@@ -1,5 +1,5 @@
 {
-  ndg,
+  inputs,
   pkgs,
   lib,
 }: let
@@ -19,7 +19,7 @@
         (
           (evalModules {
             modules =
-              [../modules/nixos/default.nix]
+              [inputs.self.nixosModules.hjem]
               ++ [
                 (
                   let
@@ -102,8 +102,8 @@
     .optionsJSON;
 
   hjemDocsWeb =
-    pkgs.runCommandLocal "hjem-docs" {
-      nativeBuildInputs = [ndg];
+    pkgs.runCommandNoCC "hjem-docs" {
+      nativeBuildInputs = [inputs.ndg.packages.${pkgs.hostPlatform.system}.ndg];
     } ''
       mkdir -p $out/share/doc
 
@@ -113,7 +113,7 @@
       ndg --verbose html \
         --jobs $NIX_BUILD_CORES --title "Hjem" \
         --module-options ${configJSON}/share/doc/nixos/options.json \
-        --manpage-urls ${pkgs.path}/doc/manpage-urls.json \
+        --manpage-urls ${inputs.nixpkgs}/doc/manpage-urls.json \
         --options-depth 3 \
         --generate-search true \
         --highlight-code true \
@@ -128,11 +128,11 @@ in {
     } ''
       mkdir -p $out/{share/doc,nix-support}
 
-      cp -a ${configJSON.optionsJSON}/share/doc/nixos $out/share/doc/hjem
+      cp -a ${configJSON}/share/doc/nixos $out/share/doc/hjem
 
       substitute \
-        ${configJSON.optionsJSON}/nix-support/hydra-build-products \
+        ${configJSON}/nix-support/hydra-build-products \
         $out/nix-support/hydra-build-products \
-          --replace '${configJSON.optionsJSON}/share/doc/nixos' "$out/share/doc/hjem"
+          --replace '${configJSON}/share/doc/nixos' "$out/share/doc/hjem"
     '';
 }
