@@ -1,12 +1,12 @@
-<h1 id="header" align="center">
-  Hjem
-</h1>
+<!-- markdownlint-disable MD033 MD041 -->
 
-<div align="center">
-  A streamlined way to manage your <code>$HOME</code> with Nix.
-</div>
-
-<div align="center">
+<div id="doc-begin" align="center">
+  <h1 id="header">
+    <pre>Hjem [ˈjɛmˀ]</pre>
+  </h1>
+  <p>
+    A streamlined way to manage your <code>$HOME</code> with Nix.
+  </p>
   <br/>
   <a href="#what-is-this">Synopsis</a><br/>
   <a href="#features">Features</a> | <a href="#module-interface">Interface</a><br/>
@@ -17,45 +17,75 @@
 ## What is this?
 
 [systemd-tmpfiles]: https://www.freedesktop.org/software/systemd/man/latest/systemd-tmpfiles-setup.service.html
+[smfh]: https://github.com/feel-co/smfh
 
 **Hjem** ("home" in Danish) is a module system that implements a simple and
 streamlined way to manage files in your `$HOME`, such as but not limited to
-files in your `~/.config`.
+files in your `~/.config`. Hjem aims to approach as an alternative,
+easy-to-grasp utility for managing your `$HOME` purely and safely.
 
 ### Features
 
-1. Multi-user by default
-2. Small, simple codebase with minimal abstraction
-3. Powerful `$HOME` management functionality and potential
-4. Systemd-native file management via [systemd-tmpfiles]\*
-5. Extensible for 3rd-party use
+We have learned from the mistakes made in the ecosystem.
 
-\*: Alternative linkers are planned for better non-NixOS support
+1. Powerful `$HOME` management functionality and potential
+2. Small and simple codebase with minimal abstraction
+3. Robust, safe and _manifest based_ file handling with [smfh]
+4. Multi-user by design, works with any number of users
+5. Designed for ease of extensibility and integration
+
+No compromises, only comfort.
 
 ### Implementation
 
-Hjem exposes a very basic interface with multi-tenant capabilities, which you
+Hjem exposes a streamlined interface with multi-tenant capabilities, which you
 may use to manage individual users' homes by leveraging the module system.
 
 ```nix
+{ inputs, lib, pkgs, ... }:
 {
-  hjem.users = {
-    alice.files = {
-      # Write a text file in `/homes/alice/.config/foo`
-      # with the contents bar
-      ".config/foo".text = "bar";
+  /*
+    other NixOS configuration here...
+  */
 
-      # Alternatively, create the file source using a writer.
-      # This can be used to generate config files with various
-      # formats expected by different programs.
-      ".config/bar".source = pkgs.writeTextFile "file-foo" "file contents";
+  hjem = {
+    # use our custom file handler
+    linker = inputs.hjem.packages.${pkgs.stdenv.hostPlatform.system}.smfh;
 
-      # You can also use generators to transform Nix values
-      ".config/baz" = {
-        # Works with `pkgs.formats` too!
-        generator = lib.generators.toJSON { };
-        value = {
-          some = "contents";
+    users = {
+      alice = {
+        enable = true;
+
+        files = {
+          # Write a text file in `/home/alice/.foo`
+          # with the contents bar
+          ".foo".text = "bar";
+
+          # Alternatively, create the file source using a writer.
+          # This can be used to generate config files with various
+          # formats expected by different programs.
+          ".bar".source = pkgs.writeText "file-foo" "file contents";
+
+          # You can also use generators to transform Nix values
+          ".baz" = {
+            # Works with `pkgs.formats` too!
+            generator = lib.generators.toJSON { };
+            value = {
+              some = "contents";
+            };
+          };
+        };
+
+        # this will write into `/home/alice/.config/test/bar.json`
+        xdg.config.files."test/bar.json" = {
+          generator = lib.generators.toJSON { };
+          value = {
+            foo = 1;
+            bar = "Hello world!";
+            baz = false;
+          };
+          # overwrite existing unmanaged file, if present
+          clobber = true;
         };
       };
     };
@@ -63,84 +93,93 @@ may use to manage individual users' homes by leveraging the module system.
 }
 ```
 
-Each attribute under `hjem.users`, e.g., `hjem.users.alice` or `hjem.users.jane`
-represent a user managed via `users.users` in NixOS. If a user does not exist,
-then Hjem will refuse to manage their `$HOME` by filtering non-existent users in
-file creation.
+> [!NOTE]
+> Each attribute under `hjem.users`, e.g., `hjem.users.alice` or
+> `hjem.users.jane` represent a user managed via `users.users` in NixOS. If a
+> user does not exist, then Hjem will refuse to manage their `$HOME` by
+> filtering non-existent users in file creation.
 
 ## Module Interface
 
-The interface for the `homes` module is conceptually very similar to Home
-Manager, but it does not act as a collection of modules like Home Manager. We
-only implement basic features, and leave abstraction to the user to do as they
-see fit.
+[already does!]: https://github.com/snugnug/hjem-rum
+
+The interface for the `hjem` module is conceptually very similar to prior art
+(e.g., Home Manager), but it does not act as a collection of modules like Home
+Manager. Instead, we implement minimal features, and leave
+application-specific abstractions to the user to do as they see fit.
+This, of course, does not mean that a module collection cannot exist.
+In fact, one [already does!]
 
 Below is a live implementation of the module.
 
-```nix
-nix-repl> :p nixosConfigurations."nixos".config.hjem.users
+```sh
+$ nix eval .#nixosConfigurations.test.config.hjem.users.alice.files.'".foo"' --json | jq
 {
-  alice = {
-    directory = "/home/alice";
-    enable = true;
-    files = {
-      ".config/foo" = {
-        enable = true;
-        executable = false;
-        clobber = false;
-        source = «derivation /nix/store/prc0c5yrfca63x987f2k9khpfhlfnq15-config-foo.drv»;
-        target = ".config/foo";
-        text = "bar";
-      };
-    };
-    user = "alice";
-  };
-}
-
-nix-repl> :p nixosConfigurations."nixos".config.systemd.user.tmpfiles.users
-{
-  alice = {
-    rules = [ "L /home/alice/.config/foo - - - - /nix/store/jfpr2z1z1aykpw2j2gj02lwwvwv6hml4-config-foo" ];
-  };
+  "clobber": false,
+  "enable": true,
+  "executable": false,
+  "generator": null,
+  "relativeTo": "/home/alice",
+  "source": "/nix/store/22yfhzhk0w5mgaq6c943vimsg6qlr1sh-foo",
+  "target": "/home/alice/.foo",
+  "text": "bar",
+  "value": null
 }
 ```
 
-Instead of relying on a Bash script to link files in place, we utilize
-[systemd-tmpfiles] to ensure the files are linked in place.
+### Linker Implementation
+
+Hjem relies on our home-baked tool [smfh], an atomic and reliable file creation
+tool designed by [Gerg-l]. We utilize smfh and Systemd services [^1] to
+correctly link files into place.
+
+[^1]: Which is preferable to hacky activation scripts that may or may not break.
+    Systemd services allow for ordered dependency management across all
+    services, and easy monitoring of Hjem-related services from the central
+    `systemctl` interface.
+
+### Environment Management
+
+Hjem does **not** manage user environments as one might expect, but it provides
+a convenient `environment.sessionVariables` option that you can use to store
+your variables. This script will be used to store your environment variables in
+a POSIX-compliant script generated by Hjem, which you can source in your shell
+configurations.
 
 ## Things to do
 
-Hjem is mostly feature-complete, in the sense that it is a clean implementation
-of `home.files` in Home Manager: it was never a goal to dive into abstracting
-files into modules. Although, some _basic_ features such as managing _Systemd
-Services_ or user packages may make their ways into the project in future
-iterations.
-
-### Manifest & Cleaning up dangling files
-
-The systemd-tmpfiles module lacks a good way of cleaning up dangling files,
-e.g., from files that are no longer linked. To tackle this problem, a _manifest_
-of files can be used to diff said manifest during switch and remove files that
-are no longer managed.
-
-Relevant: https://github.com/feel-co/hjem/pull/9
+Hjem is _mostly_ feature-complete, in the sense that it is a clean
+implementation of `home.files` in Home Manager: it was never a goal to dive into
+abstracting files into modules.
 
 ### Alternative or/and configurable file linking mechanisms
 
-Hjem currently utilizes systemd-tmpfiles to ensure the files are linked in
-place. While this is a safe and powerful way to ensure files are placed in their
-desired locations, it is not very robust. We may consider adding an alternative
-linker, e.g., in Bash that expands upon systemd-tmpfiles functionality with
-additional functionality.
+[Gerg-l]: https://github.com/gerg-l
+
+Hjem previously utilized systemd-tmpfiles to ensure files are linked in place.
+This served us well for the short duration that we relied on them, but we
+have ultimately decided to go with our in-house file linker developed by
+[Gerg-l]. The new linker is, of course, infinitely more powerful and while we
+are _not_ looking back, we understand that some users might be interested in
+alternative linking mechanisms that they can customize as they prefer.
+
+> [!TIP]
+> Setting `hjem.linker` to `null` will use [systemd-tmpfiles] as the linker
+> backend. You _may_ give this option a package you've created to use it as your
+> linker, but it must be fully compatible with the interface [smfh] currently
+> supports.
 
 Alternatively, similar to how NixOS handles external bootloaders, we may
 consider a rebuild "hook" for allowing alternative linking methods where the
 module system exposes the files configuration to a package user provides.
 
-## Attributions
+## Attributions / Prior Art
 
 [Nixpkgs]: https://github.com/nixOS/nixpkgs
 [Home Manager]: https://github.com/nix-community/home-manager
+[Hjem Rum]: https://github.com/snugnug/hjem-rum
+[@Lunarnovaa]: https://github.com/lunarnovaa
+[@nezia1]: https://github.com/nezia1
 
 Special thanks to [Nixpkgs] and [Home Manager]. The interface of the
 `hjem.users` module is inspired by Home Manager's `home.file` and Nixpkgs'
@@ -148,15 +187,21 @@ Special thanks to [Nixpkgs] and [Home Manager]. The interface of the
 addition to Nixpkgs' `users.users`. Hjem would not be possible without any of
 those projects, thank you!
 
-A project worthy of note is [Hjem Rum](https://github.com/snugnug/hjem-rum), by
-[@Lunarnovaa](https://github.com/lunarnovaa) and
-[@nezia1](https://github.com/nezia1), which establishes a Home Manager-like
-module system for users less comfortable with manually linking files in place.
-If you wish to utilize the power of Hjem, but want an easier interface, we
-encourage you to take a look at Hjem Rum.
+A project worthy of note is [Hjem Rum], by [@Lunarnovaa] and [@nezia1], which
+establishes a Home Manager-like module system for users less comfortable with
+manually linking files in place. If you wish to utilize the power of Hjem, but
+want an easier interface, we encourage you to take a look at Hjem Rum.
+
+Last but not least, our sincerest thanks to everyone who has used, contributed
+to or just talked about Hjem in public spaces. Thank you for the support!
 
 ## License
 
 This project is made available under Mozilla Public License (MPL) version 2.0.
 See [LICENSE](LICENSE) for more details on the exact conditions. An online copy
 is provided [here](https://www.mozilla.org/en-US/MPL/2.0/).
+
+<div align="right">
+  <a href="#doc-begin">Back to the Top</a>
+  <br/>
+</div>
