@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hjem - Options</title>
+     
     <script>
       // Apply sidebar state immediately to prevent flash
       (function () {
@@ -22,11 +23,15 @@
     <div class="container">
       <header>
         <div class="header-left">
-          <h1 class="site-title"><a href="index.html">Hjem</a></h1>
+          <h1 class="site-title">
+            <a href="index.html">Hjem</a>
+          </h1>
         </div>
         <nav class="header-nav">
           <ul>
-            <li class="active"><a href="options.html">Options</a></li>
+            <li class="active">
+              <a href="options.html">Options</a>
+            </li>
             
             <li><a href="search.html">Search</a></li>
             
@@ -611,7 +616,7 @@ The behaviour may be modified per-user by setting <a class="option-reference" hr
 to the desired value.</p>
 </body></html></div>
   <div class="option-default">Default: <code>false</code></div>
-  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/default.nix" target="_blank">&lt;hjem/modules/nixos/default.nix&gt;</a></code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos" target="_blank">&lt;hjem/modules/nixos&gt;</a></code></div>
 </div>
 <div class="option" id="option-hjem-extraModules">
   <h3 class="option-name">
@@ -625,7 +630,7 @@ inside <a class="option-reference" href="options.html#option-config-hjem-users-<
 extend each user configuration with additional options.</p>
 </body></html></div>
   <div class="option-default">Default: <code>[ ]</code></div>
-  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/default.nix" target="_blank">&lt;hjem/modules/nixos/default.nix&gt;</a></code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos" target="_blank">&lt;hjem/modules/nixos&gt;</a></code></div>
 </div>
 <div class="option" id="option-hjem-linker">
   <h3 class="option-name">
@@ -653,7 +658,7 @@ the default in the future.</p>
 </div>
 </body></html></div>
   <div class="option-default">Default: <code>null</code></div>
-  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/default.nix" target="_blank">&lt;hjem/modules/nixos/default.nix&gt;</a></code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos" target="_blank">&lt;hjem/modules/nixos&gt;</a></code></div>
 </div>
 <div class="option" id="option-hjem-linkerOptions">
   <h3 class="option-name">
@@ -668,7 +673,7 @@ It accepts either a list of strings, which will be passed directly as arguments,
 serialized to JSON and passed as <code>--linker-opts options.json</code>.</p>
 </body></html></div>
   <div class="option-default">Default: <code>[ ]</code></div>
-  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/default.nix" target="_blank">&lt;hjem/modules/nixos/default.nix&gt;</a></code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos" target="_blank">&lt;hjem/modules/nixos&gt;</a></code></div>
 </div>
 <div class="option" id="option-hjem-specialArgs">
   <h3 class="option-name">
@@ -682,7 +687,7 @@ to be passed down to to all imported modules.</p>
 </body></html></div>
   <div class="option-default">Default: <code>{ }</code></div>
   <div class="option-example">Example: <code>{ inherit inputs; }</code></div>
-  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/default.nix" target="_blank">&lt;hjem/modules/nixos/default.nix&gt;</a></code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos" target="_blank">&lt;hjem/modules/nixos&gt;</a></code></div>
 </div>
 <div class="option" id="option-hjem-users">
   <h3 class="option-name">
@@ -694,7 +699,7 @@ to be passed down to to all imported modules.</p>
   <div class="option-description"><html><head></head><body><p>Home configurations to be managed</p>
 </body></html></div>
   <div class="option-default">Default: <code>{ }</code></div>
-  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/default.nix" target="_blank">&lt;hjem/modules/nixos/default.nix&gt;</a></code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos" target="_blank">&lt;hjem/modules/nixos&gt;</a></code></div>
 </div>
 <div class="option" id="option-hjem-users-&lt;name&gt;-clobberFiles">
   <h3 class="option-name">
@@ -758,7 +763,7 @@ that needs to be sourced where needed.</p>
     <span class="copy-link" title="Copy link to this option"></span>
     <span class="copy-feedback">Link copied!</span>
   </h3>
-  <div class="option-type">Type: <code>attribute set of ((list of (signed integer or string or absolute path)) or signed integer or string or absolute path)</code></div>
+  <div class="option-type">Type: <code>attribute set of (null or (list of (signed integer or string or absolute path)) or signed integer or string or absolute path)</code></div>
   <div class="option-description"><html><head></head><body><p>A set of environment variables used in the user environment.
 If a list of strings is used, they will be concatenated with colon
 characters.</p>
@@ -801,7 +806,7 @@ will be constructed with <code>L+</code> (<em>re</em>create) instead of <code>L<
 (create) type while this is set to <code>true</code>.</li>
 </ul>
 </body></html></div>
-  <div class="option-default">Default: <code>config.hjem.clobberByDefault</code></div>
+  <div class="option-default">Default: <code>config.hjem.users.‹name›.clobberFiles</code></div>
   <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
 </div>
 <div class="option" id="option-hjem-users-&lt;name&gt;-files-&lt;name&gt;-enable">
@@ -863,9 +868,9 @@ will be constructed with <code>L+</code> (<em>re</em>create) instead of <code>L<
     <span class="copy-feedback">Link copied!</span>
   </h3>
   <div class="option-type">Type: <code>string</code></div>
-  <div class="option-description"><html><head></head><body><p>Path to target file relative to <a class="option-reference" href="options.html#option-hjem-users-<name>-files-<file>-relativeTo"><code>hjem.users.&lt;name&gt;.files.&lt;file&gt;.relativeTo</code></a>.</p>
+  <div class="option-description"><html><head></head><body><p>Path to target file relative to /home/‹name›.</p>
 </body></html></div>
-  <div class="option-default">Default: <code>"name"</code></div>
+  <div class="option-default">Default: <code>"‹name›"</code></div>
   <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
 </div>
 <div class="option" id="option-hjem-users-&lt;name&gt;-files-&lt;name&gt;-text">
@@ -967,7 +972,7 @@ will be constructed with <code>L+</code> (<em>re</em>create) instead of <code>L<
 (create) type while this is set to <code>true</code>.</li>
 </ul>
 </body></html></div>
-  <div class="option-default">Default: <code>config.hjem.clobberByDefault</code></div>
+  <div class="option-default">Default: <code>config.hjem.users.‹name›.clobberFiles</code></div>
   <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
 </div>
 <div class="option" id="option-hjem-users-&lt;name&gt;-xdg-cache-files-&lt;name&gt;-enable">
@@ -1029,9 +1034,9 @@ will be constructed with <code>L+</code> (<em>re</em>create) instead of <code>L<
     <span class="copy-feedback">Link copied!</span>
   </h3>
   <div class="option-type">Type: <code>string</code></div>
-  <div class="option-description"><html><head></head><body><p>Path to target file relative to <a class="option-reference" href="options.html#option-hjem-users-<name>-files-<file>-relativeTo"><code>hjem.users.&lt;name&gt;.files.&lt;file&gt;.relativeTo</code></a>.</p>
+  <div class="option-description"><html><head></head><body><p>Path to target file relative to /home/‹name›/.cache.</p>
 </body></html></div>
-  <div class="option-default">Default: <code>"name"</code></div>
+  <div class="option-default">Default: <code>"‹name›"</code></div>
   <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
 </div>
 <div class="option" id="option-hjem-users-&lt;name&gt;-xdg-cache-files-&lt;name&gt;-text">
@@ -1109,7 +1114,7 @@ will be constructed with <code>L+</code> (<em>re</em>create) instead of <code>L<
 (create) type while this is set to <code>true</code>.</li>
 </ul>
 </body></html></div>
-  <div class="option-default">Default: <code>config.hjem.clobberByDefault</code></div>
+  <div class="option-default">Default: <code>config.hjem.users.‹name›.clobberFiles</code></div>
   <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
 </div>
 <div class="option" id="option-hjem-users-&lt;name&gt;-xdg-config-files-&lt;name&gt;-enable">
@@ -1171,9 +1176,9 @@ will be constructed with <code>L+</code> (<em>re</em>create) instead of <code>L<
     <span class="copy-feedback">Link copied!</span>
   </h3>
   <div class="option-type">Type: <code>string</code></div>
-  <div class="option-description"><html><head></head><body><p>Path to target file relative to <a class="option-reference" href="options.html#option-hjem-users-<name>-files-<file>-relativeTo"><code>hjem.users.&lt;name&gt;.files.&lt;file&gt;.relativeTo</code></a>.</p>
+  <div class="option-description"><html><head></head><body><p>Path to target file relative to /home/‹name›/.config.</p>
 </body></html></div>
-  <div class="option-default">Default: <code>"name"</code></div>
+  <div class="option-default">Default: <code>"‹name›"</code></div>
   <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
 </div>
 <div class="option" id="option-hjem-users-&lt;name&gt;-xdg-config-files-&lt;name&gt;-text">
@@ -1251,7 +1256,7 @@ will be constructed with <code>L+</code> (<em>re</em>create) instead of <code>L<
 (create) type while this is set to <code>true</code>.</li>
 </ul>
 </body></html></div>
-  <div class="option-default">Default: <code>config.hjem.clobberByDefault</code></div>
+  <div class="option-default">Default: <code>config.hjem.users.‹name›.clobberFiles</code></div>
   <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
 </div>
 <div class="option" id="option-hjem-users-&lt;name&gt;-xdg-data-files-&lt;name&gt;-enable">
@@ -1313,9 +1318,9 @@ will be constructed with <code>L+</code> (<em>re</em>create) instead of <code>L<
     <span class="copy-feedback">Link copied!</span>
   </h3>
   <div class="option-type">Type: <code>string</code></div>
-  <div class="option-description"><html><head></head><body><p>Path to target file relative to <a class="option-reference" href="options.html#option-hjem-users-<name>-files-<file>-relativeTo"><code>hjem.users.&lt;name&gt;.files.&lt;file&gt;.relativeTo</code></a>.</p>
+  <div class="option-description"><html><head></head><body><p>Path to target file relative to /home/‹name›/.local/share.</p>
 </body></html></div>
-  <div class="option-default">Default: <code>"name"</code></div>
+  <div class="option-default">Default: <code>"‹name›"</code></div>
   <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
 </div>
 <div class="option" id="option-hjem-users-&lt;name&gt;-xdg-data-files-&lt;name&gt;-text">
@@ -1359,7 +1364,7 @@ will be constructed with <code>L+</code> (<em>re</em>create) instead of <code>L<
 <p>Adds <code class="env-var">XDG_STATE_HOME</code> to <a class="option-reference" href="options.html#option-environment-sessionVariables"><code>environment.sessionVariables</code></a> for
 this user if changed.</p>
 </body></html></div>
-  <div class="option-default">Default: <code>"$HOME/.local/share"</code></div>
+  <div class="option-default">Default: <code>"$HOME/.local/state"</code></div>
   <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
 </div>
 <div class="option" id="option-hjem-users-&lt;name&gt;-xdg-state-files">
@@ -1393,7 +1398,7 @@ will be constructed with <code>L+</code> (<em>re</em>create) instead of <code>L<
 (create) type while this is set to <code>true</code>.</li>
 </ul>
 </body></html></div>
-  <div class="option-default">Default: <code>config.hjem.clobberByDefault</code></div>
+  <div class="option-default">Default: <code>config.hjem.users.‹name›.clobberFiles</code></div>
   <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
 </div>
 <div class="option" id="option-hjem-users-&lt;name&gt;-xdg-state-files-&lt;name&gt;-enable">
@@ -1455,9 +1460,9 @@ will be constructed with <code>L+</code> (<em>re</em>create) instead of <code>L<
     <span class="copy-feedback">Link copied!</span>
   </h3>
   <div class="option-type">Type: <code>string</code></div>
-  <div class="option-description"><html><head></head><body><p>Path to target file relative to <a class="option-reference" href="options.html#option-hjem-users-<name>-files-<file>-relativeTo"><code>hjem.users.&lt;name&gt;.files.&lt;file&gt;.relativeTo</code></a>.</p>
+  <div class="option-description"><html><head></head><body><p>Path to target file relative to /home/‹name›/.local/state.</p>
 </body></html></div>
-  <div class="option-default">Default: <code>"name"</code></div>
+  <div class="option-default">Default: <code>"‹name›"</code></div>
   <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
 </div>
 <div class="option" id="option-hjem-users-&lt;name&gt;-xdg-state-files-&lt;name&gt;-text">
