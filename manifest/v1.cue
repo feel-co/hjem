@@ -19,6 +19,9 @@
 } | {
 	type: "symlink"
 	source!: _
+	permissions: _|_
+	uid: _|_
+	gid: _|_
 	...
 } | {
 	type: "delete" | "directory" | "modify"

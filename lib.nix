@@ -2,15 +2,20 @@
   lib,
   pkgs,
 }: let
-  inherit (builtins) isList;
+  inherit (builtins) elem isList;
+  inherit (lib.attrsets) optionalAttrs;
   inherit (lib.modules) mkDefault mkDerivedConfig mkIf mkMerge;
   inherit (lib.options) literalExpression mkEnableOption mkOption;
   inherit (lib.strings) concatMapStringsSep hasPrefix;
-  inherit (lib.types) addCheck anything attrsOf bool either functionTo int lines listOf nullOr oneOf path str submodule;
+  inherit (lib.types) addCheck anything attrsOf bool either enum functionTo int lines listOf nullOr oneOf path str submodule;
 in {
   # inlined from https://github.com/NixOS/nixpkgs/tree/master/nixos/modules/config/shells-environment.nix
   # using osOptions precludes using hjem (or this type) standalone
   envVarType = attrsOf (nullOr (oneOf [(listOf (oneOf [int str path])) int str path]));
+
+  fileToJson = f:
+    {inherit (f) clobber target type;}
+    // (optionalAttrs (elem f.type ["symlink" "copy"]) {inherit (f) source;});
 
   fileTypeRelativeTo = {
     rootDir,
@@ -31,6 +36,14 @@ in {
             default = true;
             example = false;
           };
+
+        type = mkOption {
+          type = enum ["symlink" "copy" "delete" "directory" "modify"];
+          default = "symlink";
+          description = ''
+            Type of path to create.
+          '';
+        };
 
         target = mkOption {
           type = str;
