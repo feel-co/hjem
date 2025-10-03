@@ -1,0 +1,7 @@
+[files]
+ignore-hidden = true
+extend-exclude = [".git/"]
+
+[default.extend-identifiers]
+"Hjem-Rum" = "Hjem Rum"
+"Home-manager" = "Home Manager"
