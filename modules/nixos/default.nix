@@ -13,7 +13,7 @@
   inherit (lib.trivial) pipe;
   inherit (lib.types) attrs attrsOf bool either listOf nullOr package raw singleLineStr submoduleWith;
   inherit (lib.meta) getExe;
-  inherit (builtins) filter attrNames attrValues mapAttrs getAttr concatLists concatStringsSep typeOf toJSON concatMap;
+  inherit (builtins) filter attrNames attrValues mapAttrs concatLists concatStringsSep typeOf toJSON concatMap;
 
   cfg = config.hjem;
 
@@ -90,7 +90,7 @@
           ../common/user.nix
           ({name, ...}: let
             inherit (lib.modules) mkDefault;
-            user = getAttr name config.users.users;
+            user = config.users.users.${name};
           in {
             user = mkDefault user.name;
             directory = mkDefault user.home;

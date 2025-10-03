@@ -9,6 +9,7 @@
   inherit (lib.options) mkOption;
   inherit (lib.strings) hasPrefix removePrefix;
   inherit (lib.trivial) pipe;
+  inherit (lib.types) anything;
 
   configJSON =
     (pkgs.nixosOptionsDoc {
@@ -58,12 +59,20 @@
                     };
                   }
                 )
-                # avoid having `_module.args` in the documentation
                 {
+                  # exclude NixOS options from the documentation
                   options = {
                     _module.args = mkOption {
                       internal = true;
                     };
+                    users = mkOption {
+                      type = anything;
+                      internal = true;
+                    };
+                  };
+                  # due to how options are documented, `hjem.<name>` will try to access `users.users."‹name›"`
+                  config = {
+                    users.users."‹name›" = {home = "/home/‹name›";};
                   };
                 }
               ];
