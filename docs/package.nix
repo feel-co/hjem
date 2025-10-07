@@ -19,11 +19,21 @@
       inherit
         (
           (evalModules {
-            modules =
-              [inputs.self.nixosModules.hjem]
-              ++ [
-                (
-                  let
+            modules = [
+              inputs.self.nixosModules.hjem
+              {
+                # exclude NixOS options from the documentation
+                options = {
+                  _module.args = mkOption {
+                    internal = true;
+                  };
+                  users = mkOption {
+                    type = anything;
+                    internal = true;
+                  };
+                };
+                config = {
+                  _module = let
                     # From nixpkgs:
                     #
                     # Recursively replace each derivation in the given attribute set
@@ -53,29 +63,22 @@
                       )
                       pkgSet;
                   in {
-                    _module = {
-                      check = false;
-                      args.pkgs = mkForce (scrubDerivations "pkgs" pkgs);
-                    };
-                  }
-                )
-                {
-                  # exclude NixOS options from the documentation
-                  options = {
-                    _module.args = mkOption {
-                      internal = true;
-                    };
-                    users = mkOption {
-                      type = anything;
-                      internal = true;
+                    check = false;
+                    args = {
+                      pkgs = mkForce (scrubDerivations "pkgs" pkgs);
+                      utils = import "${inputs.nixpkgs}/nixos/lib/utils.nix" {
+                        inherit lib;
+                        config = {};
+                        pkgs = null;
+                      };
                     };
                   };
+
                   # due to how options are documented, `hjem.<name>` will try to access `users.users."‹name›"`
-                  config = {
-                    users.users."‹name›" = {home = "/home/‹name›";};
-                  };
-                }
-              ];
+                  users.users."‹name›" = {home = "/home/‹name›";};
+                };
+              }
+            ];
           })
         )
         options
