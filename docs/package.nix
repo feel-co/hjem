@@ -3,7 +3,7 @@
   pkgs,
   lib,
 }: let
-  inherit (builtins) isAttrs toString;
+  inherit (builtins) isAttrs;
   inherit (lib.attrsets) isDerivation mapAttrs optionalAttrs;
   inherit (lib.modules) mkForce evalModules;
   inherit (lib.options) mkOption;

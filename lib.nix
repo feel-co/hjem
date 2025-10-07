@@ -19,7 +19,6 @@ in {
   }:
     submodule ({
       name,
-      target,
       config,
       options,
       ...
