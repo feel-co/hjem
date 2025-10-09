@@ -49,8 +49,8 @@ in {
       };
     };
 
-  config = {
-    xdg.config.files."systemd/user".source = utils.systemdUtils.lib.generateUnits mkIf config.systemd.enable {
+  config = mkIf config.systemd.enable {
+    xdg.config.files."systemd/user".source = utils.systemdUtils.lib.generateUnits {
       type = "user";
       inherit (cfg) units;
       inherit (osConfig.systemd) package;
