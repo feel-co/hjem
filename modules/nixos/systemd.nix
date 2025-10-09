@@ -4,7 +4,8 @@
   osConfig,
   utils,
   ...
-}: let
+}:
+let
   inherit (builtins) listToAttrs;
   inherit (lib) mkIf;
   inherit (lib.attrsets) mapAttrsToList nameValuePair;
@@ -22,20 +23,23 @@
     "target"
     "timer"
   ];
-in {
+in
+{
   options.systemd =
     pipe unitTypes [
-      (map (t:
+      (map (
+        t:
         nameValuePair "${t}s" (mkOption {
-          default = {};
+          default = { };
           type = utils.systemdUtils.types."${t}s";
           description = "Definition of systemd per-user ${t} units.";
-        })))
+        })
+      ))
       listToAttrs
     ]
     // {
       units = mkOption {
-        default = {};
+        default = { };
         type = utils.systemdUtils.types.units;
         description = "Internal systemd user unit option to handle transformations.";
         internal = true;
@@ -54,17 +58,16 @@ in {
       type = "user";
       inherit (cfg) units;
       inherit (osConfig.systemd) package;
-      packages = [];
-      upstreamUnits = [];
-      upstreamWants = [];
+      packages = [ ];
+      upstreamUnits = [ ];
+      upstreamWants = [ ];
     };
 
     systemd.units = pipe unitTypes [
-      (map
-        (t:
-          mapAttrsToList
-          (n: v: nameValuePair "${n}.${t}" (utils.systemdUtils.lib."${t}ToUnit" v))
-          cfg."${t}s"))
+      (map (
+        t:
+        mapAttrsToList (n: v: nameValuePair "${n}.${t}" (utils.systemdUtils.lib."${t}ToUnit" v)) cfg."${t}s"
+      ))
       flatten
       listToAttrs
     ];
