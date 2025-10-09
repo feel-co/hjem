@@ -45,7 +45,7 @@ in {
       enable = mkOption {
         default = true;
         type = bool;
-        descritpion = "Opt out of Hjem user service management";
+        description = "Opt out of Hjem user service management";
       };
     };
 
