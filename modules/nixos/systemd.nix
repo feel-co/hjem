@@ -8,7 +8,8 @@
   inherit (builtins) listToAttrs;
   inherit (lib.attrsets) mapAttrsToList nameValuePair;
   inherit (lib.lists) flatten;
-  inherit (lib.options) mkOption;
+  inherit (lib.modules) mkIf;
+  inherit (lib.options) mkEnableOption mkOption;
   inherit (lib.trivial) pipe;
 
   cfg = config.systemd;
@@ -32,6 +33,8 @@ in {
       listToAttrs
     ]
     // {
+      enable = mkEnableOption "Hjem management of systemd units" // {default = true;};
+
       units = mkOption {
         default = {};
         type = utils.systemdUtils.types.units;
@@ -40,7 +43,7 @@ in {
       };
     };
 
-  config = {
+  config = mkIf cfg.enable {
     xdg.config.files."systemd/user".source = utils.systemdUtils.lib.generateUnits {
       type = "user";
       inherit (cfg) units;
