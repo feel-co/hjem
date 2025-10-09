@@ -6,10 +6,12 @@
   ...
 }: let
   inherit (builtins) listToAttrs;
+  inherit (lib) mkIf;
   inherit (lib.attrsets) mapAttrsToList nameValuePair;
   inherit (lib.lists) flatten;
   inherit (lib.options) mkOption;
   inherit (lib.trivial) pipe;
+  inherit (lib.types) bool;
 
   cfg = config.systemd;
   unitTypes = [
@@ -38,10 +40,17 @@ in {
         description = "Internal systemd user unit option to handle transformations.";
         internal = true;
       };
+    }
+    // {
+      enable = mkOption {
+        default = true;
+        type = bool;
+        descritpion = "Opt out of Hjem user service management";
+      };
     };
 
   config = {
-    xdg.config.files."systemd/user".source = utils.systemdUtils.lib.generateUnits {
+    xdg.config.files."systemd/user".source = utils.systemdUtils.lib.generateUnits mkIf config.systemd.enable {
       type = "user";
       inherit (cfg) units;
       inherit (osConfig.systemd) package;
