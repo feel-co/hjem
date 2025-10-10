@@ -8,6 +8,7 @@ on:
       - docs/**
       - modules/**
       - flake.lock
+      - lib.nix
       - .github/workflows/deploy-docs.yml
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
