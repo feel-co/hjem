@@ -75,7 +75,7 @@
     };
 
   hjemModule = submoduleWith {
-    description = "Hjem NixOS module";
+    description = "Hjem NixOS module.";
     class = "hjem";
     specialArgs =
       cfg.specialArgs
@@ -121,7 +121,7 @@ in {
     users = mkOption {
       default = {};
       type = attrsOf hjemModule;
-      description = "Home configurations to be managed";
+      description = "Hjem-managed user configurations.";
     };
 
     extraModules = mkOption {

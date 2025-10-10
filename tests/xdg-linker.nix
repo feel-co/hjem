@@ -60,7 +60,8 @@ in
       in {
         imports = [self.nixosModules.hjem];
 
-        system.switch.enable = true;
+        # ensure nixless deployments work
+        nix.enable = false;
 
         users.groups.alice = {};
         users.users.alice = {

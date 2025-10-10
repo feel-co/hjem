@@ -33,7 +33,12 @@ in {
       listToAttrs
     ]
     // {
-      enable = mkEnableOption "Hjem management of systemd units" // {default = true;};
+      enable =
+        mkEnableOption "Hjem management of systemd units"
+        // {
+          default = true;
+          example = false;
+        };
 
       units = mkOption {
         default = {};
