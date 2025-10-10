@@ -46,13 +46,13 @@ in {
         text = mkOption {
           default = null;
           type = nullOr lines;
-          description = "Text of the file";
+          description = "Text of the file.";
         };
 
         source = mkOption {
           type = nullOr path;
           default = null;
-          description = "Path of the source file or directory";
+          description = "Path of the source file or directory.";
         };
 
         generator = lib.mkOption {
@@ -107,7 +107,7 @@ in {
           internal = true;
           type = path;
           default = rootDir;
-          description = "Path to which symlinks will be relative to";
+          description = "Path that symlinks are relative to.";
           apply = x:
             assert (hasPrefix "/" x || abort "Relative path ${x} cannot be used for files.<file>.relativeTo"); x;
         };
