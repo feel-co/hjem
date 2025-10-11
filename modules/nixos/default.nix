@@ -11,7 +11,7 @@
   inherit (lib.modules) mkIf mkMerge;
   inherit (lib.options) literalExpression mkOption;
   inherit (lib.strings) optionalString;
-  inherit (lib.trivial) pipe;
+  inherit (lib.trivial) flip pipe;
   inherit (lib.types) attrs attrsOf bool either listOf nullOr package raw singleLineStr submoduleWith;
   inherit (lib.meta) getExe;
   inherit (builtins) filter attrNames attrValues mapAttrs concatLists concatStringsSep typeOf toJSON concatMap;
@@ -32,20 +32,6 @@
   linker = getExe cfg.linker;
 
   manifests = let
-    mapFiles = files:
-      lib.attrsets.foldlAttrs (
-        accum: _: value:
-          if value.enable -> value.source == null
-          then accum
-          else
-            accum
-            ++ lib.singleton {
-              type = "symlink";
-              inherit (value) source target;
-            }
-      ) []
-      files;
-
     writeManifest = username: let
       name = "manifest-${username}.json";
     in
@@ -53,11 +39,13 @@
         inherit name;
         destination = "/${name}";
         text = builtins.toJSON {
-          clobber_by_default = cfg.users."${username}".clobberFiles;
           version = 1;
-          files = concatMap mapFiles (
-            userFiles cfg.users."${username}"
-          );
+          files = concatMap (
+            flip pipe [
+              attrValues
+              (filter (x: x.enable))
+            ]
+          ) userFiles cfg.users.${username};
         };
         checkPhase = ''
           set -e
