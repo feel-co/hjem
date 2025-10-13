@@ -32,6 +32,6 @@
 })
 
 close({
-	version: 2
+	version: 1
 	files: [...#HjemFile]
 })

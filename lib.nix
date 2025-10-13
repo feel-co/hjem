@@ -81,8 +81,7 @@ in rec {
             "copy"
             "delete"
             "directory"
-            # TODO: uncomment after https://github.com/feel-co/smfh/issues/20 is fixed
-            #"modify"
+            "modify"
           ];
           default = "symlink";
           description = ''

@@ -123,11 +123,11 @@
         "systems": "systems"
       },
       "locked": {
-        "lastModified": 1760357757,
-        "narHash": "sha256-8/mBnSM3U9PdSBx3+Cmq5OybN5W2URCVUFC/U6xur2M=",
+        "lastModified": 1760396458,
+        "narHash": "sha256-8ilu+tP5YJAqhN9/ZGekYclWal+xsyVtFEAuiEtTeD4=",
         "owner": "feel-co",
         "repo": "smfh",
-        "rev": "0bb015083fa2fac010e9c8df8bad6b7e800f6f41",
+        "rev": "f7609068a16b3962f95d68e8575b826e09bbffbf",
         "type": "github"
       },
       "original": {

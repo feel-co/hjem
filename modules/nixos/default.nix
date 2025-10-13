@@ -40,7 +40,7 @@
         inherit name;
         destination = "/${name}";
         text = toJSON {
-          version = 2;
+          version = 1;
           files = concatMap (
             flip pipe [
               attrValues

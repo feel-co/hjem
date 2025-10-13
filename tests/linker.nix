@@ -1,5 +1,6 @@
 let
-  userHome = "/home/alice";
+  user = "alice";
+  userHome = "/home/${user}";
 in
   (import ./lib) {
     name = "hjem-linker";
@@ -14,8 +15,8 @@ in
 
         system.switch.enable = true;
 
-        users.groups.alice = {};
-        users.users.alice = {
+        users.groups.${user} = {};
+        users.users.${user} = {
           isNormalUser = true;
           home = userHome;
           password = "";
@@ -24,7 +25,7 @@ in
         hjem = {
           linker = inputs.smfh.packages.${pkgs.system}.default;
           users = {
-            alice = {
+            ${user} = {
               enable = true;
             };
           };
@@ -32,18 +33,18 @@ in
 
         specialisation = {
           fileGetsLinked.configuration = {
-            hjem.users.alice.files.".config/foo".text = "Hello world!";
+            hjem.users.${user}.files.".config/foo".text = "Hello world!";
           };
 
           fileGetsOverwritten.configuration = {
-            hjem.users.alice.files.".config/foo" = {
+            hjem.users.${user}.files.".config/foo" = {
               text = "Hello new world!";
               clobber = true;
             };
           };
 
           variousFileTypes.configuration = {
-            hjem.users.alice.files = {
+            hjem.users.${user}.files = {
               foo = {
                 type = "copy";
                 text = ''
@@ -56,13 +57,10 @@ in
               baz = {
                 type = "directory";
               };
-              # TODO: uncomment after https://github.com/feel-co/smfh/issues/20 is fixed
-              /*
                 boop = {
                 type = "modify";
                 permissions = "703";
               };
-              */
             };
           };
         };
@@ -73,7 +71,7 @@ in
       baseSystem = nodes.node1.system.build.toplevel;
       specialisations = "${baseSystem}/specialisation";
     in ''
-      node1.succeed("loginctl enable-linger alice")
+      node1.succeed("loginctl enable-linger ${user}")
 
       with subtest("Activation service runs correctly"):
         node1.succeed("${baseSystem}/bin/switch-to-configuration test")
@@ -81,7 +79,7 @@ in
 
       with subtest("Manifest gets created"):
         node1.succeed("${baseSystem}/bin/switch-to-configuration test")
-        node1.succeed("[ -f /var/lib/hjem/manifest-alice.json ]")
+        node1.succeed("[ -f /var/lib/hjem/manifest-${user}.json ]")
 
       with subtest("File gets linked"):
         node1.succeed("${specialisations}/fileGetsLinked/bin/switch-to-configuration test")
@@ -99,6 +97,7 @@ in
         node1.succeed("test -f ${userHome}/bar")
         node1.succeed("test -f ${userHome}/boop")
         node1.succeed("chmod 644 ${userHome}/boop")
+        node1.succeed("chown ${user} ${userHome}/{bar,boop}")
         node1.succeed("test $(stat -c '%a' ${userHome}/boop) = \"644\"")
         node1.succeed("${specialisations}/variousFileTypes/bin/switch-to-configuration test")
         node1.succeed("test -f ${userHome}/foo")
@@ -106,8 +105,6 @@ in
         node1.succeed("! test -f ${userHome}/bar")
         node1.succeed("test -d ${userHome}/baz")
         node1.succeed("test -f ${userHome}/boop")
-        node1.succeed("stat -c '%a' ${userHome}/boop >&2")
-        # TODO: uncomment after https://github.com/feel-co/smfh/issues/20 is fixed
-        #node1.succeed("test $(stat -c '%a' ${userHome}/boop) = \"703\"")
+        node1.succeed("test $(stat -c '%a' ${userHome}/boop) = \"703\"")
     '';
   }
