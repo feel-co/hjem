@@ -33,11 +33,18 @@ in rec {
   envVarType = attrsOf (nullOr (oneOf [(listOf (oneOf [int str path])) int str path]));
 
   fileToJson = f:
-    {inherit (f) clobber target type;}
-    // (optionalAttrs (elem f.type ["symlink" "copy"]) {inherit (f) source;})
-    // (optionalAttrs
-      (elem f.type ["copy" "delete" "directory" "modify"])
-      (filterAttrs (_: v: v != null) {inherit (f) permissions uid gid;}));
+    filterAttrs (_: v: v != null) {
+      inherit
+        (f)
+        clobber
+        gid
+        permissions
+        source
+        target
+        type
+        uid
+        ;
+    };
 
   fileTypeRelativeTo = {
     rootDir,
