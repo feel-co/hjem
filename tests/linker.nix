@@ -57,7 +57,7 @@ in
               baz = {
                 type = "directory";
               };
-                boop = {
+              boop = {
                 type = "modify";
                 permissions = "703";
               };
