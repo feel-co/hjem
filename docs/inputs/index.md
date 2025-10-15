@@ -96,7 +96,7 @@ Since defined users are enabled by default, no need to set `enable` explicitly.
   hjem.users = {
     alice = {
       # enable = true; # This is not necessary, since enable is 'true' by default
-      name = "alice"; # this is the name of the user
+      user = "alice"; # this is the name of the user
       directory = "/home/alice"; # where the user's $HOME resides
     };
   };
