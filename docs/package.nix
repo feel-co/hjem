@@ -136,7 +136,7 @@ in {
   html = hjemDocsWeb;
   options.json =
     pkgs.runCommand "options.json" {
-      meta.description = "List of Hjem options in JSON format";
+      meta.description = "List of Hjem options in JSON format.";
     } ''
       mkdir -p $out/{share/doc,nix-support}
 

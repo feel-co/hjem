@@ -70,7 +70,7 @@ in {
       default = {};
       type = attrsOf (fileTypeRelativeTo' cfg.directory);
       example = {".config/foo.txt".source = "Hello World";};
-      description = "Files to be managed by Hjem";
+      description = "Hjem-managed files.";
     };
 
     xdg = {
@@ -91,7 +91,7 @@ in {
           default = {};
           type = attrsOf (fileTypeRelativeTo' cfg.xdg.cache.directory);
           example = {"foo.txt".source = "Hello World";};
-          description = "Cache files to be managed by Hjem";
+          description = "Hjem-managed cache files.";
         };
       };
 
@@ -112,7 +112,7 @@ in {
           default = {};
           type = attrsOf (fileTypeRelativeTo' cfg.xdg.config.directory);
           example = {"foo.txt".source = "Hello World";};
-          description = "Config files to be managed by Hjem";
+          description = "Hjem-managed config files.";
         };
       };
 
@@ -133,7 +133,7 @@ in {
           default = {};
           type = attrsOf (fileTypeRelativeTo' cfg.xdg.data.directory);
           example = {"foo.txt".source = "Hello World";};
-          description = "data files to be managed by Hjem";
+          description = "Hjem-managed data files.";
         };
       };
 
@@ -154,7 +154,7 @@ in {
           default = {};
           type = attrsOf (fileTypeRelativeTo' cfg.xdg.state.directory);
           example = {"foo.txt".source = "Hello World";};
-          description = "state files to be managed by Hjem";
+          description = "Hjem-managed state files.";
         };
       };
     };
@@ -163,7 +163,7 @@ in {
       type = listOf package;
       default = [];
       example = literalExpression "[pkgs.hello]";
-      description = "Packages to install for this user";
+      description = "Packages to install for this user.";
     };
 
     environment = {
