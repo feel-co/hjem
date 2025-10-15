@@ -127,8 +127,8 @@
         --module-options ${configJSON}/share/doc/nixos/options.json \
         --manpage-urls ${inputs.nixpkgs}/doc/manpage-urls.json \
         --options-depth 3 \
-        --generate-search true \
-        --highlight-code true \
+        --generate-search \
+        --highlight-code \
         --input-dir ./inputs \
         --output-dir "$out/share/doc"
     '';
