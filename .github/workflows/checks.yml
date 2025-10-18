@@ -25,4 +25,4 @@ jobs:
           system=$(nix eval --raw --impure --expr builtins.currentSystem)
 
           # Evaluate formatting check to verify tree-wide formatting.
-          nix build .#checks."${system}".formatting
+          nix build -L .#checks."${system}".formatting
