@@ -72,13 +72,13 @@
 
       # Formatting checks to run as a part of 'nix flake check' or manually
       # via 'nix build .#checks.<system>.formatting'.
-      formatting = pkgs.writeShellApplication {
-        name = "hjem-formatting-check";
-        runtimeInputs = [pkgs.alejandra];
-        text = ''
-          alejandra --check . || exit 1
+      formatting =
+        pkgs.runCommandLocal "hjem-formatting-check" {
+          nativeBuildInputs = [pkgs.alejandra];
+        } ''
+          alejandra --check ${self}
+          touch $out;
         '';
-      };
 
       # Hjem Integration Tests
       hjem-basic = import ./tests/basic.nix checkArgs;
