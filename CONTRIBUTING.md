@@ -1,10 +1,19 @@
 # Contribution Guidelines
 
-## Table of Contents
+<!--toc:start-->
 
-- [Preface](#preface)
-- [Contributing Process](#contributing)
-- [Code of Conduct](#code-of-conduct)
+- [Contribution Guidelines](#contribution-guidelines)
+  - [Preface](#preface)
+  - [Contributing](#contributing)
+    - [General Guidelines](#general-guidelines)
+    - [Formatting Code](#formatting-code)
+      - [Treewide](#treewide)
+      - [Nix](#nix)
+      - [Markdown](#markdown)
+    - [Commit Format](#commit-format)
+  - [Code of Conduct](#code-of-conduct)
+
+<!--toc:end-->
 
 ## Preface
 
@@ -14,13 +23,13 @@ We are glad you are thinking about contributing to Hjem! The project is largely
 shaped by contributors and user feedback, and all contributions are appreciated.
 
 If you are unsure about anything, whether a change is necessary or if it would
-be accepted _were_ you to create a PR, please just ask! Or, submit the issue or
+be accepted _were_ you to create a PR, please just ask! Or submit the issue or
 pull request anyway, the worst that can happen is that you will be politely
 asked to change something. Friendly contributions are _always_ welcome.
 
-Before you contribute, I encourage you to read the rest of this document for our
-contributing policy and guidelines, followed by the [LICENSE] to understand how
-your contributions are licensed.
+Before you contribute, we encourage you to read the rest of this document for
+our contributing policy and guidelines, followed by the [LICENSE] to understand
+how your contributions are licensed.
 
 If you have any questions regarding those files, or would like to ask a question
 that is not covered by any of them, please feel free to open an issue!
@@ -85,12 +94,32 @@ template:
 - `long description` is the optional addition that should be appended if the
   short description cannot sufficiently convey the motive for the change
 
+For example:
+
+```txt
+modules/systemd: init
+```
+
+Where `modules/systemd` is the relevant component, and `init` is the task done.
+In a scenario where a more complex task has been performed, long description
+would be necessary.
+
 > [!TIP]
 > In rare cases where a PR affects multiple unrelated components, then the
 > `component` part can be replaced with a generic scope such as `treewide` or
 > `various.` Maintainers might also use `meta` as a scope for commits that
 > affect the repository or the project itself, without direct changes to the
 > codebase. `ci` is reserved for CI/CD workflows.
+
+#### Example Scopes
+
+- **docs** - changes that update documentation only, including project README.
+- **ci** - changes that update our GHA workflows or relevant components.
+- **flake** - changes to the `flake.nix` or the lockfile.
+- **meta** - changes that affect the repo as a whole, e.g., Github issue
+  templates.
+- **treewide/various** - changes that modify a variety of components with
+  multiple scopes.
 
 ## Code of Conduct
 
