@@ -1,0 +1,23 @@
+name: Flake Checks
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+
+jobs:
+  check-formatting:
+    name: "Check Nix Formatting"
+    runs-on: debian-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v5
+
+      - name: "Install Nix"
+        uses: DeterminateSystems/nix-installer-action@main
+
+      - name: "Evaluate formatting checks"
+        run: |
+          system=$(nix eval --raw --impure --expr builtins.currentSystem)
+
+          # Evaluate formatting check to verify tree-wide formatting.
+          nix build .#checks."${system}".formatting
