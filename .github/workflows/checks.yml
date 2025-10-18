@@ -7,7 +7,7 @@ on:
 jobs:
   check-formatting:
     name: "Check Nix Formatting"
-    runs-on: debian-latest
+    runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
         uses: actions/checkout@v5
