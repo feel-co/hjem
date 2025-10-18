@@ -1,0 +1,28 @@
+name: Flake checks
+on:
+  workflow_dispatch:
+  pull_request:
+      paths:
+      - '**.nix'
+  push:
+    branches: ["main"]
+    paths:
+      - '**.nix'
+
+jobs:
+  check-formatting:
+    name: "check nix formatting"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v5
+
+      - name: "Install Nix"
+        uses: cachix/install-nix-action@v31.8.1
+
+      - name: "Evaluate formatting checks"
+        run: |
+          system=$(nix eval --raw --impure --expr builtins.currentSystem)
+
+          # Evaluate formatting check to verify tree-wide formatting.
+          nix build -L .#checks."${system}".formatting
