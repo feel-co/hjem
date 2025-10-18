@@ -1,6 +1,7 @@
 name: "Build and deploy documentation"
 
 on:
+  merge_group:
   workflow_dispatch:
   push:
     branches: ["main"]
