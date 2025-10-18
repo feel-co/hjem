@@ -2,8 +2,12 @@ name: Flake checks
 on:
   workflow_dispatch:
   pull_request:
+      paths:
+      - '**.nix'
   push:
     branches: ["main"]
+    paths:
+      - '**.nix'
 
 jobs:
   check-formatting:
