@@ -1,4 +1,4 @@
-name: Flake Checks
+name: Flake checks
 on:
   workflow_dispatch:
   pull_request:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   check-formatting:
-    name: "Check Nix Formatting"
+    name: "check nix formatting"
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
