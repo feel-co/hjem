@@ -26,22 +26,7 @@
     # be avoided, because it allows specifying systems Hjem is not tested on.
     forAllSystems = nixpkgs.lib.genAttrs ["x86_64-linux" "aarch64-linux"];
   in {
-    nixosModules = {
-      hjem = {
-        imports = [
-          self.nixosModules.hjem-lib
-          ./modules/nixos
-        ];
-      };
-      hjem-lib = {
-        lib,
-        pkgs,
-        ...
-      }: {
-        _module.args.hjem-lib = import ./lib.nix {inherit lib pkgs;};
-      };
-      default = self.nixosModules.hjem;
-    };
+    nixosModules = import ./modules/nixos;
 
     packages = forAllSystems (system: let
       pkgs = nixpkgs.legacyPackages.${system};
