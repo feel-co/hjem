@@ -25,6 +25,7 @@
     # allowing not-so-defined behaviour. For example, adding nix-systems should
     # be avoided, because it allows specifying systems Hjem is not tested on.
     forAllSystems = nixpkgs.lib.genAttrs ["x86_64-linux" "aarch64-linux"];
+    pkgsFor = system: nixpkgs.legacyPackages.${system};
   in {
     nixosModules = import ./modules/nixos;
 
@@ -73,41 +74,13 @@
       hjem-xdg-linker = import ./tests/xdg-linker.nix checkArgs;
     });
 
-    devShells = forAllSystems (system: let
-      inherit (builtins) attrValues;
-      pkgs = nixpkgs.legacyPackages.${system};
-    in {
-      default = pkgs.mkShell {
-        packages = attrValues {
-          inherit
-            (pkgs)
-            # formatter
-            alejandra
-            # cue validator
-            cue
-            go
-            ;
-        };
-      };
+    devShells = forAllSystems (system: {
+      default = import ./internal/shell.nix (pkgsFor system);
     });
 
-    formatter = forAllSystems (
-      system: let
-        pkgs = nixpkgs.legacyPackages.${system};
-      in
-        pkgs.writeShellApplication {
-          name = "nix3-fmt-wrapper";
-
-          runtimeInputs = [
-            pkgs.alejandra
-            pkgs.fd
-          ];
-
-          text = ''
-            fd "$@" -t f -e nix -x alejandra -q '{}'
-          '';
-        }
-    );
+    formatter =
+      forAllSystems (system:
+        import ./internal/formatter.nix (pkgsFor system));
 
     hjem-lib = forAllSystems (system:
       import ./lib.nix {
