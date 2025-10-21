@@ -3,7 +3,7 @@
   pkgs,
 }: let
   inherit (builtins) elem isList match toJSON;
-  inherit (lib.attrsets) filterAttrs optionalAttrs;
+  inherit (lib.attrsets) filterAttrs;
   inherit (lib.modules) mkDefault mkDerivedConfig mkIf mkMerge;
   inherit (lib.options) literalExpression mkEnableOption mkOption;
   inherit (lib.strings) concatMapStringsSep hasPrefix;
