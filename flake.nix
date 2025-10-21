@@ -29,20 +29,14 @@
   in {
     nixosModules = import ./modules/nixos;
 
-    packages = forAllSystems (system: let
-      pkgs = nixpkgs.legacyPackages.${system};
-      docs = pkgs.callPackage ./docs/package.nix {inherit inputs;};
-    in {
-      # Expose the 'smfh' instance used by Hjem as a package in the Hjem flake
-      # outputs. This allows consuming the exact copy of smfh used by Hjem.
-      inherit (inputs.smfh.packages.${system}) smfh;
-
-      # Hjem documentation. 'docs-html' contains the HTML document created by ndg
-      # and docs-json contains a standalone 'options.json' that is also fed to ndg
-      # for third party consumption.
-      docs-html = docs.html;
-      docs-json = docs.options.json;
-    });
+    packages = forAllSystems (system:
+      import ./internal/packages.nix {
+        inherit nixpkgs;
+        inherit (inputs.ndg.packages.${system}) ndg;
+        inherit (inputs.smfh.packages.${system}) smfh;
+        hjemModule = self.nixosModules.default;
+        pkgs = pkgsFor system;
+      });
 
     checks = forAllSystems (system:
       import ./internal/checks.nix {
