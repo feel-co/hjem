@@ -1,6 +1,6 @@
 # take `pkgs` as arg to allow injection of other nixpkgs instances, without flakes
 {
-  pkgs ? import ./internal/pkgs.nix,
+  pkgs ? import (import ./internal/flake-parse.nix "nixpkgs") {},
   ndg ? import (import ./internal/flake-parse.nix "ndg" + "/nix").packages.default,
   smfh ? pkgs.callPackage (import ./internal/flake-parse.nix "smfh" + "/package.nix") {},
 }: rec {
