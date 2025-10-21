@@ -15,22 +15,22 @@ jobs:
         include:
           - os: ubuntu-latest # x86
             system: "x86_64-linux"
-            test: hjem-basic
+            test: basic
           - os: ubuntu-22.04-arm # aarch64
             system: "aarch64-linux"
-            test: hjem-basic
+            test: basic
           - os: ubuntu-latest
             system: "x86_64-linux"
-            test: hjem-special-args
+            test: special-args
           - os: ubuntu-22.04-arm
             system: "aarch64-linux"
-            test: hjem-special-args
+            test: special-args
           - os: ubuntu-latest
             system: "x86_64-linux"
-            test: hjem-linker
+            test: linker
           - os: ubuntu-22.04-arm
             system: "aarch64-linux"
-            test: hjem-linker
+            test: linker
 
     runs-on: ${{ matrix.os }}
     steps:

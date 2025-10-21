@@ -44,35 +44,12 @@
       docs-json = docs.options.json;
     });
 
-    checks = forAllSystems (system: let
-      pkgs = nixpkgs.legacyPackages.${system};
-
-      checkArgs = {
-        inherit self inputs pkgs;
-      };
-    in {
-      # Build the 'smfh' package as a part of Hjem's test suite.
-      # If 'nix flake check' is ran in the CI, this might inflate build times
-      # *a lot*.
-      inherit (self.packages.${system}) smfh;
-
-      # Formatting checks to run as a part of 'nix flake check' or manually
-      # via 'nix build .#checks.<system>.formatting'.
-      formatting =
-        pkgs.runCommandLocal "hjem-formatting-check" {
-          nativeBuildInputs = [pkgs.alejandra];
-        } ''
-          alejandra --check ${self}
-          touch $out;
-        '';
-
-      # Hjem Integration Tests
-      hjem-basic = import ./tests/basic.nix checkArgs;
-      hjem-special-args = import ./tests/special-args.nix checkArgs;
-      hjem-linker = import ./tests/linker.nix checkArgs;
-      hjem-xdg = import ./tests/xdg.nix checkArgs;
-      hjem-xdg-linker = import ./tests/xdg-linker.nix checkArgs;
-    });
+    checks = forAllSystems (system:
+      import ./internal/checks.nix {
+        inherit self;
+        inherit (self.packages.${system}) smfh;
+        pkgs = pkgsFor system;
+      });
 
     devShells = forAllSystems (system: {
       default = import ./internal/shell.nix (pkgsFor system);
