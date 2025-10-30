@@ -1,17 +1,16 @@
-let
+{
+  hjemModule,
+  hjemTest,
+  smfh,
+}: let
   user = "alice";
   userHome = "/home/${user}";
 in
-  (import ./lib) {
+  hjemTest {
     name = "hjem-linker";
     nodes = {
       node1 = {
-        self,
-        pkgs,
-        inputs,
-        ...
-      }: {
-        imports = [self.nixosModules.hjem];
+        imports = [hjemModule];
 
         # ensure nixless deployments work
         nix.enable = false;
@@ -24,7 +23,7 @@ in
         };
 
         hjem = {
-          linker = inputs.smfh.packages.${pkgs.system}.default;
+          linker = smfh;
           users = {
             ${user} = {
               enable = true;

@@ -22,9 +22,9 @@ it above in your description.
 
 - [ ] My changes fit the guidelines found in [CONTRIBUTING] guide
 - [ ] I have tested, and self-reviewed my code
-- [ ] The [unit tests] for Hjem pass
+- [ ] The [unit tests] for Hjem pass (`nix flake check`/`nix-build -A checks`)
 - Style and consistency
-  - [ ] I formatted all relevant code (**nix fmt**)
+  - [ ] I formatted all relevant code (`nix fmt`/`nix run -f . formatter`)
   - [ ] My changes are consistent with the rest of the codebase
   - [ ] My commit messages fit the guidelines found in [CONTRIBUTING]
 - If new changes are particularly complex:

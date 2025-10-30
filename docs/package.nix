@@ -1,5 +1,7 @@
 {
-  inputs,
+  hjemModule,
+  nixpkgs,
+  ndg,
   pkgs,
   lib,
 }: let
@@ -20,7 +22,7 @@
         (
           (evalModules {
             modules = [
-              inputs.self.nixosModules.hjem
+              hjemModule
               {
                 # exclude NixOS options from the documentation
                 options = {
@@ -66,7 +68,7 @@
                     check = false;
                     args = {
                       pkgs = mkForce (scrubDerivations "pkgs" pkgs);
-                      utils = import "${inputs.nixpkgs}/nixos/lib/utils.nix" {
+                      utils = import "${nixpkgs}/nixos/lib/utils.nix" {
                         inherit lib;
                         config = {};
                         pkgs = null;
@@ -115,7 +117,7 @@
 
   hjemDocsWeb =
     pkgs.runCommandNoCC "hjem-docs" {
-      nativeBuildInputs = [inputs.ndg.packages.${pkgs.hostPlatform.system}.ndg];
+      nativeBuildInputs = [ndg];
     } ''
       mkdir -p $out/share/doc
 
@@ -125,7 +127,7 @@
       ndg --verbose html \
         --jobs $NIX_BUILD_CORES --title "Hjem" \
         --module-options ${configJSON}/share/doc/nixos/options.json \
-        --manpage-urls ${inputs.nixpkgs}/doc/manpage-urls.json \
+        --manpage-urls ${nixpkgs}/doc/manpage-urls.json \
         --options-depth 3 \
         --generate-search \
         --highlight-code \

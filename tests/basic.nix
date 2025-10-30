@@ -1,16 +1,17 @@
-let
+{
+  hjemModule,
+  hjemTest,
+  hello,
+  lib,
+  formats,
+}: let
   userHome = "/home/alice";
 in
-  (import ./lib) {
+  hjemTest {
     name = "hjem-basic";
     nodes = {
       node1 = {
-        self,
-        lib,
-        pkgs,
-        ...
-      }: {
-        imports = [self.nixosModules.hjem];
+        imports = [hjemModule];
 
         users.groups.alice = {};
         users.users.alice = {
@@ -22,7 +23,7 @@ in
         hjem.users = {
           alice = {
             enable = true;
-            packages = [pkgs.hello];
+            packages = [hello];
             files = {
               ".config/foo" = {
                 text = "Hello world!";
@@ -34,7 +35,7 @@ in
               };
 
               ".config/baz.toml" = {
-                generator = (pkgs.formats.toml {}).generate "baz.toml";
+                generator = (formats.toml {}).generate "baz.toml";
                 value = {baz = true;};
               };
             };

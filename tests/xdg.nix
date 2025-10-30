@@ -1,16 +1,17 @@
-let
+{
+  hjemModule,
+  hjemTest,
+  lib,
+  formats,
+  writeText,
+}: let
   userHome = "/home/alice";
 in
-  (import ./lib) {
+  hjemTest {
     name = "hjem-xdg";
     nodes = {
       node1 = {
-        self,
-        lib,
-        pkgs,
-        ...
-      }: {
-        imports = [self.nixosModules.hjem];
+        imports = [hjemModule];
 
         users.groups.alice = {};
         users.users.alice = {
@@ -49,7 +50,7 @@ in
                 directory = userHome + "/customDataDirectory";
                 files = {
                   "baz.toml" = {
-                    generator = (pkgs.formats.toml {}).generate "baz.toml";
+                    generator = (formats.toml {}).generate "baz.toml";
                     value = {baz = "Hello third world!";};
                   };
                 };
@@ -58,7 +59,7 @@ in
                 directory = userHome + "/customStateDirectory";
                 files = {
                   "foo" = {
-                    source = pkgs.writeText "file-bar" "Hello fourth world!";
+                    source = writeText "file-bar" "Hello fourth world!";
                   };
                 };
               };
