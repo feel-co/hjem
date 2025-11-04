@@ -259,6 +259,7 @@ in {
       in {
         hjem-prepare = {
           description = "Prepare Hjem manifests directory";
+          enableStrictShellChecks = true;
           script = "mkdir -p ${manifestsDir}";
           serviceConfig.Type = "oneshot";
           unitConfig.RefuseManualStart = true;
@@ -266,6 +267,7 @@ in {
 
         "hjem-activate@" = {
           description = "Link files for %i from their manifest";
+          enableStrictShellChecks = true;
           serviceConfig = {
             User = "%i";
             Type = "oneshot";
@@ -283,19 +285,21 @@ in {
               else concatStringsSep " " cfg.linkerOptions;
           in ''
             ${checkEnabledUsers}
-            new_manifest=${manifests}/manifest-$1.json
+            new_manifest="${manifests}/manifest-$1.json"
+            old_manifest="${manifestsDir}/manifest-$1.json"
 
-            if [ ! -f ${manifestsDir}/manifest-$1.json ]; then
-              ${linker} ${linkerOpts} activate $new_manifest
+            if [ ! -f "$old_manifest" ]; then
+              ${linker} ${linkerOpts} activate "$new_manifest"
               exit 0
             fi
 
-            ${linker} ${linkerOpts} diff $new_manifest ${manifestsDir}/manifest-$1.json
+            ${linker} ${linkerOpts} diff "$new_manifest" "$old_manifest"
           '';
         };
 
         "hjem-copy@" = {
           description = "Copy the manifest into Hjem's state directory for %i";
+          enableStrictShellChecks = true;
           serviceConfig.Type = "oneshot";
           after = ["hjem-activate@%i.service"];
           scriptArgs = "%i";
@@ -307,9 +311,9 @@ in {
           */
           script = ''
             ${checkEnabledUsers}
-            new_manifest=${manifests}/manifest-$1.json
+            new_manifest="${manifests}/manifest-$1.json"
 
-            if ! cp $new_manifest ${manifestsDir}; then
+            if ! cp "$new_manifest" ${manifestsDir}; then
               echo "Copying the manifest for $1 failed. This is likely due to using the previous\
               version of the manifest handling. The manifest directory has been recreated and repopulated with\
               %i's manifest. Please re-run the activation services for your other users, if you have ran this one manually."
@@ -317,13 +321,14 @@ in {
               rm -rf ${manifestsDir}
               mkdir -p ${manifestsDir}
 
-              cp $new_manifest ${manifestsDir}
+              cp "$new_manifest" ${manifestsDir}
             fi
           '';
         };
 
         hjem-cleanup = {
           description = "Cleanup disabled users' manifests";
+          enableStrictShellChecks = true;
           serviceConfig.Type = "oneshot";
           after = ["hjem.target"];
           unitConfig.RefuseManualStart = false;
