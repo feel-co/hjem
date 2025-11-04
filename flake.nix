@@ -25,104 +25,33 @@
     # allowing not-so-defined behaviour. For example, adding nix-systems should
     # be avoided, because it allows specifying systems Hjem is not tested on.
     forAllSystems = nixpkgs.lib.genAttrs ["x86_64-linux" "aarch64-linux"];
+    pkgsFor = system: nixpkgs.legacyPackages.${system};
   in {
-    nixosModules = {
-      hjem = {
-        imports = [
-          self.nixosModules.hjem-lib
-          ./modules/nixos
-        ];
-      };
-      hjem-lib = {
-        lib,
-        pkgs,
-        ...
-      }: {
-        _module.args.hjem-lib = import ./lib.nix {inherit lib pkgs;};
-      };
-      default = self.nixosModules.hjem;
-    };
+    nixosModules = import ./modules/nixos;
 
-    packages = forAllSystems (system: let
-      pkgs = nixpkgs.legacyPackages.${system};
-      docs = pkgs.callPackage ./docs/package.nix {inherit inputs;};
-    in {
-      # Expose the 'smfh' instance used by Hjem as a package in the Hjem flake
-      # outputs. This allows consuming the exact copy of smfh used by Hjem.
-      inherit (inputs.smfh.packages.${system}) smfh;
+    packages = forAllSystems (system:
+      import ./internal/packages.nix {
+        inherit nixpkgs;
+        inherit (inputs.ndg.packages.${system}) ndg;
+        inherit (inputs.smfh.packages.${system}) smfh;
+        hjemModule = self.nixosModules.default;
+        pkgs = pkgsFor system;
+      });
 
-      # Hjem documentation. 'docs-html' contains the HTML document created by ndg
-      # and docs-json contains a standalone 'options.json' that is also fed to ndg
-      # for third party consumption.
-      docs-html = docs.html;
-      docs-json = docs.options.json;
+    checks = forAllSystems (system:
+      import ./internal/checks.nix {
+        inherit self;
+        inherit (self.packages.${system}) smfh;
+        pkgs = pkgsFor system;
+      });
+
+    devShells = forAllSystems (system: {
+      default = import ./internal/shell.nix (pkgsFor system);
     });
 
-    checks = forAllSystems (system: let
-      pkgs = nixpkgs.legacyPackages.${system};
-
-      checkArgs = {
-        inherit self inputs pkgs;
-      };
-    in {
-      # Build the 'smfh' package as a part of Hjem's test suite.
-      # If 'nix flake check' is ran in the CI, this might inflate build times
-      # *a lot*.
-      inherit (self.packages.${system}) smfh;
-
-      # Formatting checks to run as a part of 'nix flake check' or manually
-      # via 'nix build .#checks.<system>.formatting'.
-      formatting =
-        pkgs.runCommandLocal "hjem-formatting-check" {
-          nativeBuildInputs = [pkgs.alejandra];
-        } ''
-          alejandra --check ${self}
-          touch $out;
-        '';
-
-      # Hjem Integration Tests
-      hjem-basic = import ./tests/basic.nix checkArgs;
-      hjem-special-args = import ./tests/special-args.nix checkArgs;
-      hjem-linker = import ./tests/linker.nix checkArgs;
-      hjem-xdg = import ./tests/xdg.nix checkArgs;
-      hjem-xdg-linker = import ./tests/xdg-linker.nix checkArgs;
-    });
-
-    devShells = forAllSystems (system: let
-      inherit (builtins) attrValues;
-      pkgs = nixpkgs.legacyPackages.${system};
-    in {
-      default = pkgs.mkShell {
-        packages = attrValues {
-          inherit
-            (pkgs)
-            # formatter
-            alejandra
-            # cue validator
-            cue
-            go
-            ;
-        };
-      };
-    });
-
-    formatter = forAllSystems (
-      system: let
-        pkgs = nixpkgs.legacyPackages.${system};
-      in
-        pkgs.writeShellApplication {
-          name = "nix3-fmt-wrapper";
-
-          runtimeInputs = [
-            pkgs.alejandra
-            pkgs.fd
-          ];
-
-          text = ''
-            fd "$@" -t f -e nix -x alejandra -q '{}'
-          '';
-        }
-    );
+    formatter =
+      forAllSystems (system:
+        import ./internal/formatter.nix (pkgsFor system));
 
     hjem-lib = forAllSystems (system:
       import ./lib.nix {

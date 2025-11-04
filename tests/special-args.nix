@@ -1,11 +1,15 @@
-let
+{
+  hjemModule,
+  hjemTest,
+  hello,
+}: let
   userHome = "/home/alice";
 in
-  (import ./lib) {
+  hjemTest {
     name = "hjem-basic";
     nodes = {
-      node1 = {self, ...}: {
-        imports = [self.nixosModules.hjem];
+      node1 = {
+        imports = [hjemModule];
 
         users.groups.alice = {};
         users.users.alice = {
@@ -20,13 +24,9 @@ in
           # basic case of 'username' being passed to specialArgs as a string and
           # is consumed in a file later on.
           specialArgs = {username = "alice";};
-          users.alice = {
-            pkgs,
-            username,
-            ...
-          }: {
+          users.alice = {username, ...}: {
             enable = true;
-            packages = [pkgs.hello];
+            packages = [hello];
             files.".config/fooconfig" = {
               text = "My username is ${username}";
             };

@@ -1,16 +1,17 @@
-let
+{
+  hjemModule,
+  hjemTest,
+  lib,
+  formats,
+  smfh,
+  writeText,
+}: let
   userHome = "/home/alice";
 in
-  (import ./lib) {
+  hjemTest {
     name = "hjem-xdg-linker";
     nodes = {
-      node1 = {
-        self,
-        pkgs,
-        inputs,
-        lib,
-        ...
-      }: let
+      node1 = let
         inherit (lib.modules) mkIf;
         inherit (lib.strings) optionalString;
 
@@ -41,7 +42,7 @@ in
             directory = mkIf altLocation (userHome + "/customDataDirectory");
             files = {
               "baz.toml" = {
-                generator = (pkgs.formats.toml {}).generate "baz.toml";
+                generator = (formats.toml {}).generate "baz.toml";
                 value = {baz = "Hello ${optionalString clobber "new "}third world!";};
                 inherit clobber;
               };
@@ -51,14 +52,14 @@ in
             directory = mkIf altLocation (userHome + "/customStateDirectory");
             files = {
               "foo" = {
-                source = pkgs.writeText "file-bar" "Hello ${optionalString clobber "new "}fourth world!";
+                source = writeText "file-bar" "Hello ${optionalString clobber "new "}fourth world!";
                 inherit clobber;
               };
             };
           };
         };
       in {
-        imports = [self.nixosModules.hjem];
+        imports = [hjemModule];
 
         # ensure nixless deployments work
         nix.enable = false;
@@ -71,7 +72,7 @@ in
         };
 
         hjem = {
-          linker = inputs.smfh.packages.${pkgs.system}.default;
+          linker = smfh;
           users = {
             alice = {
               enable = true;
