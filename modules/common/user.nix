@@ -211,7 +211,7 @@ in {
     assertions = [
       {
         assertion = cfg.user != "";
-        message = "A user must be configured in 'hjem.users.<user>.name'";
+        message = "A user must be configured in 'hjem.users.<user>.user'";
       }
       {
         assertion = cfg.directory != "";
