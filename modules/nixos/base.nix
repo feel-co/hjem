@@ -10,6 +10,7 @@
   inherit (builtins) attrNames attrValues concatLists concatMap concatStringsSep filter mapAttrs toJSON typeOf;
   inherit (hjem-lib) fileToJson;
   inherit (lib.attrsets) filterAttrs optionalAttrs mapAttrsToList;
+  inherit (lib.lists) optional;
   inherit (lib.modules) mkIf mkMerge;
   inherit (lib.options) literalExpression mkOption;
   inherit (lib.strings) optionalString;
@@ -200,7 +201,11 @@ in {
               )
               v.warnings
           )
-          enabledUsers);
+          enabledUsers)
+        ++ optional
+        (enabledUsers == {}) ''
+          You have imported hjem, but you have not enabled hjem for any users.
+        '';
     }
 
     # Constructed rule string that consists of the type, target, and source
