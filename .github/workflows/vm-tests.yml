@@ -31,6 +31,25 @@ jobs:
           - os: ubuntu-22.04-arm
             system: "aarch64-linux"
             test: linker
+          - os: ubuntu-latest
+            system: "x86_64-linux"
+            test: xdg-linker
+          - os: ubuntu-22.04-arm
+            system: "aarch64-linux"
+            test: xdg-linker
+          - os: ubuntu-latest
+            system: "x86_64-linux"
+            test: xdg
+          - os: ubuntu-22.04-arm
+            system: "aarch64-linux"
+            test: xdg
+          - os: ubuntu-latest
+            system: "x86_64-linux"
+            test: no-users-linker
+          - os: ubuntu-22.04-arm
+            system: "aarch64-linux"
+            test: no-users-linker
+
 
     runs-on: ${{ matrix.os }}
     steps:
