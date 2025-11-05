@@ -1,6 +1,6 @@
 {
   hjemModule,
-  ndg,
+  ndg ? (import ((import ../npins).ndg + "/nix") {inherit pkgs;}).packages.default,
   nixpkgs,
   pkgs,
   smfh,

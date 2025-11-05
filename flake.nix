@@ -8,12 +8,6 @@
       url = "github:feel-co/smfh";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    # Our in-house, super-fast documentation generator.
-    ndg = {
-      url = "github:feel-co/ndg";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs = {
@@ -32,7 +26,6 @@
     packages = forAllSystems (system:
       import ./internal/packages.nix {
         inherit nixpkgs;
-        inherit (inputs.ndg.packages.${system}) ndg;
         inherit (inputs.smfh.packages.${system}) smfh;
         hjemModule = self.nixosModules.default;
         pkgs = pkgsFor system;
