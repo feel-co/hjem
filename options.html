@@ -2379,7 +2379,7 @@ with <a class="option-reference" href="options.html#option-hjem-users-<name>-fil
     <span class="copy-link" title="Copy link to this option"></span>
     <span class="copy-feedback">Link copied!</span>
   </h3>
-  <div class="option-type">Type: <code>absolute path</code></div>
+  <div class="option-type">Type: <code>absolute path, not containing newlines or colons</code></div>
   <div class="option-description"><html><head></head><body><p>The home directory for the user, to which files configured in
 <a class="option-reference" href="options.html#option-hjem-users-<name>-files"><code>hjem.users.&lt;name&gt;.files</code></a> will be relative to by default.</p>
 </body></html></div>
@@ -5240,7 +5240,7 @@ into the NixOS design.</p>
     <span class="copy-link" title="Copy link to this option"></span>
     <span class="copy-feedback">Link copied!</span>
   </h3>
-  <div class="option-type">Type: <code>string</code></div>
+  <div class="option-type">Type: <code>string matching the pattern [a-zA-Z0-9_.][a-zA-Z0-9_.-]*</code></div>
   <div class="option-description"><html><head></head><body><p>The owner of a given home directory.</p>
 </body></html></div>
   <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
