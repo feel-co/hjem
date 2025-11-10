@@ -936,7 +936,7 @@ img {
 /* Search Page Styling */
 .search-page {
   width: 100%;
-  max-width: 650px;
+  max-width: 800px;
   margin: 0 auto;
 }
 
@@ -1015,6 +1015,22 @@ img {
   font-size: 0.875rem;
   color: var(--text-muted);
   line-height: 1.6;
+}
+
+/* Search highlighting */
+mark {
+  background-color: rgba(59, 130, 246, 0.2);
+  color: var(--link-color);
+  font-weight: 600;
+  padding: 0 2px;
+  border-radius: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+  mark {
+    background-color: rgba(59, 130, 246, 0.3);
+    color: #60a5fa;
+  }
 }
 
 @media (max-width: 800px) {
