@@ -16,7 +16,7 @@
   inherit (lib.strings) concatLines;
   inherit (lib.modules) mkIf;
   inherit (lib.options) literalExpression mkEnableOption mkOption;
-  inherit (lib.types) attrsOf bool listOf package path str;
+  inherit (lib.types) attrsOf bool listOf package passwdEntry path strMatching;
 
   cfg = config;
   fileTypeRelativeTo' = rootDir:
@@ -41,12 +41,12 @@ in {
       };
 
     user = mkOption {
-      type = str;
+      type = strMatching "[a-zA-Z0-9_.][a-zA-Z0-9_.-]*";
       description = "The owner of a given home directory.";
     };
 
     directory = mkOption {
-      type = path;
+      type = passwdEntry path;
       description = ''
         The home directory for the user, to which files configured in
         {option}`hjem.users.<name>.files` will be relative to by default.
@@ -208,15 +208,5 @@ in {
         (pkgs.writeShellScript "load-env")
       ];
     };
-    assertions = [
-      {
-        assertion = cfg.user != "";
-        message = "A user must be configured in 'hjem.users.<user>.name'";
-      }
-      {
-        assertion = cfg.directory != "";
-        message = "A home directory must be configured in 'hjem.users.<user>.directory'";
-      }
-    ];
   };
 }
