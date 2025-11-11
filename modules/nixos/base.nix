@@ -10,7 +10,7 @@
   inherit (builtins) attrNames attrValues concatLists concatMap concatStringsSep filter mapAttrs toJSON typeOf;
   inherit (hjem-lib) fileToJson;
   inherit (lib.attrsets) filterAttrs optionalAttrs;
-  inherit (lib.modules) importApply mkIf mkMerge;
+  inherit (lib.modules) importApply mkDefault mkIf mkMerge;
   inherit (lib.strings) optionalString;
   inherit (lib.trivial) flip pipe;
   inherit (lib.types) submoduleWith;
@@ -54,7 +54,7 @@
           CUE_CACHE_DIR=$(pwd)/.cache
           CUE_CONFIG_DIR=$(pwd)/.config
 
-          ${lib.getExe pkgs.cue} vet -c ${../../manifest/v2.cue} $target
+          ${getExe pkgs.cue} vet -c ${../../manifest/v2.cue} $target
         '';
       };
   in
@@ -81,7 +81,6 @@
           ../common/user.nix
           ./systemd.nix
           ({name, ...}: let
-            inherit (lib.modules) mkDefault;
             user = config.users.users.${name};
           in {
             user = mkDefault user.name;
