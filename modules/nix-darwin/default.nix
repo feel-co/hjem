@@ -1,11 +1,11 @@
-{ config
-, hjem-lib
-, lib
-, options
-, pkgs
-, ...
-}:
-let
+{
+  config,
+  hjem-lib,
+  lib,
+  options,
+  pkgs,
+  ...
+}: let
   inherit (lib.attrsets) filterAttrs mapAttrsToList;
   inherit (lib.modules) mkIf mkMerge;
   inherit (lib.options) literalExpression mkOption;
@@ -22,7 +22,7 @@ let
     user.xdg.cache.files
     user.xdg.config.files
     user.xdg.data.files
-    user.xdg.state.files 
+    user.xdg.state.files
   ];
 
   linker = getExe cfg.linker;
@@ -32,41 +32,38 @@ let
   userName = u: (getAttr u config.users.users).name;
 
   # I convert shorthand target to real path aka normalize
-  normalizeTarget = u: t:
-    let
-      home = userHome u;
-      name = userName u;
-    in
-    if lib.hasPrefix "~/" t then
-      lib.replaceStrings [ "~/" ] [ "${home}/" ] t
-    else if lib.hasPrefix "/home/${name}/" t then
-      lib.replaceStrings [ "/home/${name}/" ] [ "${home}/" ] t
-    else
-      t;
+  normalizeTarget = u: t: let
+    home = userHome u;
+    name = userName u;
+  in
+    if lib.hasPrefix "~/" t
+    then lib.replaceStrings ["~/"] ["${home}/"] t
+    else if lib.hasPrefix "/home/${name}/" t
+    then lib.replaceStrings ["/home/${name}/"] ["${home}/"] t
+    else t;
 
   mapFiles = username: files:
     lib.attrsets.foldlAttrs
-      (
-        accum: _: value:
-          if value.enable -> value.source == null
-          then accum
-          else
-            accum
-            ++ lib.singleton {
-              type = "symlink";
-              source = value.source;
-              target = normalizeTarget username value.target;
-            }
-      ) [ ]
-      files;
+    (
+      accum: _: value:
+        if value.enable -> value.source == null
+        then accum
+        else
+          accum
+          ++ lib.singleton {
+            type = "symlink";
+            source = value.source;
+            target = normalizeTarget username value.target;
+          }
+    ) []
+    files;
 
   # Most stuff is the exact same to the nixos module
   # Perhaps they should share a file or something with settings
   # For now, just copy and pasted settings (mostly)
-  writeManifest = username:
-    let
-      name = "manifest-${username}.json";
-    in
+  writeManifest = username: let
+    name = "manifest-${username}.json";
+  in
     pkgs.writeTextFile {
       inherit name;
       destination = "/${name}";
@@ -85,11 +82,10 @@ let
       '';
     };
 
-  manifests =
-    pkgs.symlinkJoin {
-      name = "hjem-manifests";
-      paths = map writeManifest (builtins.attrNames enabledUsers);
-    };
+  manifests = pkgs.symlinkJoin {
+    name = "hjem-manifests";
+    paths = map writeManifest (builtins.attrNames enabledUsers);
+  };
 
   hjemModule = submoduleWith {
     description = "Hjem Darwin module";
@@ -103,37 +99,33 @@ let
       };
     modules =
       concatLists
+      [
         [
-          [
-            ../common/user.nix
-            ({ name, ... }:
-              let
-                inherit (lib.modules) mkDefault;
-                user = getAttr name config.users.users;
-              in
-              {
-                user = mkDefault user.name;
-                directory = mkDefault user.home;
-                clobberFiles = mkDefault cfg.clobberByDefault;
-              })
-          ]
-          # Evaluate additional modules under 'hjem.users.<name>' so that
-          # module systems built on Hjem are more ergonomic.
-          cfg.extraModules
-        ];
+          ../common/user.nix
+          ({name, ...}: let
+            inherit (lib.modules) mkDefault;
+            user = getAttr name config.users.users;
+          in {
+            user = mkDefault user.name;
+            directory = mkDefault user.home;
+            clobberFiles = mkDefault cfg.clobberByDefault;
+          })
+        ]
+        # Evaluate additional modules under 'hjem.users.<name>' so that
+        # module systems built on Hjem are more ergonomic.
+        cfg.extraModules
+      ];
   };
 
   linkerArgs =
-    if builtins.isAttrs cfg.linkerOptions then
-      let f = pkgs.writeText "smfh-opts.json" (builtins.toJSON cfg.linkerOptions);
-      in [ "--linker-opts" f ]
-    else
-      cfg.linkerOptions;
+    if builtins.isAttrs cfg.linkerOptions
+    then let
+      f = pkgs.writeText "smfh-opts.json" (builtins.toJSON cfg.linkerOptions);
+    in ["--linker-opts" f]
+    else cfg.linkerOptions;
 
   argsStr = lib.escapeShellArgs linkerArgs;
-
-in
-{
+in {
   options.hjem = {
     clobberByDefault = mkOption {
       type = bool;
@@ -148,14 +140,14 @@ in
     };
 
     users = mkOption {
-      default = { };
+      default = {};
       type = attrsOf hjemModule;
       description = "Home configurations to be managed";
     };
 
     extraModules = mkOption {
       type = listOf raw;
-      default = [ ];
+      default = [];
       description = ''
         Additional modules to be evaluated as a part of the users module
         inside {option}`config.hjem.users.<name>`. This can be used to
@@ -165,7 +157,7 @@ in
 
     specialArgs = mkOption {
       type = attrs;
-      default = { };
+      default = {};
       example = literalExpression "{ inherit inputs; }";
       description = ''
         Additional `specialArgs` are passed to Hjem, allowing extra arguments
@@ -201,7 +193,7 @@ in
     };
 
     linkerOptions = mkOption {
-      default = [ ];
+      default = [];
       description = ''
         Additional arguments to pass to the linker.
 
@@ -215,35 +207,36 @@ in
 
   config = mkMerge [
     {
-      users.users = (mapAttrs (_: v: { inherit (v) packages; })) enabledUsers;
+      users.users = (mapAttrs (_: v: {inherit (v) packages;})) enabledUsers;
 
       assertions =
         concatLists
-          (mapAttrsToList
-            (user: config:
-              map
-                ({ assertion
-                 , message
-                 , ...
-                 }: {
-                  inherit assertion;
-                  message = "${user} profile: ${message}";
-                })
-                config.assertions)
-            enabledUsers);
+        (mapAttrsToList
+          (user: config:
+            map
+            ({
+              assertion,
+              message,
+              ...
+            }: {
+              inherit assertion;
+              message = "${user} profile: ${message}";
+            })
+            config.assertions)
+          enabledUsers);
 
       warnings =
         concatLists
-          (mapAttrsToList
-            (
-              user: v:
-                map
-                  (
-                    warning: "${user} profile: ${warning}"
-                  )
-                  v.warnings
-            )
-            enabledUsers);
+        (mapAttrsToList
+          (
+            user: v:
+              map
+              (
+                warning: "${user} profile: ${warning}"
+              )
+              v.warnings
+          )
+          enabledUsers);
     }
 
     (mkIf (cfg.linker != null) {
@@ -258,7 +251,7 @@ in
           Program = "${pkgs.writeShellApplication {
             name = "hjem-activate";
             # Maybe the kickstart is broken because a runtimeInput is missing?
-            runtimeInputs = with pkgs; [ coreutils bash ];
+            runtimeInputs = with pkgs; [coreutils bash];
             text = ''
               set -euo pipefail
 
@@ -292,12 +285,12 @@ in
       # This kickstart does not work?? No clue why.
       system.activationScripts.hjem-activate-kick.text = lib.mkAfter (lib.concatStringsSep "\n" (
         lib.mapAttrsToList
-          (u: _: ''
-            if uid="$(/usr/bin/id -u ${u} 2>/dev/null)"; then
-              /bin/launchctl kickstart -k "gui/''${uid}/org.hjem.activate" 2>/dev/null || true
-            fi
-          '')
-          enabledUsers
+        (u: _: ''
+          if uid="$(/usr/bin/id -u ${u} 2>/dev/null)"; then
+            /bin/launchctl kickstart -k "gui/''${uid}/org.hjem.activate" 2>/dev/null || true
+          fi
+        '')
+        enabledUsers
       ));
     })
 
@@ -309,7 +302,7 @@ in
           serviceConfig = {
             Program = "${pkgs.writeShellApplication {
               name = "link-nix-apps";
-              runtimeInputs = with pkgs; [ coreutils findutils gnugrep bash nix ];
+              runtimeInputs = with pkgs; [coreutils findutils gnugrep bash nix];
               text = ''
                 set -euo pipefail
 
@@ -363,12 +356,12 @@ in
       # For now we are forced to use system.activationScripts
       system.activationScripts.applications.text = lib.mkAfter (lib.concatStringsSep "\n" (
         lib.mapAttrsToList
-          (u: _: ''
-            if uid="$(/usr/bin/id -u ${u} 2>/dev/null)"; then
-              /bin/launchctl kickstart -k "gui/''${uid}/org.nix.link-nix-apps" 2>/dev/null || true
-            fi
-          '')
-          enabledUsers
+        (u: _: ''
+          if uid="$(/usr/bin/id -u ${u} 2>/dev/null)"; then
+            /bin/launchctl kickstart -k "gui/''${uid}/org.nix.link-nix-apps" 2>/dev/null || true
+          fi
+        '')
+        enabledUsers
       ));
     }
   ];
