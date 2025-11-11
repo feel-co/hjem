@@ -1,6 +1,6 @@
 {
   "nodes": {
-    "darwin": {
+    "nix-darwin": {
       "inputs": {
         "nixpkgs": [
           "nixpkgs"
@@ -38,7 +38,7 @@
     },
     "root": {
       "inputs": {
-        "darwin": "darwin",
+        "nix-darwin": "nix-darwin",
         "nixpkgs": "nixpkgs",
         "smfh": "smfh"
       }

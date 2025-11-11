@@ -2,7 +2,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-unstable";
 
-    darwin = {
+    nix-darwin = {
       url = "github:nix-darwin/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
@@ -18,34 +18,16 @@
   outputs = {
     self,
     nixpkgs,
-    darwin,
     ...
   } @ inputs: let
     # We should only specify the modules Hjem explicitly supports, or we risk
     # allowing not-so-defined behaviour. For example, adding nix-systems should
     # be avoided, because it allows specifying systems Hjem is not tested on.
-    forAllLinux = nixpkgs.lib.genAttrs ["x86_64-linux" "aarch64-linux"];
-    forAllDarwin = nixpkgs.lib.genAttrs ["x86_64-darwin" "aarch64-darwin"];
     forAllSystems = nixpkgs.lib.genAttrs ["x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin"];
     pkgsFor = system: nixpkgs.legacyPackages.${system};
   in {
     nixosModules = import ./modules/nixos;
-    darwinModules = {
-      hjem = {
-        imports = [
-          self.darwinModules.hjem-lib
-          ./modules/nix-darwin
-        ];
-      };
-      hjem-lib = {
-        lib,
-        pkgs,
-        ...
-      }: {
-        _module.args.hjem-lib = import ./lib.nix {inherit lib pkgs;};
-      };
-      default = self.darwinModules.hjem;
-    };
+    darwinModules = import ./modules/nix-darwin;
 
     packages = forAllSystems (system:
       import ./internal/packages.nix {
