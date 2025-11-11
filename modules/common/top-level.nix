@@ -1,4 +1,4 @@
-{hjemModule}: {
+{hjemSubmodule}: {
   lib,
   config,
   ...
@@ -28,7 +28,7 @@ in {
 
     users = mkOption {
       default = {};
-      type = attrsOf hjemModule;
+      type = attrsOf hjemSubmodule;
       description = "Hjem-managed user configurations.";
     };
 
