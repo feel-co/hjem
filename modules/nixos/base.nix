@@ -31,7 +31,7 @@
 
   linker = getExe cfg.linker;
 
-  manifests = let
+  newManifests = let
     writeManifest = username: let
       name = "manifest-${username}.json";
     in
@@ -63,8 +63,8 @@
       paths = map writeManifest (attrNames enabledUsers);
     };
 
-  hjemModule = submoduleWith {
-    description = "Hjem NixOS module.";
+  hjemSubmodule = submoduleWith {
+    description = "Hjem submodule for NixOS.";
     class = "hjem";
     specialArgs =
       cfg.specialArgs
@@ -95,7 +95,7 @@
   };
 in {
   imports = [
-    (importApply ../common/top-level.nix {inherit hjemModule;})
+    (importApply ../common/top-level.nix {inherit hjemSubmodule;})
   ];
 
   config = mkMerge [
@@ -145,7 +145,7 @@ in {
       };
 
       systemd.services = let
-        manifestsDir = "/var/lib/hjem";
+        oldManifests = "/var/lib/hjem";
         checkEnabledUsers = ''
           case "$1" in
             ${concatStringsSep "|" (attrNames enabledUsers)}) ;;
@@ -157,7 +157,7 @@ in {
           hjem-prepare = {
             description = "Prepare Hjem manifests directory";
             enableStrictShellChecks = true;
-            script = "mkdir -p ${manifestsDir}";
+            script = "mkdir -p ${oldManifests}";
             serviceConfig.Type = "oneshot";
             unitConfig.RefuseManualStart = true;
           };
@@ -182,8 +182,8 @@ in {
                 else concatStringsSep " " cfg.linkerOptions;
             in ''
               ${checkEnabledUsers}
-              new_manifest="${manifests}/manifest-$1.json"
-              old_manifest="${manifestsDir}/manifest-$1.json"
+              new_manifest="${newManifests}/manifest-$1.json"
+              old_manifest="${oldManifests}/manifest-$1.json"
 
               if [ ! -f "$old_manifest" ]; then
                 ${linker} ${linkerOpts} activate "$new_manifest"
@@ -208,17 +208,17 @@ in {
             */
             script = ''
               ${checkEnabledUsers}
-              new_manifest="${manifests}/manifest-$1.json"
+              new_manifest="${newManifests}/manifest-$1.json"
 
-              if ! cp "$new_manifest" ${manifestsDir}; then
+              if ! cp "$new_manifest" ${oldManifests}; then
                 echo "Copying the manifest for $1 failed. This is likely due to using the previous\
                 version of the manifest handling. The manifest directory has been recreated and repopulated with\
                 %i's manifest. Please re-run the activation services for your other users, if you have ran this one manually."
 
-                rm -rf ${manifestsDir}
-                mkdir -p ${manifestsDir}
+                rm -rf ${oldManifests}
+                mkdir -p ${oldManifests}
 
-                cp "$new_manifest" ${manifestsDir}
+                cp "$new_manifest" ${oldManifests}
               fi
             '';
           };
@@ -232,7 +232,7 @@ in {
             script = let
               manifestsToDelete =
                 map
-                (user: "${manifestsDir}/manifest-${user}.json")
+                (user: "${oldManifests}/manifest-${user}.json")
                 (attrNames disabledUsers);
             in
               if disabledUsers != {}
