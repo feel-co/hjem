@@ -6,12 +6,13 @@
   pkgs,
   ...
 }: let
-  inherit (builtins) attrNames concatLists concatMap getAttr replaceStrings;
-  inherit (lib.attrsets) filterAttrs foldlAttrs;
-  inherit (lib.lists) singleton;
+  inherit (builtins) attrNames attrValues concatLists concatMap filter getAttr head isAttrs toJSON;
+  inherit (hjem-lib) fileToJson;
+  inherit (lib.attrsets) filterAttrs;
   inherit (lib.meta) getExe getExe';
   inherit (lib.modules) importApply mkAfter mkDefault;
-  inherit (lib.strings) concatMapAttrsStringSep escapeShellArgs hasPrefix;
+  inherit (lib.strings) concatMapAttrsStringSep escapeShellArgs;
+  inherit (lib.trivial) flip pipe;
   inherit (lib.types) submoduleWith;
 
   cfg = config.hjem;
@@ -29,65 +30,37 @@
 
   linker = getExe cfg.linker;
 
-  # I force the home here. Cause on linux it's home/ but on macos/dariwn, it's Users/
-  userHome = u: "/Users/${(getAttr u config.users.users).name}";
-  userName = u: (getAttr u config.users.users).name;
+  newManifests = let
+    writeManifest = username: let
+      name = "manifest-${username}.json";
+    in
+      pkgs.writeTextFile {
+        inherit name;
+        destination = "/${name}";
+        text = toJSON {
+          version = 2;
+          files = concatMap (
+            flip pipe [
+              attrValues
+              (filter (x: x.enable))
+              (map fileToJson)
+            ]
+          ) (userFiles cfg.users.${username});
+        };
+        checkPhase = ''
+          set -e
+          CUE_CACHE_DIR=$(pwd)/.cache
+          CUE_CONFIG_DIR=$(pwd)/.config
 
-  # I convert shorthand target to real path aka normalize
-  normalizeTarget = u: t: let
-    home = userHome u;
-    name = userName u;
-  in
-    if hasPrefix "~/" t
-    then replaceStrings ["~/"] ["${home}/"] t
-    else if hasPrefix "/home/${name}/" t
-    then replaceStrings ["/home/${name}/"] ["${home}/"] t
-    else t;
-
-  mapFiles = username: files:
-    foldlAttrs
-    (
-      accum: _: value:
-        if value.enable -> value.source == null
-        then accum
-        else
-          accum
-          ++ singleton {
-            type = "symlink";
-            source = value.source;
-            target = normalizeTarget username value.target;
-          }
-    ) []
-    files;
-
-  # Most stuff is the exact same to the nixos module
-  # Perhaps they should share a file or something with settings
-  # For now, just copy and pasted settings (mostly)
-  writeManifest = username: let
-    name = "manifest-${username}.json";
-  in
-    pkgs.writeTextFile {
-      inherit name;
-      destination = "/${name}";
-      text = builtins.toJSON {
-        clobber_by_default = cfg.users."${username}".clobberFiles;
-        version = 1;
-        files = concatMap (mapFiles username) (
-          userFiles cfg.users."${username}"
-        );
+          ${getExe pkgs.cue} vet -c ${../../manifest/v2.cue} $target
+        '';
       };
-      checkPhase = ''
-        set -e
-        CUE_CACHE_DIR=$(pwd)/.cache
-        CUE_CONFIG_DIR=$(pwd)/.config
-        ${getExe pkgs.cue} vet -c ${../../manifest/v1.cue} $target
-      '';
+  in
+    pkgs.symlinkJoin
+    {
+      name = "hjem-manifests";
+      paths = map writeManifest (attrNames enabledUsers);
     };
-
-  newManifests = pkgs.symlinkJoin {
-    name = "hjem-manifests";
-    paths = map writeManifest (attrNames enabledUsers);
-  };
 
   hjemSubmodule = submoduleWith {
     description = "Hjem submodule for nix-darwin.";
@@ -119,9 +92,9 @@
   };
 
   linkerArgs =
-    if builtins.isAttrs cfg.linkerOptions
+    if isAttrs cfg.linkerOptions
     then let
-      f = pkgs.writeText "smfh-opts.json" (builtins.toJSON cfg.linkerOptions);
+      f = pkgs.writeText "smfh-opts.json" (toJSON cfg.linkerOptions);
     in ["--linker-opts" f]
     else cfg.linkerOptions;
 
@@ -133,8 +106,8 @@ in {
 
   config = {
     # Temporary requirement: choose a primary user, pick the first enabled user.
-    # This option will be depracated in the future.
-    system.primaryUser = mkDefault (builtins.head (attrNames enabledUsers));
+    # This option will be deprecated in the future.
+    system.primaryUser = mkDefault (head (attrNames enabledUsers));
 
     # launchd agent to apply/diff the manifest per logged-in user
     # https://github.com/nix-darwin/nix-darwin/issues/871#issuecomment-2340443820
