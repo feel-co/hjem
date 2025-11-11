@@ -26,6 +26,8 @@
       clobberDefaultText = literalExpression "config.hjem.users.${name}.clobberFiles";
     };
 in {
+  _class = "hjem";
+
   imports = [
     # Makes "assertions" option available without having to duplicate the work
     # already done in the Nixpkgs module.

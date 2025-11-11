@@ -17,6 +17,7 @@
   inherit (lib.meta) getExe;
 
   cfg = config.hjem;
+  _class = "nixos";
 
   enabledUsers = filterAttrs (_: u: u.enable) cfg.users;
   disabledUsers = filterAttrs (_: u: !u.enable) cfg.users;
@@ -94,8 +95,10 @@
       ];
   };
 in {
+  inherit _class;
+
   imports = [
-    (importApply ../common/top-level.nix {inherit hjemSubmodule;})
+    (importApply ../common/top-level.nix {inherit hjemSubmodule _class;})
   ];
 
   config = mkMerge [
