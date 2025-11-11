@@ -6,13 +6,13 @@
   pkgs,
   ...
 }: let
-  inherit (builtins) attrNames concatLists concatMap concatStringsSep getAttr replaceStrings;
-  inherit (lib.attrsets) filterAttrs foldlAttrs mapAttrsToList;
+  inherit (builtins) attrNames concatLists concatMap getAttr replaceStrings;
+  inherit (lib.attrsets) filterAttrs foldlAttrs;
   inherit (lib.lists) singleton;
+  inherit (lib.meta) getExe getExe';
   inherit (lib.modules) importApply mkAfter mkDefault;
-  inherit (lib.strings) escapeShellArgs hasPrefix;
+  inherit (lib.strings) concatMapAttrsStringSep escapeShellArgs hasPrefix;
   inherit (lib.types) submoduleWith;
-  inherit (lib.meta) getExe;
 
   cfg = config.hjem;
   _class = "darwin";
@@ -138,72 +138,61 @@ in {
 
     # launchd agent to apply/diff the manifest per logged-in user
     # https://github.com/nix-darwin/nix-darwin/issues/871#issuecomment-2340443820
-    launchd.user.agents.hjem-activate = {
-      serviceConfig = {
-        Program = "${pkgs.writeShellApplication {
-          name = "hjem-activate";
-          # Maybe the kickstart is broken because a runtimeInput is missing?
-          runtimeInputs = with pkgs; [coreutils bash];
-          text = ''
-            set -euo pipefail
-
-            USER="$(/usr/bin/id -un)"
-            NEW="${newManifests}/manifest-''${USER}.json"
-
-            if [ ! -f "$NEW" ]; then
-              exit 0
-            fi
-
-            STATE_DIR="$HOME/Library/Application Support/Hjem"
-            mkdir -p "$STATE_DIR"
-            CUR="$STATE_DIR/manifest.json"
-
-            if [ ! -f "$CUR" ]; then
-              ${linker} ${argsStr} activate "$NEW"
-            else
-              ${linker} ${argsStr} diff "$NEW" "$CUR"
-            fi
-
-            cp -f "$NEW" "$CUR"
-          '';
-        }}/bin/hjem-activate";
-        Label = "org.hjem.activate";
-        RunAtLoad = true;
-        StandardOutPath = "/var/tmp/hjem-activate.out";
-        StandardErrorPath = "/var/tmp/hjem-activate.err";
-      };
-    };
-
-    # This kickstart does not work?? No clue why.
-    system.activationScripts.hjem-activate-kick.text = mkAfter (concatStringsSep "\n" (
-      mapAttrsToList
-      (u: _: ''
-        if uid="$(/usr/bin/id -u ${u} 2>/dev/null)"; then
-          /bin/launchctl kickstart -k "gui/''${uid}/org.hjem.activate" 2>/dev/null || true
-        fi
-      '')
-      enabledUsers
-    ));
-
-    # Currently forced upon users, perhaps we should make an option for enabling this behavior?
-    # Leaving it be for now.
     launchd.user.agents = {
-      link-nix-apps = {
+      hjem-activate = {
         serviceConfig = {
-          Program = "${pkgs.writeShellApplication {
-            name = "link-nix-apps";
-            runtimeInputs = with pkgs; [coreutils findutils gnugrep bash nix];
+          Program = getExe (pkgs.writeShellApplication {
+            name = "hjem-activate";
+            # Maybe the kickstart is broken because a runtimeInput is missing?
+            runtimeInputs = with pkgs; [coreutils-full bash];
             text = ''
               set -euo pipefail
 
-              USER="$(/usr/bin/id -un)"
-              GROUP="$(/usr/bin/id -gn)"
+              USER="$(id -un)"
+              NEW="${newManifests}/manifest-''${USER}.json"
+
+              if [ ! -f "$NEW" ]; then
+                exit 0
+              fi
+
+              STATE_DIR="$HOME/Library/Application Support/Hjem"
+              mkdir -p "$STATE_DIR"
+              CUR="$STATE_DIR/manifest.json"
+
+              if [ ! -f "$CUR" ]; then
+                ${linker} ${argsStr} activate "$NEW"
+              else
+                ${linker} ${argsStr} diff "$NEW" "$CUR"
+              fi
+
+              cp -f "$NEW" "$CUR"
+            '';
+          });
+          Label = "org.hjem.activate";
+          RunAtLoad = true;
+          StandardOutPath = "/var/tmp/hjem-activate.out";
+          StandardErrorPath = "/var/tmp/hjem-activate.err";
+        };
+      };
+
+      # Currently forced upon users, perhaps we should make an option for enabling this behavior?
+      # Leaving it be for now.
+      link-nix-apps = {
+        serviceConfig = {
+          Program = getExe (pkgs.writeShellApplication {
+            name = "link-nix-apps";
+            runtimeInputs = with pkgs; [coreutils-full findutils gnugrep nix];
+            text = ''
+              set -euo pipefail
+
+              USER="$(id -un)"
+              GROUP="$(id -gn)"
               DEST="$HOME/Applications/Nix User Apps"
               PROFILE="/etc/profiles/per-user/$USER"
 
               install -d -m 0755 -o "$USER" -g "$GROUP" "$DEST"
 
-              desired="$(/usr/bin/mktemp -t desired-apps.XXXXXX)"
+              desired="$(mktemp -t desired-apps.XXXXXX)"
               trap 'rm -f "$desired"' EXIT
 
               nix-store -qR "$PROFILE" | while IFS= read -r p; do
@@ -232,7 +221,7 @@ in {
               find "$DEST" -maxdepth 1 -type l -name "*.app" -print0 \
                 | xargs -0 -I {} bash -c '[[ -e "{}" ]] || rm -f "{}"'
             '';
-          }}/bin/link-nix-apps";
+          });
           Label = "org.nix.link-nix-apps";
           RunAtLoad = true;
           StandardOutPath = "/var/tmp/link-nix-apps.out";
@@ -241,17 +230,27 @@ in {
       };
     };
 
-    # Kick the user agent for every configured user at activation.
-    # Launchd does not have a After/Require unlike systemd
-    # For now we are forced to use system.activationScripts
-    system.activationScripts.applications.text = mkAfter (concatStringsSep "\n" (
-      mapAttrsToList
-      (u: _: ''
-        if uid="$(/usr/bin/id -u ${u} 2>/dev/null)"; then
-          /bin/launchctl kickstart -k "gui/''${uid}/org.nix.link-nix-apps" 2>/dev/null || true
-        fi
-      '')
-      enabledUsers
-    ));
+    system.activationScripts = {
+      hjem-activate-kick.text = mkAfter (
+        concatMapAttrsStringSep "\n"
+        (u: _: ''
+          if uid="$(${getExe' pkgs.coreutils-full "id"} -u ${u} 2>/dev/null)"; then
+            /bin/launchctl kickstart -k "gui/''${uid}/${config.launchd.user.agents.hjem-activate.Label}" 2>/dev/null || true
+          fi
+        '')
+        enabledUsers
+      );
+
+      # Kick the user agent for every configured user at activation.
+      applications.text = mkAfter (
+        concatMapAttrsStringSep "\n"
+        (u: _: ''
+          if uid="$(${getExe' pkgs.coreutils-full "id"} -u ${u} 2>/dev/null)"; then
+            /bin/launchctl kickstart -k "gui/''${uid}/${config.launchd.user.agents.link-nix-apps.Label}" 2>/dev/null || true
+          fi
+        '')
+        enabledUsers
+      );
+    };
   };
 }
