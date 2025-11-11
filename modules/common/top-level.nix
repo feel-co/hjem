@@ -1,4 +1,7 @@
-{hjemSubmodule}: {
+{
+  hjemSubmodule,
+  _class,
+}: {
   lib,
   config,
   ...
@@ -13,6 +16,8 @@
 
   enabledUsers = filterAttrs (_: u: u.enable) cfg.users;
 in {
+  inherit _class;
+
   options.hjem = {
     clobberByDefault = mkOption {
       type = bool;
@@ -94,6 +99,7 @@ in {
 
   config = {
     users.users = (mapAttrs (_: v: {inherit (v) packages;})) enabledUsers;
+
     assertions =
       concatLists
       (mapAttrsToList (user: config:
