@@ -111,7 +111,7 @@ in {
 
     # launchd agent to apply/diff the manifest per logged-in user
     # https://github.com/nix-darwin/nix-darwin/issues/871#issuecomment-2340443820
-    launchd.user.agents = {
+    launchd.user.agents = lib.mkForce {
       hjem-activate = {
         serviceConfig = {
           Program = getExe (pkgs.writeShellApplication {
@@ -208,7 +208,7 @@ in {
         concatMapAttrsStringSep "\n"
         (u: _: ''
           if uid="$(${getExe' pkgs.coreutils-full "id"} -u ${u} 2>/dev/null)"; then
-            /bin/launchctl kickstart -k "gui/''${uid}/${config.launchd.user.agents.hjem-activate.Label}" 2>/dev/null || true
+            /bin/launchctl kickstart -k "gui/''${uid}/${config.launchd.user.agents.hjem-activate.serviceConfig.Label}" 2>/dev/null || true
           fi
         '')
         enabledUsers
@@ -219,7 +219,7 @@ in {
         concatMapAttrsStringSep "\n"
         (u: _: ''
           if uid="$(${getExe' pkgs.coreutils-full "id"} -u ${u} 2>/dev/null)"; then
-            /bin/launchctl kickstart -k "gui/''${uid}/${config.launchd.user.agents.link-nix-apps.Label}" 2>/dev/null || true
+            /bin/launchctl kickstart -k "gui/''${uid}/${config.launchd.user.agents.link-nix-apps.serviceConfig.Label}" 2>/dev/null || true
           fi
         '')
         enabledUsers
