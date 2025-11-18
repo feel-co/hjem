@@ -105,13 +105,6 @@ in {
     # of a tmpfile. Files with 'null' sources are filtered before the rule
     # is constructed.
     (mkIf (cfg.linker == null) {
-      assertions = [
-        {
-          assertion = pkgs.stdenv.hostPlatform.isLinux;
-          message = "The systemd-tmpfiles linker is only supported on Linux; on other platforms, use the manifest linker.";
-        }
-      ];
-
       systemd.user.tmpfiles.users =
         mapAttrs (_: u: {
           rules = pipe (userFiles u) [
