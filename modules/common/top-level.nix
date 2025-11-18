@@ -3,14 +3,15 @@
   _class,
 }: {
   lib,
+  pkgs,
   config,
   ...
 }: let
   inherit (builtins) concatLists mapAttrs;
   inherit (lib.attrsets) filterAttrs mapAttrsToList;
   inherit (lib.lists) optional;
-  inherit (lib.options) literalExpression mkOption;
-  inherit (lib.types) attrs attrsOf bool either listOf nullOr package raw singleLineStr;
+  inherit (lib.options) literalExpression mkOption mkPackageOption;
+  inherit (lib.types) attrs attrsOf bool either listOf raw singleLineStr;
 
   cfg = config.hjem;
 
@@ -57,32 +58,29 @@ in {
       '';
     };
 
-    linker = mkOption {
-      default = null;
-      description = ''
-        Method to use to link files.
+    linker =
+      mkPackageOption pkgs "smfh" {nullable = true;}
+      // {
+        description = ''
+          Package to use to link files.
 
-        `null` will use `systemd-tmpfiles`, which is only supported on Linux.
+          By default, we use `smfh`, our own file linker.
 
-        This is the default file linker on Linux, as it is the more mature
-        linker, but it has the downside of leaving behind symlinks that may
-        not get invalidated until the next GC, if an entry is removed from
-        {option}`hjem.<user>.files`.
+          Setting this to `null` will use `systemd-tmpfiles`,
+          which is only supported on Linux.
 
-        Specifying a package will use a custom file linker that uses an
-        internally-generated manifest. The custom file linker must use this
-        manifest to create or remove links as needed, by comparing the manifest
-        of the currently activated system with that of the new system.
-        This prevents dangling symlinks when an entry is removed from
-        {option}`hjem.<user>.files`.
+          `systemd-tmpfiles` is more mature, but it has the downside of
+          leaving behind symlinks that may not get invalidated until the next GC,
+          if an entry is removed from {option}`hjem.<user>.files`.
 
-        :::{.note}
-        This linker is currently experimental; once it matures, it may become
-        the default in the future.
-        :::
-      '';
-      type = nullOr package;
-    };
+          Specifying a package will use a custom file linker that uses an
+          internally-generated manifest. The custom file linker must use this
+          manifest to create or remove links as needed, by comparing the manifest
+          of the currently activated system with that of the new system.
+          This prevents dangling symlinks when an entry is removed from
+          {option}`hjem.<user>.files`.
+        '';
+      };
 
     linkerOptions = mkOption {
       default = [];
@@ -112,7 +110,13 @@ in {
           message = "${user} profile: ${message}";
         })
         config.assertions)
-      enabledUsers);
+      enabledUsers)
+      ++ [
+        {
+          assertion = cfg.linker == null -> pkgs.stdenv.hostPlatform.isLinux;
+          message = "The systemd-tmpfiles linker is only supported on Linux; on other platforms, use the manifest linker.";
+        }
+      ];
 
     warnings =
       concatLists
