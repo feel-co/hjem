@@ -111,7 +111,7 @@ in {
 
     # launchd agent to apply/diff the manifest per logged-in user
     # https://github.com/nix-darwin/nix-darwin/issues/871#issuecomment-2340443820
-    launchd.user.agents = {
+    launchd.user.agents = lib.mkForce {
       hjem-activate = {
         serviceConfig = {
           Program = getExe (pkgs.writeShellApplication {
