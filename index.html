@@ -108,25 +108,25 @@ import it from inside the <code>nixosSystem</code> call.</p>
 <h2>Usage</h2>
 <p>Hjem achieves its signature simplicity and robustness by shaving off the
 unnecessary complexity and the boilerplate. Instead we expose a simple interface
-used to link files: <a class="option-reference" href="options.html#option-hjem-users-<user>-files"><code>hjem.users.&lt;user&gt;.files</code></a>. This is the core of
+used to link files: <a class="option-reference" href="options.html#option-hjem-users-<user>-files"><code class="nixos-option">hjem.users.&lt;user&gt;.files</code></a>. This is the core of
 Hjem―file linking.</p>
 <h3><code>hjem.users</code></h3>
-<p><a class="option-reference" href="options.html#option-hjem-users"><code>hjem.users</code></a> is the main entry point used to declare individual users
+<p><a class="option-reference" href="options.html#option-hjem-users"><code class="nixos-option">hjem.users</code></a> is the main entry point used to declare individual users
 for Hjem. It contains several sub-options that may be used to control Hjem's
 behaviour per user. You may refer to the option documentation for more details
 on each bell and whistle. Important options to be aware of are as follows:</p>
 <ul>
-<li><a class="option-reference" href="options.html#option-hjem-users-<name>-enable"><code>hjem.users.&lt;name&gt;.enable</code></a> allows toggling file linking for individual
+<li><a class="option-reference" href="options.html#option-hjem-users-<name>-enable"><code class="nixos-option">hjem.users.&lt;name&gt;.enable</code></a> allows toggling file linking for individual
 users. Set to <code>true</code> by default, but can be used to toggle off file linking
 for individual users on a multi-tenant system.</li>
-<li><a class="option-reference" href="options.html#option-hjem-users-<name>-user"><code>hjem.users.&lt;name&gt;.user</code></a> is the name of the user that will be defined.
+<li><a class="option-reference" href="options.html#option-hjem-users-<name>-user"><code class="nixos-option">hjem.users.&lt;name&gt;.user</code></a> is the name of the user that will be defined.
 This <strong>must</strong> be set in your configuration. To avoid making assumptions, Hjem
 does not infer this from <code>&lt;name&gt;</code>.</li>
-<li><a class="option-reference" href="options.html#option-hjem-users-<name>-directory"><code>hjem.users.&lt;name&gt;.directory</code></a> is your home directory. Files in
+<li><a class="option-reference" href="options.html#option-hjem-users-<name>-directory"><code class="nixos-option">hjem.users.&lt;name&gt;.directory</code></a> is your home directory. Files in
 <code>&lt;name&gt;.files</code> will always be relative to this directory.</li>
-<li><a class="option-reference" href="options.html#option-hjem-users-<name>-clobberFiles"><code>hjem.users.&lt;name&gt;.clobberFiles</code></a> decides whether Hjem should override
+<li><a class="option-reference" href="options.html#option-hjem-users-<name>-clobberFiles"><code class="nixos-option">hjem.users.&lt;name&gt;.clobberFiles</code></a> decides whether Hjem should override
 if a file already exists at a target location. This default to <code>false</code>, but
-this can be enabled for all users by setting <a class="option-reference" href="options.html#option-hjem-clobberByDefault"><code>hjem.clobberByDefault</code></a>
+this can be enabled for all users by setting <a class="option-reference" href="options.html#option-hjem-clobberByDefault"><code class="nixos-option">hjem.clobberByDefault</code></a>
 to <code>true</code>.</li>
 </ul>
 <h4>Example</h4>

@@ -2268,7 +2268,7 @@
   <div class="option-type">Type: <code>boolean</code></div>
   <div class="option-description"><html><head></head><body><p>The default override behaviour for files managed by Hjem.</p>
 <p>While <code>true</code>, existing files will be overriden with new files on rebuild.
-The behaviour may be modified per-user by setting <a class="option-reference" href="options.html#option-hjem-users-<name>-clobberFiles"><code>hjem.users.&lt;name&gt;.clobberFiles</code></a>
+The behaviour may be modified per-user by setting <a class="option-reference" href="options.html#option-hjem-users-<name>-clobberFiles"><code class="nixos-option">hjem.users.&lt;name&gt;.clobberFiles</code></a>
 to the desired value.</p>
 </body></html></div>
   <div class="option-default">Default: <code>false</code></div>
@@ -2282,7 +2282,7 @@ to the desired value.</p>
   </h3>
   <div class="option-type">Type: <code>list of raw value</code></div>
   <div class="option-description"><html><head></head><body><p>Additional modules to be evaluated as a part of the users module
-inside <a class="option-reference" href="options.html#option-config-hjem-users-<name>"><code>config.hjem.users.&lt;name&gt;</code></a>. This can be used to
+inside <code class="nixos-option">config.hjem.users.&lt;name&gt;</code>. This can be used to
 extend each user configuration with additional options.</p>
 </body></html></div>
   <div class="option-default">Default: <code>[ ]</code></div>
@@ -2300,13 +2300,13 @@ extend each user configuration with additional options.</p>
 <p>This is the default file linker on Linux, as it is the more mature
 linker, but it has the downside of leaving behind symlinks that may
 not get invalidated until the next GC, if an entry is removed from
-<a class="option-reference" href="options.html#option-hjem-<user>-files"><code>hjem.&lt;user&gt;.files</code></a>.</p>
+<code class="nixos-option">hjem.&lt;user&gt;.files</code>.</p>
 <p>Specifying a package will use a custom file linker that uses an
 internally-generated manifest. The custom file linker must use this
 manifest to create or remove links as needed, by comparing the manifest
 of the currently activated system with that of the new system.
 This prevents dangling symlinks when an entry is removed from
-<a class="option-reference" href="options.html#option-hjem-<user>-files"><code>hjem.&lt;user&gt;.files</code></a>.</p>
+<code class="nixos-option">hjem.&lt;user&gt;.files</code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This linker is currently experimental; once it matures, it may become
@@ -2367,8 +2367,8 @@ to be passed down to to all imported modules.</p>
   <div class="option-description"><html><head></head><body><p>The default override behaviour for files managed by Hjem for a
 particular user.</p>
 <p>A top level option exists under the Hjem module option
-<a class="option-reference" href="options.html#option-hjem-clobberByDefault"><code>hjem.clobberByDefault</code></a>. Per-file behaviour can be modified
-with <a class="option-reference" href="options.html#option-hjem-users-<name>-files-<file>-clobber"><code>hjem.users.&lt;name&gt;.files.&lt;file&gt;.clobber</code></a>.</p>
+<a class="option-reference" href="options.html#option-hjem-clobberByDefault"><code class="nixos-option">hjem.clobberByDefault</code></a>. Per-file behaviour can be modified
+with <code class="nixos-option">hjem.users.&lt;name&gt;.files.&lt;file&gt;.clobber</code>.</p>
 </body></html></div>
   <div class="option-example">Example: <code>true</code></div>
   <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
@@ -2381,7 +2381,7 @@ with <a class="option-reference" href="options.html#option-hjem-users-<name>-fil
   </h3>
   <div class="option-type">Type: <code>absolute path, not containing newlines or colons</code></div>
   <div class="option-description"><html><head></head><body><p>The home directory for the user, to which files configured in
-<a class="option-reference" href="options.html#option-hjem-users-<name>-files"><code>hjem.users.&lt;name&gt;.files</code></a> will be relative to by default.</p>
+<a class="option-reference" href="options.html#option-hjem-users-<name>-files"><code class="nixos-option">hjem.users.&lt;name&gt;.files</code></a> will be relative to by default.</p>
 </body></html></div>
   <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
 </div>
@@ -3332,10 +3332,10 @@ is reloaded.</p>
   <div class="option-type">Type: <code>boolean</code></div>
   <div class="option-description"><html><head></head><body><p>Whether the service should be reloaded during a NixOS
 configuration switch if its definition has changed.  If
-enabled, the value of <a class="option-reference" href="options.html#option-restartIfChanged"><code>restartIfChanged</code></a> is
+enabled, the value of <code class="nixos-option">restartIfChanged</code> is
 ignored.</p>
 <p>This option should not be used anymore in favor of
-<a class="option-reference" href="options.html#option-reloadTriggers"><code>reloadTriggers</code></a> which allows more granular
+<code class="nixos-option">reloadTriggers</code> which allows more granular
 control of when a service is reloaded and when a service
 is restarted.</p>
 </body></html></div>
@@ -3478,7 +3478,7 @@ Can contain specifiers (<code>%</code> placeholders expanded by systemd, see <a 
 must be in the format described in
 <a href="https://www.freedesktop.org/software/systemd/man/systemd.time.html" class="manpage-reference">systemd.time(7)</a>.  This is equivalent
 to adding a corresponding timer unit with
-<a class="option-reference" href="options.html#option-OnCalendar"><code>OnCalendar</code></a> set to the value given here.</p>
+<code class="nixos-option">OnCalendar</code> set to the value given here.</p>
 </body></html></div>
   <div class="option-default">Default: <code>[ ]</code></div>
   <div class="option-example">Example: <code>"Sun 14:00:00"</code></div>
@@ -5253,8 +5253,8 @@ into the NixOS design.</p>
   </h3>
   <div class="option-type">Type: <code>absolute path</code></div>
   <div class="option-description"><html><head></head><body><p>The XDG cache directory for the user, to which files configured in
-<a class="option-reference" href="options.html#option-hjem-users-<name>-xdg-cache-files"><code>hjem.users.&lt;name&gt;.xdg.cache.files</code></a> will be relative to by default.</p>
-<p>Adds <code class="env-var">XDG_CACHE_HOME</code> to <a class="option-reference" href="options.html#option-environment-sessionVariables"><code>environment.sessionVariables</code></a> for
+<a class="option-reference" href="options.html#option-hjem-users-<name>-xdg-cache-files"><code class="nixos-option">hjem.users.&lt;name&gt;.xdg.cache.files</code></a> will be relative to by default.</p>
+<p>Adds <code class="env-var">XDG_CACHE_HOME</code> to <code class="nixos-option">environment.sessionVariables</code> for
 this user if changed.</p>
 </body></html></div>
   <div class="option-default">Default: <code>"$HOME/.cache"</code></div>
@@ -5443,8 +5443,8 @@ will be constructed with <code>L+</code> (<em>re</em>create) instead of <code>L<
   </h3>
   <div class="option-type">Type: <code>absolute path</code></div>
   <div class="option-description"><html><head></head><body><p>The XDG config directory for the user, to which files configured in
-<a class="option-reference" href="options.html#option-hjem-users-<name>-xdg-config-files"><code>hjem.users.&lt;name&gt;.xdg.config.files</code></a> will be relative to by default.</p>
-<p>Adds <code class="env-var">XDG_CONFIG_HOME</code> to <a class="option-reference" href="options.html#option-environment-sessionVariables"><code>environment.sessionVariables</code></a> for
+<a class="option-reference" href="options.html#option-hjem-users-<name>-xdg-config-files"><code class="nixos-option">hjem.users.&lt;name&gt;.xdg.config.files</code></a> will be relative to by default.</p>
+<p>Adds <code class="env-var">XDG_CONFIG_HOME</code> to <code class="nixos-option">environment.sessionVariables</code> for
 this user if changed.</p>
 </body></html></div>
   <div class="option-default">Default: <code>"$HOME/.config"</code></div>
@@ -5633,8 +5633,8 @@ will be constructed with <code>L+</code> (<em>re</em>create) instead of <code>L<
   </h3>
   <div class="option-type">Type: <code>absolute path</code></div>
   <div class="option-description"><html><head></head><body><p>The XDG data directory for the user, to which files configured in
-<a class="option-reference" href="options.html#option-hjem-users-<name>-xdg-data-files"><code>hjem.users.&lt;name&gt;.xdg.data.files</code></a> will be relative to by default.</p>
-<p>Adds <code class="env-var">XDG_DATA_HOME</code> to <a class="option-reference" href="options.html#option-environment-sessionVariables"><code>environment.sessionVariables</code></a> for
+<a class="option-reference" href="options.html#option-hjem-users-<name>-xdg-data-files"><code class="nixos-option">hjem.users.&lt;name&gt;.xdg.data.files</code></a> will be relative to by default.</p>
+<p>Adds <code class="env-var">XDG_DATA_HOME</code> to <code class="nixos-option">environment.sessionVariables</code> for
 this user if changed.</p>
 </body></html></div>
   <div class="option-default">Default: <code>"$HOME/.local/share"</code></div>
@@ -5823,8 +5823,8 @@ will be constructed with <code>L+</code> (<em>re</em>create) instead of <code>L<
   </h3>
   <div class="option-type">Type: <code>absolute path</code></div>
   <div class="option-description"><html><head></head><body><p>The XDG state directory for the user, to which files configured in
-<a class="option-reference" href="options.html#option-hjem-users-<name>-xdg-state-files"><code>hjem.users.&lt;name&gt;.xdg.state.files</code></a> will be relative to by default.</p>
-<p>Adds <code class="env-var">XDG_STATE_HOME</code> to <a class="option-reference" href="options.html#option-environment-sessionVariables"><code>environment.sessionVariables</code></a> for
+<a class="option-reference" href="options.html#option-hjem-users-<name>-xdg-state-files"><code class="nixos-option">hjem.users.&lt;name&gt;.xdg.state.files</code></a> will be relative to by default.</p>
+<p>Adds <code class="env-var">XDG_STATE_HOME</code> to <code class="nixos-option">environment.sessionVariables</code> for
 this user if changed.</p>
 </body></html></div>
   <div class="option-default">Default: <code>"$HOME/.local/state"</code></div>
