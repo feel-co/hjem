@@ -6,11 +6,12 @@ on:
   push:
     branches: ["main"]
     paths:
+      - .github/workflows/deploy-docs.yml
       - docs/**
       - modules/**
-      - flake.lock
       - lib.nix
-      - .github/workflows/deploy-docs.yml
+      - npins/**
+
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:

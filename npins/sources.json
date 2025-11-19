@@ -1,17 +1,20 @@
 {
   "pins": {
     "ndg": {
-      "type": "Git",
+      "type": "GitRelease",
       "repository": {
         "type": "GitHub",
         "owner": "feel-co",
         "repo": "ndg"
       },
-      "branch": "main",
+      "pre_releases": false,
+      "version_upper_bound": null,
+      "release_prefix": null,
       "submodules": false,
-      "revision": "2fd7dcd1618875e6b6aae00bd2780d6d334fb7e4",
-      "url": "https://github.com/feel-co/ndg/archive/2fd7dcd1618875e6b6aae00bd2780d6d334fb7e4.tar.gz",
-      "hash": "1bzq6hyjizm9hjj15j5ns0740ks5m1wplwj9s9lrlzj74d9hzy6a"
+      "version": "v2.4.0",
+      "revision": "4ecc1110a5f9e4009d3fd70b74c9b3b8e7d49dba",
+      "url": "https://api.github.com/repos/feel-co/ndg/tarball/v2.4.0",
+      "hash": "0xm7jcgi8g0n0in17mms5vdsqszk3v8cvj1drvgf7fwx53k0wb7c"
     }
   },
   "version": 5
