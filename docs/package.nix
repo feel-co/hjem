@@ -116,7 +116,7 @@
     .optionsJSON;
 
   hjemDocsWeb =
-    pkgs.runCommandNoCC "hjem-docs" {
+    pkgs.runCommand "hjem-docs" {
       nativeBuildInputs = [ndg];
     } ''
       mkdir -p $out/share/doc
