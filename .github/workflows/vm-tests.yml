@@ -62,7 +62,7 @@ jobs:
             allow-import-from-derivation = false
 
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Build packages
         run: nix build -L .#checks.${{ matrix.system }}.${{ matrix.test }}
