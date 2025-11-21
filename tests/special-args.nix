@@ -19,6 +19,7 @@ in
         };
 
         hjem = {
+          linker = null;
           # Things like username, home directory or credentials should not really
           # be put into specialArgs, but users do it anyway. Lets test for a very
           # basic case of 'username' being passed to specialArgs as a string and
