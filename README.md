@@ -49,9 +49,6 @@ may use to manage individual users' homes by leveraging the module system.
   */
 
   hjem = {
-    # use our custom file handler
-    linker = inputs.hjem.packages.${pkgs.stdenv.hostPlatform.system}.smfh;
-
     users = {
       alice = {
         enable = true;
