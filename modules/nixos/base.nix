@@ -88,7 +88,7 @@
             clobberFiles = mkDefault cfg.clobberByDefault;
           })
         ]
-        # Evaluate additional modules under 'hjem.users.<name>' so that
+        # Evaluate additional modules under 'hjem.users.<username>' so that
         # module systems built on Hjem are more ergonomic.
         cfg.extraModules
       ];

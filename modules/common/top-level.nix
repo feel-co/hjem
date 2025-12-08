@@ -11,7 +11,7 @@
   inherit (lib.attrsets) filterAttrs mapAttrsToList;
   inherit (lib.lists) optional;
   inherit (lib.options) literalExpression mkOption mkPackageOption;
-  inherit (lib.types) attrs attrsOf bool either listOf raw singleLineStr;
+  inherit (lib.types) attrs attrsWith bool either listOf raw singleLineStr;
 
   cfg = config.hjem;
 
@@ -27,14 +27,17 @@ in {
         The default override behaviour for files managed by Hjem.
 
         While `true`, existing files will be overriden with new files on rebuild.
-        The behaviour may be modified per-user by setting {option}`hjem.users.<name>.clobberFiles`
+        The behaviour may be modified per-user by setting {option}`hjem.users.<username>.clobberFiles`
         to the desired value.
       '';
     };
 
     users = mkOption {
       default = {};
-      type = attrsOf hjemSubmodule;
+      type = attrsWith {
+        elemType = hjemSubmodule;
+        placeholder = "username";
+      };
       description = "Hjem-managed user configurations.";
     };
 
@@ -43,7 +46,7 @@ in {
       default = [];
       description = ''
         Additional modules to be evaluated as a part of the users module
-        inside {option}`config.hjem.users.<name>`. This can be used to
+        inside {option}`config.hjem.users.<username>`. This can be used to
         extend each user configuration with additional options.
       '';
     };

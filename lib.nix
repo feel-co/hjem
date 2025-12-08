@@ -104,7 +104,7 @@ in rec {
             else "${config.relativeTo}/${p}";
           defaultText = name;
           description = ''
-            Path to target file relative to ${rootDir}.
+            Path to target file relative to `${rootDir}`.
           '';
         };
 

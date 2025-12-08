@@ -51,7 +51,7 @@ in {
       type = passwdEntry path;
       description = ''
         The home directory for the user, to which files configured in
-        {option}`hjem.users.<name>.files` will be relative to by default.
+        {option}`hjem.users.<username>.files` will be relative to by default.
       '';
     };
 
@@ -64,7 +64,7 @@ in {
 
         A top level option exists under the Hjem module option
         {option}`hjem.clobberByDefault`. Per-file behaviour can be modified
-        with {option}`hjem.users.<name>.files.<file>.clobber`.
+        with {option}`hjem.users.<username>.files.<file>.clobber`.
       '';
     };
 
@@ -83,7 +83,7 @@ in {
           defaultText = "$HOME/.cache";
           description = ''
             The XDG cache directory for the user, to which files configured in
-            {option}`hjem.users.<name>.xdg.cache.files` will be relative to by default.
+            {option}`hjem.users.<username>.xdg.cache.files` will be relative to by default.
 
             Adds {env}`XDG_CACHE_HOME` to {option}`environment.sessionVariables` for
             this user if changed.
@@ -104,7 +104,7 @@ in {
           defaultText = "$HOME/.config";
           description = ''
             The XDG config directory for the user, to which files configured in
-            {option}`hjem.users.<name>.xdg.config.files` will be relative to by default.
+            {option}`hjem.users.<username>.xdg.config.files` will be relative to by default.
 
             Adds {env}`XDG_CONFIG_HOME` to {option}`environment.sessionVariables` for
             this user if changed.
@@ -125,7 +125,7 @@ in {
           defaultText = "$HOME/.local/share";
           description = ''
             The XDG data directory for the user, to which files configured in
-            {option}`hjem.users.<name>.xdg.data.files` will be relative to by default.
+            {option}`hjem.users.<username>.xdg.data.files` will be relative to by default.
 
             Adds {env}`XDG_DATA_HOME` to {option}`environment.sessionVariables` for
             this user if changed.
@@ -146,7 +146,7 @@ in {
           defaultText = "$HOME/.local/state";
           description = ''
             The XDG state directory for the user, to which files configured in
-            {option}`hjem.users.<name>.xdg.state.files` will be relative to by default.
+            {option}`hjem.users.<username>.xdg.state.files` will be relative to by default.
 
             Adds {env}`XDG_STATE_HOME` to {option}`environment.sessionVariables` for
             this user if changed.
@@ -197,6 +197,9 @@ in {
   };
 
   config = {
+    # for docs
+    _module.args.name = lib.mkDefault "‹username›";
+
     environment = {
       sessionVariables = {
         XDG_CACHE_HOME = mkIf (cfg.xdg.cache.directory != options.xdg.cache.directory.default) cfg.xdg.cache.directory;
