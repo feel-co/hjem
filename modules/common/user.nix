@@ -16,14 +16,17 @@
   inherit (lib.strings) concatLines;
   inherit (lib.modules) mkIf;
   inherit (lib.options) literalExpression mkEnableOption mkOption;
-  inherit (lib.types) attrsOf bool listOf package passwdEntry path strMatching;
+  inherit (lib.types) attrsWith bool listOf package passwdEntry path strMatching;
 
   cfg = config;
   fileTypeRelativeTo' = rootDir:
-    hjem-lib.fileTypeRelativeTo {
-      inherit rootDir;
-      clobberDefault = cfg.clobberFiles;
-      clobberDefaultText = literalExpression "config.hjem.users.${name}.clobberFiles";
+    attrsWith {
+      elemType = hjem-lib.fileTypeRelativeTo {
+        inherit rootDir;
+        clobberDefault = cfg.clobberFiles;
+        clobberDefaultText = literalExpression "config.hjem.users.${name}.clobberFiles";
+      };
+      placeholder = "path";
     };
 in {
   _class = "hjem";
@@ -64,13 +67,13 @@ in {
 
         A top level option exists under the Hjem module option
         {option}`hjem.clobberByDefault`. Per-file behaviour can be modified
-        with {option}`hjem.users.<username>.files.<file>.clobber`.
+        with {option}`hjem.users.<username>.files.<path>.clobber`.
       '';
     };
 
     files = mkOption {
       default = {};
-      type = attrsOf (fileTypeRelativeTo' cfg.directory);
+      type = fileTypeRelativeTo' cfg.directory;
       example = {".config/foo.txt".source = "Hello World";};
       description = "Hjem-managed files.";
     };
@@ -91,7 +94,7 @@ in {
         };
         files = mkOption {
           default = {};
-          type = attrsOf (fileTypeRelativeTo' cfg.xdg.cache.directory);
+          type = fileTypeRelativeTo' cfg.xdg.cache.directory;
           example = {"foo.txt".source = "Hello World";};
           description = "Hjem-managed cache files.";
         };
@@ -112,7 +115,7 @@ in {
         };
         files = mkOption {
           default = {};
-          type = attrsOf (fileTypeRelativeTo' cfg.xdg.config.directory);
+          type = fileTypeRelativeTo' cfg.xdg.config.directory;
           example = {"foo.txt".source = "Hello World";};
           description = "Hjem-managed config files.";
         };
@@ -133,7 +136,7 @@ in {
         };
         files = mkOption {
           default = {};
-          type = attrsOf (fileTypeRelativeTo' cfg.xdg.data.directory);
+          type = fileTypeRelativeTo' cfg.xdg.data.directory;
           example = {"foo.txt".source = "Hello World";};
           description = "Hjem-managed data files.";
         };
@@ -154,7 +157,7 @@ in {
         };
         files = mkOption {
           default = {};
-          type = attrsOf (fileTypeRelativeTo' cfg.xdg.state.directory);
+          type = fileTypeRelativeTo' cfg.xdg.state.directory;
           example = {"foo.txt".source = "Hello World";};
           description = "Hjem-managed state files.";
         };
