@@ -65,7 +65,7 @@
     };
 
   hjemSubmodule = submoduleWith {
-    description = "Hjem submodule for NixOS.";
+    description = "Hjem submodule for NixOS";
     class = "hjem";
     specialArgs =
       cfg.specialArgs

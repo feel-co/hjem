@@ -63,7 +63,7 @@
     };
 
   hjemSubmodule = submoduleWith {
-    description = "Hjem submodule for nix-darwin.";
+    description = "Hjem submodule for nix-darwin";
     class = "hjem";
     specialArgs =
       cfg.specialArgs
