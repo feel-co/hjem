@@ -36,6 +36,10 @@ We have learned from the mistakes made in the ecosystem.
 
 No compromises, only comfort.
 
+### How to use
+
+Refer to our documentation at https://hjem.feel-co.org/.
+
 ### Implementation
 
 Hjem exposes a streamlined interface with multi-tenant capabilities, which you

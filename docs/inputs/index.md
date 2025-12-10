@@ -14,7 +14,7 @@ get started with, use, and extend Hjem per your needs.
 
 This page is still in early beta. If you think some things should be better
 explained, or find bugs in the site please report them
-[over our issue tracker](https://github.com/feel-co/hjem).
+[over at our issue tracker](https://github.com/feel-co/hjem/issues).
 
 ## Installing Hjem
 
@@ -27,14 +27,24 @@ you must first add Hjem as a flake input in your `flake.nix`.
 # flake.nix
 {
   inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+
     # ↓  Add here in the 'inputs' section. The name is arbitrary.
-    hjem.url = "github:feel-co/hjem";
+    hjem = {
+      url = "github:feel-co/hjem";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 }
 ```
 
-Hjem is distributed as a **NixOS module** for the time being, and you must
-import it as such. For the sake of brevity, this guide will demonstrate how to
+Then add the corresponding module for your system to your
+system configuration.
+
+
+Hjem is distributed as a **NixOS module** or **nix-darwin** module
+for the time being, and you must import it as such.
+For the sake of brevity, this guide will demonstrate how to
 import it from inside the `nixosSystem` call.
 
 ```nix
@@ -42,7 +52,11 @@ import it from inside the `nixosSystem` call.
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    hjem.url = "github:feel-co/hjem";
+
+    hjem = {
+      url = "github:feel-co/hjem";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs: {
@@ -50,12 +64,49 @@ import it from inside the `nixosSystem` call.
       # ...
       modules = [
         inputs.hjem.nixosModules.default # <- needed for 'config.hjem' options
+        # ...
       ];
       # ...
     };
   };
 }
 ```
+
+Alternatively, if you use nix-darwin:
+
+```nix
+# flake.nix
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+    nix-darwin = {
+      url = "github:nix-darwin/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    hjem = {
+      url = "github:feel-co/hjem";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+
+  outputs = inputs: {
+    darwinConfigurations."<your_configuration>" = inputs.nix-darwin.lib.darwinSystem {
+      # ...
+      modules = [
+        inputs.hjem.darwinModules.default # <- needed for 'config.hjem' options
+        # ...
+      ];
+      # ...
+    };
+  };
+}
+```
+
+> [!WARNING]
+> nix-darwin support is currently experimental;
+> please report any issues to [the tracker](https://github.com/feel-co/hjem/issues).
 
 ## Usage
 
