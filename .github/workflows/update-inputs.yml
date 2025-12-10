@@ -93,7 +93,7 @@ jobs:
 
       - name: Create or update pull request
         if: steps.diff.outputs.changed == 'true'
-        uses: peter-evans/create-pull-request@v7.0.11
+        uses: peter-evans/create-pull-request@v8.0.0
         with:
           branch: ${{ env.UPDATE_BRANCH }}
           title: "ci: update Nix dependencies"
