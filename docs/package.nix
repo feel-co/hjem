@@ -76,8 +76,8 @@
                     };
                   };
 
-                  # due to how options are documented, `hjem.<name>` will try to access `users.users."‹name›"`
-                  users.users."‹name›" = {home = "/home/‹name›";};
+                  # due to how options are documented, `hjem.users.<username>` will try to access `users.users."‹username›"`
+                  users.users."‹username›" = {home = "/home/‹username›";};
                 };
               }
             ];

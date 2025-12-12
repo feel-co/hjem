@@ -16,16 +16,21 @@
   inherit (lib.strings) concatLines;
   inherit (lib.modules) mkIf;
   inherit (lib.options) literalExpression mkEnableOption mkOption;
-  inherit (lib.types) attrsOf bool listOf package passwdEntry path strMatching;
+  inherit (lib.types) attrsWith bool listOf package passwdEntry path strMatching;
 
   cfg = config;
   fileTypeRelativeTo' = rootDir:
-    hjem-lib.fileTypeRelativeTo {
-      inherit rootDir;
-      clobberDefault = cfg.clobberFiles;
-      clobberDefaultText = literalExpression "config.hjem.users.${name}.clobberFiles";
+    attrsWith {
+      elemType = hjem-lib.fileTypeRelativeTo {
+        inherit rootDir;
+        clobberDefault = cfg.clobberFiles;
+        clobberDefaultText = literalExpression "config.hjem.users.${name}.clobberFiles";
+      };
+      placeholder = "path";
     };
 in {
+  _class = "hjem";
+
   imports = [
     # Makes "assertions" option available without having to duplicate the work
     # already done in the Nixpkgs module.
@@ -49,7 +54,7 @@ in {
       type = passwdEntry path;
       description = ''
         The home directory for the user, to which files configured in
-        {option}`hjem.users.<name>.files` will be relative to by default.
+        {option}`hjem.users.<username>.files` will be relative to by default.
       '';
     };
 
@@ -62,13 +67,13 @@ in {
 
         A top level option exists under the Hjem module option
         {option}`hjem.clobberByDefault`. Per-file behaviour can be modified
-        with {option}`hjem.users.<name>.files.<file>.clobber`.
+        with {option}`hjem.users.<username>.files.<path>.clobber`.
       '';
     };
 
     files = mkOption {
       default = {};
-      type = attrsOf (fileTypeRelativeTo' cfg.directory);
+      type = fileTypeRelativeTo' cfg.directory;
       example = {".config/foo.txt".source = "Hello World";};
       description = "Hjem-managed files.";
     };
@@ -81,7 +86,7 @@ in {
           defaultText = "$HOME/.cache";
           description = ''
             The XDG cache directory for the user, to which files configured in
-            {option}`hjem.users.<name>.xdg.cache.files` will be relative to by default.
+            {option}`hjem.users.<username>.xdg.cache.files` will be relative to by default.
 
             Adds {env}`XDG_CACHE_HOME` to {option}`environment.sessionVariables` for
             this user if changed.
@@ -89,7 +94,7 @@ in {
         };
         files = mkOption {
           default = {};
-          type = attrsOf (fileTypeRelativeTo' cfg.xdg.cache.directory);
+          type = fileTypeRelativeTo' cfg.xdg.cache.directory;
           example = {"foo.txt".source = "Hello World";};
           description = "Hjem-managed cache files.";
         };
@@ -102,7 +107,7 @@ in {
           defaultText = "$HOME/.config";
           description = ''
             The XDG config directory for the user, to which files configured in
-            {option}`hjem.users.<name>.xdg.config.files` will be relative to by default.
+            {option}`hjem.users.<username>.xdg.config.files` will be relative to by default.
 
             Adds {env}`XDG_CONFIG_HOME` to {option}`environment.sessionVariables` for
             this user if changed.
@@ -110,7 +115,7 @@ in {
         };
         files = mkOption {
           default = {};
-          type = attrsOf (fileTypeRelativeTo' cfg.xdg.config.directory);
+          type = fileTypeRelativeTo' cfg.xdg.config.directory;
           example = {"foo.txt".source = "Hello World";};
           description = "Hjem-managed config files.";
         };
@@ -123,7 +128,7 @@ in {
           defaultText = "$HOME/.local/share";
           description = ''
             The XDG data directory for the user, to which files configured in
-            {option}`hjem.users.<name>.xdg.data.files` will be relative to by default.
+            {option}`hjem.users.<username>.xdg.data.files` will be relative to by default.
 
             Adds {env}`XDG_DATA_HOME` to {option}`environment.sessionVariables` for
             this user if changed.
@@ -131,7 +136,7 @@ in {
         };
         files = mkOption {
           default = {};
-          type = attrsOf (fileTypeRelativeTo' cfg.xdg.data.directory);
+          type = fileTypeRelativeTo' cfg.xdg.data.directory;
           example = {"foo.txt".source = "Hello World";};
           description = "Hjem-managed data files.";
         };
@@ -144,7 +149,7 @@ in {
           defaultText = "$HOME/.local/state";
           description = ''
             The XDG state directory for the user, to which files configured in
-            {option}`hjem.users.<name>.xdg.state.files` will be relative to by default.
+            {option}`hjem.users.<username>.xdg.state.files` will be relative to by default.
 
             Adds {env}`XDG_STATE_HOME` to {option}`environment.sessionVariables` for
             this user if changed.
@@ -152,7 +157,7 @@ in {
         };
         files = mkOption {
           default = {};
-          type = attrsOf (fileTypeRelativeTo' cfg.xdg.state.directory);
+          type = fileTypeRelativeTo' cfg.xdg.state.directory;
           example = {"foo.txt".source = "Hello World";};
           description = "Hjem-managed state files.";
         };
@@ -195,6 +200,9 @@ in {
   };
 
   config = {
+    # for docs
+    _module.args.name = lib.mkDefault "‹username›";
+
     environment = {
       sessionVariables = {
         XDG_CACHE_HOME = mkIf (cfg.xdg.cache.directory != options.xdg.cache.directory.default) cfg.xdg.cache.directory;

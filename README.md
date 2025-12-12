@@ -36,6 +36,10 @@ We have learned from the mistakes made in the ecosystem.
 
 No compromises, only comfort.
 
+### How to use
+
+Refer to our documentation at https://hjem.feel-co.org/.
+
 ### Implementation
 
 Hjem exposes a streamlined interface with multi-tenant capabilities, which you
@@ -49,9 +53,6 @@ may use to manage individual users' homes by leveraging the module system.
   */
 
   hjem = {
-    # use our custom file handler
-    linker = inputs.hjem.packages.${pkgs.stdenv.hostPlatform.system}.smfh;
-
     users = {
       alice = {
         enable = true;
@@ -170,22 +171,15 @@ abstracting files into modules.
 
 [Gerg-l]: https://github.com/gerg-l
 
-Hjem previously utilized systemd-tmpfiles to ensure files are linked in place.
+Hjem previously utilized [systemd-tmpfiles] to ensure files are linked in place.
 This served us well for the short duration that we relied on them, but we
 have ultimately decided to go with our in-house file linker developed by
 [Gerg-l]. The new linker is, of course, infinitely more powerful and while we
 are _not_ looking back, we understand that some users might be interested in
 alternative linking mechanisms that they can customize as they prefer.
 
-> [!TIP]
-> Setting `hjem.linker` to `null` will use [systemd-tmpfiles] as the linker
-> backend. You _may_ give this option a package you've created to use it as your
-> linker, but it must be fully compatible with the interface [smfh] currently
-> supports.
-
-Alternatively, similar to how NixOS handles external bootloaders, we may
-consider a rebuild "hook" for allowing alternative linking methods where the
-module system exposes the files configuration to a package user provides.
+You can set [`hjem.linker`](https://hjem.feel-co.org/options.html#option-hjem-linker)
+to use a custom linker if desired.
 
 ## Attributions / Prior Art
 
