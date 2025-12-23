@@ -104,7 +104,7 @@ in rec {
             else "${config.relativeTo}/${p}";
           defaultText = name;
           description = ''
-            Path to target file relative to ${rootDir}.
+            Path to target file relative to `${rootDir}`.
           '';
         };
 
@@ -200,7 +200,7 @@ in rec {
           default = rootDir;
           description = "Path that symlinks are relative to.";
           apply = x:
-            assert (hasPrefix "/" x || abort "Relative path ${x} cannot be used for files.<file>.relativeTo"); x;
+            assert (hasPrefix "/" x || abort "Relative path ${x} cannot be used for files.<path>.relativeTo"); x;
         };
       };
 
@@ -212,6 +212,9 @@ in rec {
       in
         mkMerge [
           {
+            # for docs
+            _module.args.name = mkDefault (literalExpression "‹path›");
+
             target = mkDefault name;
             source = mkIf (config.text != null) (mkDerivedConfig options.text (text:
               pkgs.writeTextFile {

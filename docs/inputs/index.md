@@ -14,7 +14,7 @@ get started with, use, and extend Hjem per your needs.
 
 This page is still in early beta. If you think some things should be better
 explained, or find bugs in the site please report them
-[over our issue tracker](https://github.com/feel-co/hjem).
+[over at our issue tracker](https://github.com/feel-co/hjem/issues).
 
 ## Installing Hjem
 
@@ -27,14 +27,24 @@ you must first add Hjem as a flake input in your `flake.nix`.
 # flake.nix
 {
   inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+
     # ↓  Add here in the 'inputs' section. The name is arbitrary.
-    hjem.url = "github:feel-co/hjem";
+    hjem = {
+      url = "github:feel-co/hjem";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 }
 ```
 
-Hjem is distributed as a **NixOS module** for the time being, and you must
-import it as such. For the sake of brevity, this guide will demonstrate how to
+Then add the corresponding module for your system to your
+system configuration.
+
+
+Hjem is distributed as a **NixOS module** or **nix-darwin** module
+for the time being, and you must import it as such.
+For the sake of brevity, this guide will demonstrate how to
 import it from inside the `nixosSystem` call.
 
 ```nix
@@ -42,7 +52,11 @@ import it from inside the `nixosSystem` call.
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    hjem.url = "github:feel-co/hjem";
+
+    hjem = {
+      url = "github:feel-co/hjem";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs: {
@@ -50,6 +64,7 @@ import it from inside the `nixosSystem` call.
       # ...
       modules = [
         inputs.hjem.nixosModules.default # <- needed for 'config.hjem' options
+        # ...
       ];
       # ...
     };
@@ -57,11 +72,47 @@ import it from inside the `nixosSystem` call.
 }
 ```
 
+Alternatively, if you use nix-darwin:
+
+```nix
+# flake.nix
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+    nix-darwin = {
+      url = "github:nix-darwin/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    hjem = {
+      url = "github:feel-co/hjem";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+
+  outputs = inputs: {
+    darwinConfigurations."<your_configuration>" = inputs.nix-darwin.lib.darwinSystem {
+      # ...
+      modules = [
+        inputs.hjem.darwinModules.default # <- needed for 'config.hjem' options
+        # ...
+      ];
+      # ...
+    };
+  };
+}
+```
+
+> [!WARNING]
+> nix-darwin support is currently experimental;
+> please report any issues to [the tracker](https://github.com/feel-co/hjem/issues).
+
 ## Usage
 
 Hjem achieves its signature simplicity and robustness by shaving off the
 unnecessary complexity and the boilerplate. Instead we expose a simple interface
-used to link files: {option}`hjem.users.<user>.files`. This is the core of
+used to link files: {option}`hjem.users.<username>.files`. This is the core of
 Hjem―file linking.
 
 ### `hjem.users`
@@ -71,15 +122,14 @@ for Hjem. It contains several sub-options that may be used to control Hjem's
 behaviour per user. You may refer to the option documentation for more details
 on each bell and whistle. Important options to be aware of are as follows:
 
-- {option}`hjem.users.<name>.enable` allows toggling file linking for individual
+- {option}`hjem.users.<username>.enable` allows toggling file linking for individual
   users. Set to `true` by default, but can be used to toggle off file linking
   for individual users on a multi-tenant system.
-- {option}`hjem.users.<name>.user` is the name of the user that will be defined.
-  This **must** be set in your configuration. To avoid making assumptions, Hjem
-  does not infer this from `<name>`.
-- {option}`hjem.users.<name>.directory` is your home directory. Files in
-  `<name>.files` will always be relative to this directory.
-- {option}`hjem.users.<name>.clobberFiles` decides whether Hjem should override
+- {option}`hjem.users.<username>.user` is the name of the user that will be defined.
+  Set to `<username>` by default.
+- {option}`hjem.users.<username>.directory` is your home directory. Files in
+  `hjem.users.<username>.files` will always be relative to this directory.
+- {option}`hjem.users.<username>.clobberFiles` decides whether Hjem should override
   if a file already exists at a target location. This default to `false`, but
   this can be enabled for all users by setting {option}`hjem.clobberByDefault`
   to `true`.
@@ -211,9 +261,9 @@ With such a configuration, we can expect three files:
 #### Using Hjem To Install Packages {#installing-packages}
 
 Hjem exposes an experimental interface for managing packages of individual
-users. At its core, `hjem.users.<name>.packages` is identical to
-`users.users.<name>.packages` as found in Nixpkgs. In fact, to avoid creating
-additional environments Hjem maps your `hjem.users.<name>.packages` to
-`users.users.<name>.packages`. This is provided as a convenient alias to manage
+users. At its core, `hjem.users.<username>.packages` is identical to
+`users.users.<username>.packages` as found in Nixpkgs. In fact, to avoid creating
+additional environments Hjem maps your `hjem.users.<username>.packages` to
+`users.users.<username>.packages`. This is provided as a convenient alias to manage
 users in one place, but **this may be subject to change!**. Please report any
 issues.

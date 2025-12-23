@@ -9,16 +9,15 @@
 }: let
   inherit (builtins) attrNames attrValues concatLists concatMap concatStringsSep filter mapAttrs toJSON typeOf;
   inherit (hjem-lib) fileToJson;
-  inherit (lib.attrsets) filterAttrs optionalAttrs mapAttrsToList;
-  inherit (lib.lists) optional;
-  inherit (lib.modules) mkIf mkMerge;
-  inherit (lib.options) literalExpression mkOption;
+  inherit (lib.attrsets) filterAttrs optionalAttrs;
+  inherit (lib.modules) importApply mkDefault mkIf mkMerge;
   inherit (lib.strings) optionalString;
   inherit (lib.trivial) flip pipe;
-  inherit (lib.types) attrs attrsOf bool either listOf nullOr package raw singleLineStr submoduleWith;
+  inherit (lib.types) submoduleWith;
   inherit (lib.meta) getExe;
 
   cfg = config.hjem;
+  _class = "nixos";
 
   enabledUsers = filterAttrs (_: u: u.enable) cfg.users;
   disabledUsers = filterAttrs (_: u: !u.enable) cfg.users;
@@ -33,7 +32,7 @@
 
   linker = getExe cfg.linker;
 
-  manifests = let
+  newManifests = let
     writeManifest = username: let
       name = "manifest-${username}.json";
     in
@@ -55,7 +54,7 @@
           CUE_CACHE_DIR=$(pwd)/.cache
           CUE_CONFIG_DIR=$(pwd)/.config
 
-          ${lib.getExe pkgs.cue} vet -c ${../../manifest/v2.cue} $target
+          ${getExe pkgs.cue} vet -c ${../../manifest/v2.cue} $target
         '';
       };
   in
@@ -65,8 +64,8 @@
       paths = map writeManifest (attrNames enabledUsers);
     };
 
-  hjemModule = submoduleWith {
-    description = "Hjem NixOS module.";
+  hjemSubmodule = submoduleWith {
+    description = "Hjem submodule for NixOS";
     class = "hjem";
     specialArgs =
       cfg.specialArgs
@@ -82,7 +81,6 @@
           ../common/user.nix
           ./systemd.nix
           ({name, ...}: let
-            inherit (lib.modules) mkDefault;
             user = config.users.users.${name};
           in {
             user = mkDefault user.name;
@@ -90,135 +88,23 @@
             clobberFiles = mkDefault cfg.clobberByDefault;
           })
         ]
-        # Evaluate additional modules under 'hjem.users.<name>' so that
+        # Evaluate additional modules under 'hjem.users.<username>' so that
         # module systems built on Hjem are more ergonomic.
         cfg.extraModules
       ];
   };
 in {
-  options.hjem = {
-    clobberByDefault = mkOption {
-      type = bool;
-      default = false;
-      description = ''
-        The default override behaviour for files managed by Hjem.
+  inherit _class;
 
-        While `true`, existing files will be overriden with new files on rebuild.
-        The behaviour may be modified per-user by setting {option}`hjem.users.<name>.clobberFiles`
-        to the desired value.
-      '';
-    };
-
-    users = mkOption {
-      default = {};
-      type = attrsOf hjemModule;
-      description = "Hjem-managed user configurations.";
-    };
-
-    extraModules = mkOption {
-      type = listOf raw;
-      default = [];
-      description = ''
-        Additional modules to be evaluated as a part of the users module
-        inside {option}`config.hjem.users.<name>`. This can be used to
-        extend each user configuration with additional options.
-      '';
-    };
-
-    specialArgs = mkOption {
-      type = attrs;
-      default = {};
-      example = literalExpression "{ inherit inputs; }";
-      description = ''
-        Additional `specialArgs` are passed to Hjem, allowing extra arguments
-        to be passed down to to all imported modules.
-      '';
-    };
-
-    linker = mkOption {
-      default = null;
-      description = ''
-        Method to use to link files.
-
-        `null` will use `systemd-tmpfiles`, which is only supported on Linux.
-
-        This is the default file linker on Linux, as it is the more mature
-        linker, but it has the downside of leaving behind symlinks that may
-        not get invalidated until the next GC, if an entry is removed from
-        {option}`hjem.<user>.files`.
-
-        Specifying a package will use a custom file linker that uses an
-        internally-generated manifest. The custom file linker must use this
-        manifest to create or remove links as needed, by comparing the manifest
-        of the currently activated system with that of the new system.
-        This prevents dangling symlinks when an entry is removed from
-        {option}`hjem.<user>.files`.
-
-        :::{.note}
-        This linker is currently experimental; once it matures, it may become
-        the default in the future.
-        :::
-      '';
-      type = nullOr package;
-    };
-
-    linkerOptions = mkOption {
-      default = [];
-      description = ''
-        Additional arguments to pass to the linker.
-
-        This is for external linker modules to set, to allow extending the default set of hjem behaviours.
-        It accepts either a list of strings, which will be passed directly as arguments, or an attribute set, which will be
-        serialized to JSON and passed as `--linker-opts options.json`.
-      '';
-      type = either (listOf singleLineStr) attrs;
-    };
-  };
+  imports = [
+    (importApply ../common/top-level.nix {inherit hjemSubmodule _class;})
+  ];
 
   config = mkMerge [
-    {
-      users.users = (mapAttrs (_: v: {inherit (v) packages;})) enabledUsers;
-      assertions =
-        concatLists
-        (mapAttrsToList (user: config:
-          map ({
-            assertion,
-            message,
-            ...
-          }: {
-            inherit assertion;
-            message = "${user} profile: ${message}";
-          })
-          config.assertions)
-        enabledUsers);
-
-      warnings =
-        concatLists
-        (mapAttrsToList (
-            user: v:
-              map (
-                warning: "${user} profile: ${warning}"
-              )
-              v.warnings
-          )
-          enabledUsers)
-        ++ optional
-        (enabledUsers == {}) ''
-          You have imported hjem, but you have not enabled hjem for any users.
-        '';
-    }
-
     # Constructed rule string that consists of the type, target, and source
     # of a tmpfile. Files with 'null' sources are filtered before the rule
     # is constructed.
     (mkIf (cfg.linker == null) {
-      assertions = [
-        {
-          assertion = pkgs.stdenv.hostPlatform.isLinux;
-          message = "The systemd-tmpfiles linker is only supported on Linux; on other platforms, use the manifest linker.";
-        }
-      ];
-
       systemd.user.tmpfiles.users =
         mapAttrs (_: u: {
           rules = pipe (userFiles u) [
@@ -254,7 +140,7 @@ in {
       };
 
       systemd.services = let
-        manifestsDir = "/var/lib/hjem";
+        oldManifests = "/var/lib/hjem";
         checkEnabledUsers = ''
           case "$1" in
             ${concatStringsSep "|" (attrNames enabledUsers)}) ;;
@@ -266,7 +152,7 @@ in {
           hjem-prepare = {
             description = "Prepare Hjem manifests directory";
             enableStrictShellChecks = true;
-            script = "mkdir -p ${manifestsDir}";
+            script = "mkdir -p ${oldManifests}";
             serviceConfig.Type = "oneshot";
             unitConfig.RefuseManualStart = true;
           };
@@ -291,8 +177,8 @@ in {
                 else concatStringsSep " " cfg.linkerOptions;
             in ''
               ${checkEnabledUsers}
-              new_manifest="${manifests}/manifest-$1.json"
-              old_manifest="${manifestsDir}/manifest-$1.json"
+              new_manifest="${newManifests}/manifest-$1.json"
+              old_manifest="${oldManifests}/manifest-$1.json"
 
               if [ ! -f "$old_manifest" ]; then
                 ${linker} ${linkerOpts} activate "$new_manifest"
@@ -317,17 +203,17 @@ in {
             */
             script = ''
               ${checkEnabledUsers}
-              new_manifest="${manifests}/manifest-$1.json"
+              new_manifest="${newManifests}/manifest-$1.json"
 
-              if ! cp "$new_manifest" ${manifestsDir}; then
+              if ! cp "$new_manifest" ${oldManifests}; then
                 echo "Copying the manifest for $1 failed. This is likely due to using the previous\
                 version of the manifest handling. The manifest directory has been recreated and repopulated with\
                 %i's manifest. Please re-run the activation services for your other users, if you have ran this one manually."
 
-                rm -rf ${manifestsDir}
-                mkdir -p ${manifestsDir}
+                rm -rf ${oldManifests}
+                mkdir -p ${oldManifests}
 
-                cp "$new_manifest" ${manifestsDir}
+                cp "$new_manifest" ${oldManifests}
               fi
             '';
           };
@@ -341,7 +227,7 @@ in {
             script = let
               manifestsToDelete =
                 map
-                (user: "${manifestsDir}/manifest-${user}.json")
+                (user: "${oldManifests}/manifest-${user}.json")
                 (attrNames disabledUsers);
             in
               if disabledUsers != {}

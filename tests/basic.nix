@@ -20,6 +20,7 @@ in
           password = "";
         };
 
+        hjem.linker = null;
         hjem.users = {
           alice = {
             enable = true;
