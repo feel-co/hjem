@@ -6,7 +6,7 @@
   ...
 }: let
   inherit (builtins) listToAttrs;
-  inherit (lib.attrsets) mapAttrsToList nameValuePair;
+  inherit (lib.attrsets) mapAttrsToList nameValuePair concatMapAttrs;
   inherit (lib.lists) flatten;
   inherit (lib.modules) mkIf;
   inherit (lib.options) mkEnableOption mkOption;
@@ -49,14 +49,26 @@ in {
     };
 
   config = mkIf cfg.enable {
-    xdg.config.files."systemd/user".source = utils.systemdUtils.lib.generateUnits {
-      type = "user";
-      inherit (cfg) units;
-      inherit (osConfig.systemd) package;
-      packages = [];
-      upstreamUnits = [];
-      upstreamWants = [];
-    };
+    xdg.config.files = let
+      unitDir = utils.systemdUtils.lib.generateUnits {
+        type = "user";
+        inherit (cfg) units;
+        inherit (osConfig.systemd) package;
+        packages = [];
+        upstreamUnits = [];
+        upstreamWants = [];
+      };
+      recurseLink = dir: dest:
+        pipe dir [
+          builtins.readDir
+          (concatMapAttrs (path: type:
+            if (type == "directory")
+            then recurseLink "${dir}/${path}" "${dest}/${path}"
+            else {
+              "${dest}/${path}".source = "${dir}/${path}";
+            }))
+        ];
+    in (recurseLink unitDir "systemd/user");
 
     systemd.units = pipe unitTypes [
       (map
