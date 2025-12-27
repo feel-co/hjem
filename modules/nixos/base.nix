@@ -16,6 +16,8 @@
   inherit (lib.types) submoduleWith;
   inherit (lib.meta) getExe;
 
+  osConfig = config;
+
   cfg = config.hjem;
   _class = "nixos";
 
@@ -70,8 +72,7 @@
     specialArgs =
       cfg.specialArgs
       // {
-        inherit hjem-lib pkgs utils;
-        osConfig = config;
+        inherit hjem-lib osConfig pkgs utils;
         osOptions = options;
       };
     modules =
@@ -80,9 +81,20 @@
         [
           ../common/user.nix
           ./systemd.nix
-          ({name, ...}: let
-            user = config.users.users.${name};
+          ({
+            config,
+            name,
+            ...
+          }: let
+            user = osConfig.users.users.${name};
           in {
+            assertions = [
+              {
+                assertion = config.enable -> user.enable;
+                message = "Enabled Hjem user '${name}' must also be configured and enabled in NixOS.";
+              }
+            ];
+
             user = mkDefault user.name;
             directory = mkDefault user.home;
             clobberFiles = mkDefault cfg.clobberByDefault;
