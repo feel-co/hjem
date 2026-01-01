@@ -4,10 +4,11 @@
 }: let
   inherit (builtins) elem isList match toJSON;
   inherit (lib.attrsets) filterAttrs;
+  inherit (lib.lists) toList;
   inherit (lib.modules) mkDefault mkDerivedConfig mkIf mkMerge;
   inherit (lib.options) literalExpression mkEnableOption mkOption;
   inherit (lib.strings) concatMapStringsSep hasPrefix;
-  inherit (lib.types) addCheck anything attrsOf bool either enum functionTo int lines listOf nullOr oneOf path str submodule;
+  inherit (lib.types) addCheck anything attrsOf bool coercedTo either enum functionTo int lines listOf nullOr oneOf path str submodule;
 in rec {
   addCheckForTypes = {
     baseType,
@@ -31,6 +32,8 @@ in rec {
   # inlined from https://github.com/NixOS/nixpkgs/tree/master/nixos/modules/config/shells-environment.nix
   # using osOptions precludes using hjem (or this type) standalone
   envVarType = attrsOf (nullOr (oneOf [(listOf (oneOf [int str path])) int str path]));
+
+  listOrSingletonOf = type: coercedTo (either (listOf type) type) toList (listOf type);
 
   fileToJson = f:
     filterAttrs (_: v: v != null) {
