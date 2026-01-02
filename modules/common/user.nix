@@ -11,12 +11,14 @@
   pkgs,
   ...
 }: let
-  inherit (hjem-lib) envVarType toEnv;
-  inherit (lib.attrsets) mapAttrsToList;
-  inherit (lib.strings) concatLines;
+  inherit (hjem-lib) envVarType listOrSingletonOf toEnv;
+  inherit (lib.attrsets) attrValues mapAttrs mapAttrsToList;
+  inherit (lib.lists) any;
   inherit (lib.modules) mkIf;
   inherit (lib.options) literalExpression mkEnableOption mkOption;
-  inherit (lib.types) attrsWith bool listOf package passwdEntry path strMatching;
+  inherit (lib.strings) concatLines concatStringsSep;
+  inherit (lib.trivial) id;
+  inherit (lib.types) attrsOf attrsWith bool listOf package passwdEntry path str strMatching;
 
   cfg = config;
   fileTypeRelativeTo' = rootDir:
@@ -162,6 +164,50 @@ in {
           description = "Hjem-managed state files.";
         };
       };
+
+      mime-apps = {
+        added-associations = mkOption {
+          type = attrsOf (listOrSingletonOf str);
+          default = {};
+          example = {
+            mimetype1 = ["foo1.desktop" "foo2.desktop" "foo3.desktop"];
+            mimetype2 = "foo4.desktop";
+          };
+          description = ''
+            Defines additional [associations] of applications with mimetypes, as
+            if the `.desktop` file was listing this mimetype in the first place.
+
+            [associations]: https://specifications.freedesktop.org/mime-apps/latest/associations.html
+          '';
+        };
+
+        removed-associations = mkOption {
+          type = attrsOf (listOrSingletonOf str);
+          default = {};
+          example = {
+            mimetype1 = "foo5.desktop";
+          };
+          description = ''
+            Removes [associations] of applications with mimetypes, as if the
+            `.desktop` file was NOT listing this mimetype in the first place.
+
+            [associations]: https://specifications.freedesktop.org/mime-apps/latest/associations.html
+          '';
+        };
+
+        default-applications = mkOption {
+          type = attrsOf (listOrSingletonOf str);
+          default = {};
+          example = {
+            mimetype1 = ["default1.desktop" "default2.desktop"];
+          };
+          description = ''
+            Indicates the [default application] to be used for a given mimetype.
+
+            [default application]: https://specifications.freedesktop.org/mime-apps/latest/default.html
+          '';
+        };
+      };
     };
 
     packages = mkOption {
@@ -216,5 +262,21 @@ in {
         (pkgs.writeShellScript "load-env")
       ];
     };
+
+    xdg.config.files."mimeapps.list" = let
+      nonDefault = {
+        added = cfg.xdg.mime-apps.added-associations != options.xdg.mime-apps.added-associations.default;
+        removed = cfg.xdg.mime-apps.removed-associations != options.xdg.mime-apps.removed-associations.default;
+        default = cfg.xdg.mime-apps.default-applications != options.xdg.mime-apps.default-applications.default;
+      };
+    in
+      mkIf (any id (attrValues nonDefault)) {
+        generator = (pkgs.formats.ini {listToValue = concatStringsSep ";";}).generate "mimeapps.list";
+        value = {
+          "Added Associations" = mkIf nonDefault.added cfg.xdg.mime-apps.added-associations;
+          "Removed Associations" = mkIf nonDefault.removed cfg.xdg.mime-apps.removed-associations;
+          "Default Applications" = mkIf nonDefault.default cfg.xdg.mime-apps.default-applications;
+        };
+      };
   };
 }
