@@ -127,7 +127,7 @@
     <details class="toc-category">
       <summary title="hjem.users.&lt;username&gt;">
         <span>hjem.users.&lt;username&gt;</span>
-        <span class="toc-count">263</span>
+        <span class="toc-count">266</span>
       </summary>
       <ul>
         
@@ -2120,6 +2120,30 @@
         <li>
           <a href='#option-hjem-users-&lt;username&gt;-xdg-data-files-&lt;path&gt;-value' title="hjem.users.&lt;username&gt;.xdg.data.files.&lt;path&gt;.value">
             xdg.data.files.&lt;path&gt;.value
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;username&gt;-xdg-mime-apps-added-associations' title="hjem.users.&lt;username&gt;.xdg.mime-apps.added-associations">
+            xdg.mime-apps.added-associations
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;username&gt;-xdg-mime-apps-default-applications' title="hjem.users.&lt;username&gt;.xdg.mime-apps.default-applications">
+            xdg.mime-apps.default-applications
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem-users-&lt;username&gt;-xdg-mime-apps-removed-associations' title="hjem.users.&lt;username&gt;.xdg.mime-apps.removed-associations">
+            xdg.mime-apps.removed-associations
             
             
           </a>
@@ -5808,6 +5832,61 @@ will be constructed with <code>L+</code> (<em>re</em>create) instead of <code>L<
   user = {
     email = "me@example.com";
   };
+}</code></pre></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;username&gt;-xdg-mime-apps-added-associations">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;username&gt;-xdg-mime-apps-added-associations" class="option-anchor">hjem.users.&lt;username&gt;.xdg.mime-apps.added-associations</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>attribute set of ((list of string) or ((list of string) or string) convertible to it)</code></div>
+  <div class="option-description"><html><head></head><body><p>Defines additional <a href="https://specifications.freedesktop.org/mime-apps/latest/associations.html">associations</a> of applications with mimetypes, as
+if the <code>.desktop</code> file was listing this mimetype in the first place.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>{ }</code></div>
+  <div class="option-example">Example: <pre><code>{
+  mimetype1 = [
+    "foo1.desktop"
+    "foo2.desktop"
+    "foo3.desktop"
+  ];
+  mimetype2 = "foo4.desktop";
+}</code></pre></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;username&gt;-xdg-mime-apps-default-applications">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;username&gt;-xdg-mime-apps-default-applications" class="option-anchor">hjem.users.&lt;username&gt;.xdg.mime-apps.default-applications</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>attribute set of ((list of string) or ((list of string) or string) convertible to it)</code></div>
+  <div class="option-description"><html><head></head><body><p>Indicates the <a href="https://specifications.freedesktop.org/mime-apps/latest/default.html">default application</a> to be used for a given mimetype.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>{ }</code></div>
+  <div class="option-example">Example: <pre><code>{
+  mimetype1 = [
+    "default1.desktop"
+    "default2.desktop"
+  ];
+}</code></pre></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem-users-&lt;username&gt;-xdg-mime-apps-removed-associations">
+  <h3 class="option-name">
+    <a href="#option-hjem-users-&lt;username&gt;-xdg-mime-apps-removed-associations" class="option-anchor">hjem.users.&lt;username&gt;.xdg.mime-apps.removed-associations</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>attribute set of ((list of string) or ((list of string) or string) convertible to it)</code></div>
+  <div class="option-description"><html><head></head><body><p>Removes <a href="https://specifications.freedesktop.org/mime-apps/latest/associations.html">associations</a> of applications with mimetypes, as if the
+<code>.desktop</code> file was NOT listing this mimetype in the first place.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>{ }</code></div>
+  <div class="option-example">Example: <pre><code>{
+  mimetype1 = "foo5.desktop";
 }</code></pre></div>
   <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
 </div>
