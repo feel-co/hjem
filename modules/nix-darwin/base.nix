@@ -143,6 +143,8 @@ in {
           });
           Label = "org.hjem.activate";
           RunAtLoad = true;
+          ThrottleInterval = 5;
+          WatchPaths = [ "/nix/var/nix/profiles" ];
           StandardOutPath = "/var/tmp/hjem-activate.out";
           StandardErrorPath = "/var/tmp/hjem-activate.err";
         };
@@ -197,33 +199,12 @@ in {
           });
           Label = "org.nix.link-nix-apps";
           RunAtLoad = true;
+          ThrottleInterval = 5;
+          WatchPaths = [ "/nix/var/nix/profiles" ];
           StandardOutPath = "/var/tmp/link-nix-apps.out";
           StandardErrorPath = "/var/tmp/link-nix-apps.err";
         };
       };
-    };
-
-    system.activationScripts = {
-      hjem-activate-kick.text = mkAfter (
-        concatMapAttrsStringSep "\n"
-        (u: _: ''
-          if uid="$(${getExe' pkgs.coreutils-full "id"} -u ${u} 2>/dev/null)"; then
-            /bin/launchctl kickstart -k "gui/''${uid}/${config.launchd.user.agents.hjem-activate.serviceConfig.Label}" 2>/dev/null || true
-          fi
-        '')
-        enabledUsers
-      );
-
-      # Kick the user agent for every configured user at activation.
-      applications.text = mkAfter (
-        concatMapAttrsStringSep "\n"
-        (u: _: ''
-          if uid="$(${getExe' pkgs.coreutils-full "id"} -u ${u} 2>/dev/null)"; then
-            /bin/launchctl kickstart -k "gui/''${uid}/${config.launchd.user.agents.link-nix-apps.serviceConfig.Label}" 2>/dev/null || true
-          fi
-        '')
-        enabledUsers
-      );
     };
   };
 }
