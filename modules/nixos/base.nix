@@ -42,7 +42,7 @@
         inherit name;
         destination = "/${name}";
         text = toJSON {
-          version = 2;
+          version = 3;
           files = concatMap (
             flip pipe [
               attrValues
@@ -56,7 +56,7 @@
           CUE_CACHE_DIR=$(pwd)/.cache
           CUE_CONFIG_DIR=$(pwd)/.config
 
-          ${getExe pkgs.cue} vet -c ${../../manifest/v2.cue} $target
+          ${getExe pkgs.cue} vet -c ${../../manifest/v3.cue} $target
         '';
       };
   in
