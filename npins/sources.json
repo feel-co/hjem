@@ -11,11 +11,11 @@
       "version_upper_bound": null,
       "release_prefix": null,
       "submodules": false,
-      "version": "v2.4.2",
-      "revision": "7d920e007a92652438346785771a78b4e3b3b879",
-      "url": "https://api.github.com/repos/feel-co/ndg/tarball/v2.4.2",
-      "hash": "1dqg6s0bj463gz18h7dih4bi511aqsr1p4l14g8ry4slh683nyza"
+      "version": "v2.6.0",
+      "revision": "a6bd3c1ce2668d096e4fdaaa03ad7f03ba1fbca8",
+      "url": "https://api.github.com/repos/feel-co/ndg/tarball/refs/tags/v2.6.0",
+      "hash": "sha256-hnBZDQWUxJV3KbtvyGW5BKLO/fAwydrxm5WHCWMQTbw="
     }
   },
-  "version": 5
+  "version": 7
 }
