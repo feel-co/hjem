@@ -13,12 +13,16 @@ jobs:
   check-formatting:
     name: "check nix formatting"
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v6
+        uses: actions/checkout@11bd0112011b244d6f43aece5ff8411b7815e01b
+        with:
+          persist-credentials: false
 
       - name: "Install Nix"
-        uses: cachix/install-nix-action@v31.10.0
+        uses: cachix/install-nix-action@2126ae7fc54c9df00dd18f7f18754393182c73cd
 
       - name: "Evaluate formatting checks"
         run: |
