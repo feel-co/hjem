@@ -38,7 +38,9 @@ No compromises, only comfort.
 
 ### How to use
 
-Refer to our documentation at <https://hjem.feel-co.org>.
+Hjem features _extensive_ documentation, meticulously describing each component
+and how to use them. Refer to our documentation at <https://hjem.feel-co.org>
+for an overview, usage guides and an options reference.
 
 ### Standalone CLI
 
@@ -186,7 +188,7 @@ Below is a live implementation of the module.
 
 <!--markdownlint-disable MD013-->
 
-```sh
+```bash
 $ nix eval .#nixosConfigurations.test.config.hjem.users.alice.files.'".foo"' --json | jq
 {
   "clobber": false,
@@ -239,9 +241,14 @@ the flake (without `system`).
 
 ## Things to do
 
-Hjem is _mostly_ feature-complete, in the sense that it is a clean
-implementation of `home.files` in Home Manager: it was never a goal to dive into
-abstracting files into modules.
+Hjem is considered _mostly_ feature complete, in the sense that it is a clean,
+modular and reliable system for managing your `$HOME` and a clean implementation
+of the `home.files` API in Home Manager. It was never a goal to dive into
+abstracting files into modules, so the core functionality is entirely complete
+with clean linking semantics and Systemd user service management.
+
+There are, however, things that we might be interested in doing. Below is a list
+of things that are currently on the agenda.
 
 ### Alternative or/and configurable file linking mechanisms
 
@@ -270,19 +277,24 @@ Special thanks to [Nixpkgs] and [Home Manager]. The interface of the
 addition to Nixpkgs' `users.users`. Hjem would not be possible without any of
 those projects, thank you!
 
-A project worthy of note is [Hjem Rum], by [@Lunarnovaa] and [@nezia1], which
-establishes a Home Manager-like module system for users less comfortable with
-manually linking files in place. If you wish to utilize the power of Hjem, but
-want an easier interface, we encourage you to take a look at Hjem Rum.
+A project worthy of note is [Hjem Rum], by [@Lunarnovaa] and [@nezia1] (who have
+also contributed to Hjem and the surrounding ecosystem!), which establishes a
+Home Manager-like module system for users less comfortable with manually linking
+files in place. If you wish to utilize the power of Hjem, but want an easier
+interface, we encourage you to take a look at Hjem Rum.
 
 Last but not least, our sincerest thanks to everyone who has used, contributed
 to or just talked about Hjem in public spaces. Thank you for the support!
 
 ## License
 
+<!--markdownlint-disable MD059-->
+
 This project is made available under Mozilla Public License (MPL) version 2.0.
 See [LICENSE](LICENSE) for more details on the exact conditions. An online copy
 is [provided here](https://www.mozilla.org/en-US/MPL/2.0/).
+
+<!--markdownlint-enable MD059-->
 
 <div align="right">
   <a href="#doc-begin">Back to the Top</a>
