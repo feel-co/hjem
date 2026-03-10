@@ -23,7 +23,7 @@
     # We should only specify the modules Hjem explicitly supports, or we risk
     # allowing not-so-defined behaviour. For example, adding nix-systems should
     # be avoided, because it allows specifying systems Hjem is not tested on.
-    forAllSystems = nixpkgs.lib.genAttrs ["x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin"];
+    forAllSystems = nixpkgs.lib.genAttrs ["x86_64-linux" "aarch64-linux" "aarch64-darwin"];
     pkgsFor = system: nixpkgs.legacyPackages.${system};
   in {
     nixosModules = import ./modules/nixos;

@@ -15,15 +15,19 @@ on:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
-  contents: read
-  pages: read
+  contents: write
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
 jobs:
   check_date:
     runs-on: ubuntu-latest
     name: Check latest commit
-    permissions:
-      contents: read
     outputs:
       should_run: ${{ steps.should_run.outputs.should_run }}
     steps:
@@ -42,9 +46,6 @@ jobs:
   publish:
     needs: check_date
     if: ${{ needs.check_date.outputs.should_run != 'false' }}
-    permissions:
-      contents: write
-      pages: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
