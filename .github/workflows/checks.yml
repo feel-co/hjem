@@ -13,11 +13,9 @@ jobs:
   check-formatting:
     name: "check nix formatting"
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
       - name: "Checkout"
-        uses: actions/checkout@11bd0112011b244d6f43aece5ff8411b7815e01b
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
 

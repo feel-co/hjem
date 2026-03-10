@@ -10,8 +10,6 @@ on:
 jobs:
   vm-tests:
     if: github.event.pull_request.draft == false
-    permissions:
-      contents: read
     strategy:
       matrix:
         include:
