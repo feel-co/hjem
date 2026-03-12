@@ -11,6 +11,8 @@
       - [Nix](#nix)
       - [Markdown](#markdown)
     - [Commit Format](#commit-format)
+      - [Example Scopes](#example-scopes)
+  - [Usage without flakes](#usage-without-flakes)
   - [Code of Conduct](#code-of-conduct)
 
 <!--toc:end-->
@@ -120,6 +122,21 @@ would be necessary.
   templates.
 - **treewide/various** - changes that modify a variety of components with
   multiple scopes.
+
+## Usage without flakes
+
+We support usage without flakes. Specifically, you can use the following shell
+commands:
+
+| With flakes        | Without flakes               |
+| ------------------ | ---------------------------- |
+| `nix flake check`  | `nix-build -A checks`        |
+| `nix develop`      | `nix-shell -A shell`         |
+| `nix build .#hjem` | `nix-build -A packages.hjem` |
+| `nix fmt`          | `nix run -f . formatter`     |
+
+You can also `import` the root of the repo and get all of the same attributes as
+the flake (without `system`).
 
 ## Code of Conduct
 
