@@ -11,7 +11,7 @@
   inherit (lib.attrsets) filterAttrs mapAttrsToList;
   inherit (lib.lists) optional;
   inherit (lib.options) literalExpression mkOption mkPackageOption;
-  inherit (lib.types) attrs attrsWith bool either listOf raw singleLineStr;
+  inherit (lib.types) attrs attrsWith bool deferredModule either listOf singleLineStr;
 
   cfg = config.hjem;
 
@@ -42,7 +42,7 @@ in {
     };
 
     extraModules = mkOption {
-      type = listOf raw;
+      type = listOf deferredModule;
       default = [];
       description = ''
         Additional modules to be evaluated as a part of the users module
