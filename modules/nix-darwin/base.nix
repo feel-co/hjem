@@ -31,8 +31,8 @@
   linker = getExe cfg.linker;
 
   newManifests = let
-    writeManifest = username: let
-      name = "manifest-${username}.json";
+    writeManifest = user: let
+      name = "manifest-${user.name}.json";
     in
       pkgs.writeTextFile {
         inherit name;
@@ -45,7 +45,7 @@
               (filter (x: x.enable))
               (map fileToJson)
             ]
-          ) (userFiles cfg.users.${username});
+          ) (userFiles user);
         };
         checkPhase = ''
           set -e
@@ -59,7 +59,7 @@
     pkgs.symlinkJoin
     {
       name = "hjem-manifests";
-      paths = map writeManifest (attrNames enabledUsers);
+      paths = map writeManifest (attrValues enabledUsers);
     };
 
   hjemSubmodule = submoduleWith {
@@ -80,6 +80,7 @@
           ({name, ...}: let
             user = getAttr name config.users.users;
           in {
+            name = mkDefault user.name;
             user = mkDefault user.name;
             directory = mkDefault user.home;
             clobberFiles = mkDefault cfg.clobberByDefault;
@@ -107,7 +108,7 @@ in {
   config = {
     # Temporary requirement: choose a primary user, pick the first enabled user.
     # This option will be deprecated in the future.
-    system.primaryUser = mkDefault (head (attrNames enabledUsers));
+    system.primaryUser = mkDefault (head (map (u: u.name) (attrValues enabledUsers)));
 
     # launchd agent to apply/diff the manifest per logged-in user
     # https://github.com/nix-darwin/nix-darwin/issues/871#issuecomment-2340443820
