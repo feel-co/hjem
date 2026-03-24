@@ -216,8 +216,11 @@ in {
             script = ''
               ${checkEnabledUsers}
 
+              # XXX: This assumes that the XDG runtime directory is /run/user/<uid> which is correct
+              # *most of the time* but we cannot guarantee it. In the future we should try to infer
+              # and respect the existing runtime directory.
               uid=$(id -u)
-              XDG_RUNTIME_DIR="/run/user/$uid" # XXX:we might want to respect existing runtime dir(?)
+              XDG_RUNTIME_DIR="/run/user/$uid"
               export XDG_RUNTIME_DIR
 
               systemd_status=$(systemctl --user is-system-running 2>&1 || true)
@@ -257,14 +260,19 @@ in {
 
                 # Only act on services that existed before; no auto-start for new ones.
                 [ -f "$old_file" ] || continue
-                # Skip services whose unit file is unchanged.
-                cmp --quiet "$old_file" "$new_file" && continue
 
-                if grep -q "^X-Restart-Triggers=" "$new_file"; then
+                # Extract trigger values from old and new unit files (empty string if not present)
+                old_restart=$(grep "^X-Restart-Triggers=" "$old_file" 2>/dev/null | cut -d= -f2- || true)
+                new_restart=$(grep "^X-Restart-Triggers=" "$new_file" 2>/dev/null | cut -d= -f2- || true)
+                old_reload=$(grep "^X-Reload-Triggers=" "$old_file" 2>/dev/null | cut -d= -f2- || true)
+                new_reload=$(grep "^X-Reload-Triggers=" "$new_file" 2>/dev/null | cut -d= -f2- || true)
+
+                # Only restart/reload if the trigger values actually changed
+                if [ -n "$new_restart" ] && [ "$old_restart" != "$new_restart" ]; then
                   echo "Restarting $unit_name for $1 (restart trigger changed)"
                   systemctl --user try-restart "$unit_name" \
                     || echo "Warning: try-restart of $unit_name failed"
-                elif grep -q "^X-Reload-Triggers=" "$new_file"; then
+                elif [ -n "$new_reload" ] && [ "$old_reload" != "$new_reload" ]; then
                   echo "Reloading $unit_name for $1 (reload trigger changed)"
                   systemctl --user reload-or-try-restart "$unit_name" \
                     || echo "Warning: reload-or-try-restart of $unit_name failed"
