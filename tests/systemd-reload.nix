@@ -81,6 +81,41 @@ in
             };
           };
         };
+
+        # v3 changes the service config (store paths) but keeps trigger content
+        # the same as v2. Services should NOT restart/reload.
+        v3.configuration = {config, ...}: {
+          hjem.users.${user} = {
+            files.".config/restart-test.conf".text = "version=2";
+            files.".config/reload-test.conf".text = "version=2";
+            systemd.services = {
+              restart-test = {
+                description = "Hjem restartTriggers test – v3";
+                serviceConfig = {
+                  Type = "oneshot";
+                  RemainAfterExit = true;
+                  # Use a different binary to change the store path
+                  ExecStart = "${pkgs.bash}/bin/true";
+                };
+                restartTriggers = [
+                  config.hjem.users.${user}.files.".config/restart-test.conf".source
+                ];
+              };
+              reload-test = {
+                description = "Hjem reloadTriggers test – v3";
+                serviceConfig = {
+                  Type = "simple";
+                  # Use a different sleep duration to change the store path
+                  ExecStart = "${pkgs.coreutils}/bin/sleep 1000";
+                  ExecReload = "${pkgs.bash}/bin/true";
+                };
+                reloadTriggers = [
+                  config.hjem.users.${user}.files.".config/reload-test.conf".source
+                ];
+              };
+            };
+          };
+        };
       };
     };
 
@@ -131,5 +166,26 @@ in
               f"reload-test was RESTARTED instead of reloaded: PID changed {pid_before} -> {pid_after}"
           )
           assert pid_after != "0", "reload-test MainPID is 0 after reload; service died"
+
+      with subtest("unchanged triggers: services stay the same when only store paths change"):
+          # Record state after v2
+          ts_v2 = alice_show("restart-test.service", "ActiveEnterTimestamp")
+          pid_v2 = alice_show("reload-test.service", "MainPID")
+
+          # Switch to v3, where unit files change but trigger content stays the same
+          node1.succeed("${specialisations}/v3/bin/switch-to-configuration test")
+          alice("systemctl --user is-active restart-test.service")
+          alice("systemctl --user is-active reload-test.service")
+
+          ts_v3 = alice_show("restart-test.service", "ActiveEnterTimestamp")
+          pid_v3 = alice_show("reload-test.service", "MainPID")
+
+          # These should be IDENTICAL since trigger content didn't change
+          assert ts_v2 == ts_v3, (
+              f"restart-test was restarted when it shouldn't be: timestamp changed {ts_v2} -> {ts_v3}"
+          )
+          assert pid_v2 == pid_v3, (
+              f"reload-test changed when it shouldn't have: PID changed {pid_v2} -> {pid_v3}"
+          )
     '';
   }
