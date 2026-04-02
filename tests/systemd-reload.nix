@@ -31,6 +31,42 @@
     };
     reloadTriggers = [triggerSource];
   };
+
+  # Timer with restartTriggers. ActiveEnterTimestamp changes on restart, which
+  # makes restarts unambiguously detectable.
+  restartTimer = name: triggerSource: {
+    description = "Hjem restartTriggers test timer – ${name}";
+    timerConfig.OnCalendar = "weekly";
+    restartTriggers = [triggerSource];
+  };
+
+  # Companion service required by restartTimer so that systemd accepts the timer.
+  # The timer refuses to start if its corresponding .service unit is not loaded.
+  timerCompanion = {
+    description = "Hjem restartTriggers test timer companion";
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${pkgs.coreutils}/bin/true";
+    };
+  };
+
+  # A socket with restartTriggers. ActiveEnterTimestamp changes on restart.
+  restartSocket = name: triggerSource: {
+    description = "Hjem restartTriggers test socket – ${name}";
+    socketConfig.ListenStream = "%t/hjem-restart-test.sock";
+    restartTriggers = [triggerSource];
+  };
+
+  # Companion service required by restartSocket so that systemd accepts the socket.
+  # The socket refuses to start if its corresponding .service unit is not loaded.
+  socketCompanion = {
+    description = "Hjem restartTriggers test socket companion";
+    serviceConfig = {
+      Type = "simple";
+      ExecStart = "${pkgs.coreutils}/bin/sleep infinity";
+    };
+  };
 in
   hjemTest {
     name = "hjem-systemd-reload";
@@ -54,64 +90,122 @@ in
       specialisation = {
         v1.configuration = {config, ...}: {
           hjem.users.${user} = {
-            files.".config/restart-test.conf".text = "version=1";
-            files.".config/reload-test.conf".text = "version=1";
-            systemd.services = {
-              restart-test =
-                restartSvc "v1"
-                config.hjem.users.${user}.files.".config/restart-test.conf".source;
-              reload-test =
-                reloadSvc "v1"
-                config.hjem.users.${user}.files.".config/reload-test.conf".source;
+            files = {
+              ".config/restart-test.conf".text = "version=1";
+              ".config/reload-test.conf".text = "version=1";
+              ".config/timer-test.conf".text = "version=1";
+              ".config/socket-test.conf".text = "version=1";
+            };
+
+            systemd = {
+              services = {
+                restart-test =
+                  restartSvc "v1"
+                  config.hjem.users.${user}.files.".config/restart-test.conf".source;
+                reload-test =
+                  reloadSvc "v1"
+                  config.hjem.users.${user}.files.".config/reload-test.conf".source;
+                restart-test-timer = timerCompanion;
+                restart-test-socket = socketCompanion;
+              };
+
+              timers.restart-test-timer =
+                restartTimer "v1"
+                config.hjem.users.${user}.files.".config/timer-test.conf".source;
+
+              sockets.restart-test-socket =
+                restartSocket "v1"
+                config.hjem.users.${user}.files.".config/socket-test.conf".source;
             };
           };
         };
 
         v2.configuration = {config, ...}: {
           hjem.users.${user} = {
-            files.".config/restart-test.conf".text = "version=2";
-            files.".config/reload-test.conf".text = "version=2";
-            systemd.services = {
-              restart-test =
-                restartSvc "v2"
-                config.hjem.users.${user}.files.".config/restart-test.conf".source;
-              reload-test =
-                reloadSvc "v2"
-                config.hjem.users.${user}.files.".config/reload-test.conf".source;
+            files = {
+              ".config/restart-test.conf".text = "version=2";
+              ".config/reload-test.conf".text = "version=2";
+              ".config/timer-test.conf".text = "version=2";
+              ".config/socket-test.conf".text = "version=2";
+            };
+
+            systemd = {
+              services = {
+                restart-test =
+                  restartSvc "v2"
+                  config.hjem.users.${user}.files.".config/restart-test.conf".source;
+                reload-test =
+                  reloadSvc "v2"
+                  config.hjem.users.${user}.files.".config/reload-test.conf".source;
+                restart-test-timer = timerCompanion;
+                restart-test-socket = socketCompanion;
+              };
+
+              timers.restart-test-timer =
+                restartTimer "v2"
+                config.hjem.users.${user}.files.".config/timer-test.conf".source;
+
+              sockets.restart-test-socket =
+                restartSocket "v2"
+                config.hjem.users.${user}.files.".config/socket-test.conf".source;
             };
           };
         };
 
-        # v3 changes the service config (store paths) but keeps trigger content
-        # the same as v2. Services should NOT restart/reload.
+        # v3 changes unit file contents (store paths) but keeps trigger content
+        # the same as v2. No unit should restart/reload.
         v3.configuration = {config, ...}: {
           hjem.users.${user} = {
-            files.".config/restart-test.conf".text = "version=2";
-            files.".config/reload-test.conf".text = "version=2";
-            systemd.services = {
-              restart-test = {
-                description = "Hjem restartTriggers test – v3";
-                serviceConfig = {
-                  Type = "oneshot";
-                  RemainAfterExit = true;
-                  # Use a different binary to change the store path
-                  ExecStart = "${pkgs.bash}/bin/true";
+            files = {
+              ".config/restart-test.conf".text = "version=2";
+              ".config/reload-test.conf".text = "version=2";
+              ".config/timer-test.conf".text = "version=2";
+              ".config/socket-test.conf".text = "version=2";
+            };
+
+            systemd = let
+              cfg = config.hjem.users.${user};
+            in {
+              services = {
+                restart-test = {
+                  description = "Hjem restartTriggers test – v3";
+                  serviceConfig = {
+                    Type = "oneshot";
+                    RemainAfterExit = true; # FIXME: does ihe test work without this?
+
+                    # Use a different binary to change the store path
+                    ExecStart = "${pkgs.bash}/bin/true";
+                  };
+                  restartTriggers = [cfg.files.".config/restart-test.conf".source];
                 };
-                restartTriggers = [
-                  config.hjem.users.${user}.files.".config/restart-test.conf".source
-                ];
+
+                reload-test = {
+                  description = "Hjem reloadTriggers test – v3";
+                  serviceConfig = {
+                    Type = "simple";
+                    ExecStart = "${pkgs.coreutils}/bin/sleep 1000";
+                    ExecReload = "${pkgs.bash}/bin/true";
+                  };
+
+                  reloadTriggers = [cfg.files.".config/reload-test.conf".source];
+                };
+
+                restart-test-timer = timerCompanion;
+                restart-test-socket = socketCompanion;
               };
-              reload-test = {
-                description = "Hjem reloadTriggers test – v3";
-                serviceConfig = {
-                  Type = "simple";
-                  # Use a different sleep duration to change the store path
-                  ExecStart = "${pkgs.coreutils}/bin/sleep 1000";
-                  ExecReload = "${pkgs.bash}/bin/true";
-                };
-                reloadTriggers = [
-                  config.hjem.users.${user}.files.".config/reload-test.conf".source
-                ];
+
+              timers.restart-test-timer = {
+                # Change OnCalendar to produce a different unit file, trigger content is
+                # unchanged.
+                description = "Hjem restartTriggers test timer – v3";
+                timerConfig.OnCalendar = "monthly";
+                restartTriggers = [cfg.files.".config/timer-test.conf".source];
+              };
+
+              sockets.restart-test-socket = {
+                description = "Hjem restartTriggers test socket – v3";
+                socketConfig.ListenStream = "%t/hjem-restart-test.sock";
+                restartTriggers = [cfg.files.".config/socket-test.conf".source];
               };
             };
           };
@@ -134,18 +228,27 @@ in
       def alice_show(unit, prop):
           return alice(f"systemctl --user show {unit} --property={prop} --value").strip()
 
-      with subtest("Deploy v1 and start both services"):
+      with subtest("Deploy v1 and start all units"):
+          # FIXME: yeesh, this got ugly fast
           node1.succeed("${specialisations}/v1/bin/switch-to-configuration test")
           alice("systemctl --user start restart-test.service")
           alice("systemctl --user start reload-test.service")
+          alice("systemctl --user start restart-test-timer.timer")
+          alice("systemctl --user start restart-test-socket.socket")
           alice("systemctl --user is-active restart-test.service")
           alice("systemctl --user is-active reload-test.service")
+          alice("systemctl --user is-active restart-test-timer.timer")
+          alice("systemctl --user is-active restart-test-socket.socket")
 
-          ts_before  = alice_show("restart-test.service", "ActiveEnterTimestamp")
-          pid_before = alice_show("reload-test.service",  "MainPID")
+          ts_before        = alice_show("restart-test.service",        "ActiveEnterTimestamp")
+          pid_before       = alice_show("reload-test.service",         "MainPID")
+          ts_timer_before  = alice_show("restart-test-timer.timer",    "ActiveEnterTimestamp")
+          ts_socket_before = alice_show("restart-test-socket.socket",  "ActiveEnterTimestamp")
 
-          assert ts_before  != "", "restart-test has no ActiveEnterTimestamp; service did not start"
-          assert pid_before != "0", "reload-test MainPID is 0; service did not start"
+          assert ts_before        != "",  "restart-test has no ActiveEnterTimestamp; service did not start"
+          assert pid_before       != "0", "reload-test MainPID is 0; service did not start"
+          assert ts_timer_before  != "",  "restart-test-timer has no ActiveEnterTimestamp; timer did not start"
+          assert ts_socket_before != "",  "restart-test-socket has no ActiveEnterTimestamp; socket did not start"
 
       with subtest("restartTriggers: service is restarted on config change"):
           node1.succeed("${specialisations}/v2/bin/switch-to-configuration test")
@@ -167,18 +270,40 @@ in
           )
           assert pid_after != "0", "reload-test MainPID is 0 after reload; service died"
 
-      with subtest("unchanged triggers: services stay the same when only store paths change"):
+      with subtest("restartTriggers: timer is restarted on config change"):
+          alice("systemctl --user is-active restart-test-timer.timer")
+
+          ts_timer_after = alice_show("restart-test-timer.timer", "ActiveEnterTimestamp")
+          assert ts_timer_before != ts_timer_after, (
+              f"restart-test-timer was NOT restarted: timestamps unchanged ({ts_timer_before})"
+          )
+
+      with subtest("restartTriggers: socket is restarted on config change"):
+          alice("systemctl --user is-active restart-test-socket.socket")
+
+          ts_socket_after = alice_show("restart-test-socket.socket", "ActiveEnterTimestamp")
+          assert ts_socket_before != ts_socket_after, (
+              f"restart-test-socket was NOT restarted: timestamps unchanged ({ts_socket_before})"
+          )
+
+      with subtest("unchanged triggers: no unit restarts when only store paths change"):
           # Record state after v2
-          ts_v2 = alice_show("restart-test.service", "ActiveEnterTimestamp")
-          pid_v2 = alice_show("reload-test.service", "MainPID")
+          ts_v2        = alice_show("restart-test.service",       "ActiveEnterTimestamp")
+          pid_v2       = alice_show("reload-test.service",        "MainPID")
+          ts_timer_v2  = alice_show("restart-test-timer.timer",   "ActiveEnterTimestamp")
+          ts_socket_v2 = alice_show("restart-test-socket.socket", "ActiveEnterTimestamp")
 
           # Switch to v3, where unit files change but trigger content stays the same
           node1.succeed("${specialisations}/v3/bin/switch-to-configuration test")
           alice("systemctl --user is-active restart-test.service")
           alice("systemctl --user is-active reload-test.service")
+          alice("systemctl --user is-active restart-test-timer.timer")
+          alice("systemctl --user is-active restart-test-socket.socket")
 
-          ts_v3 = alice_show("restart-test.service", "ActiveEnterTimestamp")
-          pid_v3 = alice_show("reload-test.service", "MainPID")
+          ts_v3        = alice_show("restart-test.service",       "ActiveEnterTimestamp")
+          pid_v3       = alice_show("reload-test.service",        "MainPID")
+          ts_timer_v3  = alice_show("restart-test-timer.timer",   "ActiveEnterTimestamp")
+          ts_socket_v3 = alice_show("restart-test-socket.socket", "ActiveEnterTimestamp")
 
           # These should be IDENTICAL since trigger content didn't change
           assert ts_v2 == ts_v3, (
@@ -186,6 +311,12 @@ in
           )
           assert pid_v2 == pid_v3, (
               f"reload-test changed when it shouldn't have: PID changed {pid_v2} -> {pid_v3}"
+          )
+          assert ts_timer_v2 == ts_timer_v3, (
+              f"restart-test-timer was restarted when it shouldn't be: timestamp changed {ts_timer_v2} -> {ts_timer_v3}"
+          )
+          assert ts_socket_v2 == ts_socket_v3, (
+              f"restart-test-socket was restarted when it shouldn't be: timestamp changed {ts_socket_v2} -> {ts_socket_v3}"
           )
     '';
   }
