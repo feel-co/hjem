@@ -253,7 +253,7 @@ in {
                 exit 0
               fi
 
-              for new_file in "$new_units"/*.service; do
+              for new_file in "$new_units"/*.service "$new_units"/*.timer "$new_units"/*.socket; do
                 [ -f "$new_file" ] || continue
                 unit_name=$(basename "$new_file")
                 old_file="$old_units/$unit_name"
