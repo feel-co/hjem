@@ -12,5 +12,6 @@
   formatter = import ./internal/formatter.nix pkgs;
   nixosModules = import ./modules/nixos;
   darwinModules = import ./modules/nix-darwin;
+  finixModules = import ./modules/finix;
   shell = import ./internal/shell.nix pkgs;
 }
