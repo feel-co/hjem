@@ -110,7 +110,7 @@ in {
           ...
         }: {
           inherit assertion;
-          message = "${user} profile: ${message}";
+          message = "${config.name} profile: ${message}";
         })
         config.assertions)
       enabledUsers)
@@ -126,7 +126,7 @@ in {
       (mapAttrsToList (
           user: v:
             map (
-              warning: "${user} profile: ${warning}"
+              warning: "${config.name} profile: ${warning}"
             )
             v.warnings
         )
