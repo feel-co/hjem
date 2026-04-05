@@ -22,6 +22,7 @@
   in {
     nixosModules = import ./modules/nixos;
     darwinModules = import ./modules/nix-darwin;
+    finixModules = import ./modules/finix;
 
     packages = forAllSystems (system:
       import ./internal/packages.nix rec {

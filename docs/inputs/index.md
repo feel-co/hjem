@@ -42,7 +42,7 @@ Then add the corresponding module for your system to your
 system configuration.
 
 
-Hjem is distributed as a **NixOS module** or **nix-darwin** module
+Hjem is distributed as a **NixOS module**, **nix-darwin** or **finix** module
 for the time being, and you must import it as such.
 For the sake of brevity, this guide will demonstrate how to
 import it from inside the `nixosSystem` call.
@@ -104,8 +104,40 @@ Alternatively, if you use nix-darwin:
 }
 ```
 
+or if you use finix:
+
+```nix
+# flake.nix
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+    finix = {
+      url = "github:finix-community/finix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    hjem = {
+      url = "github:feel-co/hjem";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+
+  outputs = inputs: {
+    nixosConfigurations."<your_configuration>" = inputs.finix.lib.finixSystem {
+      # ...
+      modules = [
+        inputs.hjem.finixModules.default # <- needed for 'config.hjem' options
+        # ...
+      ];
+      # ...
+    };
+  };
+}
+```
+
 > [!WARNING]
-> nix-darwin support is currently experimental;
+> nix-darwin and finix support is currently experimental;
 > please report any issues to [the tracker](https://github.com/feel-co/hjem/issues).
 
 ## Usage
