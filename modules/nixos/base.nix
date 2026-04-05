@@ -144,6 +144,7 @@ in {
         requires = let
           requiredUserServices = name: [
             "hjem-activate@${name}.service"
+            "hjem-reload@${name}.service"
             "hjem-copy@${name}.service"
           ];
         in
@@ -201,11 +202,90 @@ in {
             '';
           };
 
+          "hjem-reload@" = {
+            description = "Reload systemd user units for %i after Hjem file activation";
+            enableStrictShellChecks = true;
+            serviceConfig = {
+              User = "%i";
+              Type = "oneshot";
+            };
+            requires = ["hjem-activate@%i.service"];
+            after = ["hjem-activate@%i.service"];
+            path = [config.systemd.package pkgs.coreutils-full pkgs.jq pkgs.gnugrep];
+            scriptArgs = "%i";
+            script = ''
+              ${checkEnabledUsers}
+
+              # XXX: This assumes that the XDG runtime directory is /run/user/<uid> which is correct
+              # *most of the time* but we cannot guarantee it. In the future we should try to infer
+              # and respect the existing runtime directory.
+              uid=$(id -u)
+              XDG_RUNTIME_DIR="/run/user/$uid"
+              export XDG_RUNTIME_DIR
+
+              systemd_status=$(systemctl --user is-system-running 2>&1 || true)
+              if [ "$systemd_status" != "running" ] && [ "$systemd_status" != "degraded" ]; then
+                echo "User systemd for $1 is not running (status: $systemd_status). Skipping."
+                exit 0
+              fi
+
+              new_manifest="${newManifests}/manifest-$1.json"
+              old_manifest="${oldManifests}/manifest-$1.json"
+
+              systemctl --user daemon-reload
+
+              if [ ! -f "$old_manifest" ]; then
+                echo "No previous manifest for $1; skipping trigger-based restarts."
+                exit 0
+              fi
+
+              # head -1: there is exactly one systemd/user entry per user; guard
+              # against pathological manifests with duplicate matches.
+              old_units=$(jq -re \
+                '.files[] | select((.type == "symlink") and (.target | endswith("/systemd/user"))) | .source' \
+                "$old_manifest" 2>/dev/null | head -1 || true)
+              new_units=$(jq -re \
+                '.files[] | select((.type == "symlink") and (.target | endswith("/systemd/user"))) | .source' \
+                "$new_manifest" 2>/dev/null | head -1 || true)
+
+              if [ -z "$old_units" ] || [ -z "$new_units" ]; then
+                echo "No systemd user unit directory in manifest for $1; skipping."
+                exit 0
+              fi
+
+              for new_file in "$new_units"/*.service "$new_units"/*.timer "$new_units"/*.socket; do
+                [ -f "$new_file" ] || continue
+                unit_name=$(basename "$new_file")
+                old_file="$old_units/$unit_name"
+
+                # Only act on services that existed before; no auto-start for new ones.
+                [ -f "$old_file" ] || continue
+
+                # Extract trigger values from old and new unit files (empty string if not present)
+                old_restart=$(grep "^X-Restart-Triggers=" "$old_file" 2>/dev/null | cut -d= -f2- || true)
+                new_restart=$(grep "^X-Restart-Triggers=" "$new_file" 2>/dev/null | cut -d= -f2- || true)
+                old_reload=$(grep "^X-Reload-Triggers=" "$old_file" 2>/dev/null | cut -d= -f2- || true)
+                new_reload=$(grep "^X-Reload-Triggers=" "$new_file" 2>/dev/null | cut -d= -f2- || true)
+
+                # Only restart/reload if the trigger values actually changed
+                if [ -n "$new_restart" ] && [ "$old_restart" != "$new_restart" ]; then
+                  echo "Restarting $unit_name for $1 (restart trigger changed)"
+                  systemctl --user try-restart "$unit_name" \
+                    || echo "Warning: try-restart of $unit_name failed"
+                elif [ -n "$new_reload" ] && [ "$old_reload" != "$new_reload" ]; then
+                  echo "Reloading $unit_name for $1 (reload trigger changed)"
+                  systemctl --user reload-or-try-restart "$unit_name" \
+                    || echo "Warning: reload-or-try-restart of $unit_name failed"
+                fi
+              done
+            '';
+          };
+
           "hjem-copy@" = {
             description = "Copy the manifest into Hjem's state directory for %i";
             enableStrictShellChecks = true;
             serviceConfig.Type = "oneshot";
-            after = ["hjem-activate@%i.service"];
+            after = ["hjem-reload@%i.service"];
             scriptArgs = "%i";
             /*
             TODO: remove the if condition in a while, this is in place because the first iteration of the

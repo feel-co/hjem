@@ -49,6 +49,12 @@ jobs:
           - os: ubuntu-22.04-arm
             system: "aarch64-linux"
             test: no-users-linker
+          - os: ubuntu-latest
+            system: "x86_64-linux"
+            test: systemd-reload
+          - os: ubuntu-22.04-arm
+            system: "aarch64-linux"
+            test: systemd-reload
 
 
     runs-on: ${{ matrix.os }}
