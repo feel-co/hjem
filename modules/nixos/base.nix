@@ -211,7 +211,7 @@ in {
             };
             requires = ["hjem-activate@%i.service"];
             after = ["hjem-activate@%i.service"];
-            path = [pkgs.jq pkgs.gnugrep];
+            path = [config.systemd.package pkgs.coreutils-full pkgs.jq pkgs.gnugrep];
             scriptArgs = "%i";
             script = ''
               ${checkEnabledUsers}
