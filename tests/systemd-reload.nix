@@ -16,7 +16,7 @@
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
-      ExecStart = "${getExe' pkgs.coreutils "true"}";
+      ExecStart = getExe' pkgs.coreutils "true";
     };
     restartTriggers = [triggerSource];
   };
@@ -29,7 +29,7 @@
     serviceConfig = {
       Type = "simple";
       ExecStart = "${getExe' pkgs.coreutils "sleep"} infinity";
-      ExecReload = "${getExe' pkgs.coreutils "true"}";
+      ExecReload = getExe' pkgs.coreutils "true";
     };
     reloadTriggers = [triggerSource];
   };
@@ -49,7 +49,7 @@
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
-      ExecStart = "${getExe' pkgs.coreutils "true"}";
+      ExecStart = getExe' pkgs.coreutils "true";
     };
   };
 
@@ -176,7 +176,7 @@ in
                     RemainAfterExit = true; # FIXME: does ihe test work without this?
 
                     # Use a different binary to change the store path
-                    ExecStart = "${getExe' pkgs.busybox "true"}";
+                    ExecStart = getExe' pkgs.busybox "true";
                   };
                   restartTriggers = [cfg.files.".config/restart-test.conf".source];
                 };
@@ -186,7 +186,7 @@ in
                   serviceConfig = {
                     Type = "simple";
                     ExecStart = "${pkgs.coreutils}/bin/sleep 1000";
-                    ExecReload = "${getExe' pkgs.busybox "true"}";
+                    ExecReload = getExe' pkgs.busybox "true";
                   };
 
                   reloadTriggers = [cfg.files.".config/reload-test.conf".source];
