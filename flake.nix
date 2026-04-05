@@ -23,6 +23,7 @@
   in {
     nixosModules = import ./modules/nixos;
     darwinModules = import ./modules/nix-darwin;
+    finixModules = import ./modules/finix;
 
     overlays = {
       smfh = (import smfhPin).overlays.default;
