@@ -3,7 +3,9 @@
   hjemTest,
   smfh,
   pkgs,
+  lib,
 }: let
+  inherit (lib.meta) getExe';
   user = "alice";
   userHome = "/home/${user}";
 
@@ -14,7 +16,7 @@
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
-      ExecStart = "${pkgs.coreutils}/bin/true";
+      ExecStart = "${getExe' pkgs.coreutils "true"}";
     };
     restartTriggers = [triggerSource];
   };
@@ -26,8 +28,8 @@
     description = "Hjem reloadTriggers test – ${name}";
     serviceConfig = {
       Type = "simple";
-      ExecStart = "${pkgs.coreutils}/bin/sleep infinity";
-      ExecReload = "${pkgs.coreutils}/bin/true";
+      ExecStart = "${getExe' pkgs.coreutils "sleep"} infinity";
+      ExecReload = "${getExe' pkgs.coreutils "true"}";
     };
     reloadTriggers = [triggerSource];
   };
@@ -47,7 +49,7 @@
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
-      ExecStart = "${pkgs.coreutils}/bin/true";
+      ExecStart = "${getExe' pkgs.coreutils "true"}";
     };
   };
 
@@ -64,7 +66,7 @@
     description = "Hjem restartTriggers test socket companion";
     serviceConfig = {
       Type = "simple";
-      ExecStart = "${pkgs.coreutils}/bin/sleep infinity";
+      ExecStart = "${getExe' pkgs.coreutils "sleep"} infinity";
     };
   };
 in
@@ -174,7 +176,7 @@ in
                     RemainAfterExit = true; # FIXME: does ihe test work without this?
 
                     # Use a different binary to change the store path
-                    ExecStart = "${pkgs.bash}/bin/true";
+                    ExecStart = "${getExe' pkgs.busybox "true"}";
                   };
                   restartTriggers = [cfg.files.".config/restart-test.conf".source];
                 };
@@ -184,7 +186,7 @@ in
                   serviceConfig = {
                     Type = "simple";
                     ExecStart = "${pkgs.coreutils}/bin/sleep 1000";
-                    ExecReload = "${pkgs.bash}/bin/true";
+                    ExecReload = "${getExe' pkgs.busybox "true"}";
                   };
 
                   reloadTriggers = [cfg.files.".config/reload-test.conf".source];
