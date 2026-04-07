@@ -9,6 +9,8 @@ pkgs.mkShell {
       # cue validator
       cue
       go
+      # source management
+      npins
       ;
   };
 }

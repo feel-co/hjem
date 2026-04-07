@@ -6,13 +6,6 @@
       url = "github:nix-darwin/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    # Sleek, manifest based file handler.
-    # Our awesome atomic file linker.
-    smfh = {
-      url = "github:feel-co/smfh";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs = {
@@ -25,23 +18,24 @@
     # be avoided, because it allows specifying systems Hjem is not tested on.
     forAllSystems = nixpkgs.lib.genAttrs ["x86_64-linux" "aarch64-linux" "aarch64-darwin"];
     pkgsFor = system: nixpkgs.legacyPackages.${system};
+    smfhFor = pkgs: pkgs.callPackage ((import ./npins).smfh + "/package.nix") {};
   in {
     nixosModules = import ./modules/nixos;
     darwinModules = import ./modules/nix-darwin;
 
     packages = forAllSystems (system:
-      import ./internal/packages.nix {
+      import ./internal/packages.nix rec {
         inherit nixpkgs;
-        inherit (inputs.smfh.packages.${system}) smfh;
         hjemModule = self.nixosModules.default;
         pkgs = pkgsFor system;
+        smfh = smfhFor pkgs;
       });
 
     checks = forAllSystems (system:
-      import ./internal/checks.nix {
+      import ./internal/checks.nix rec {
         inherit self;
-        inherit (self.packages.${system}) smfh;
         pkgs = pkgsFor system;
+        smfh = smfhFor pkgs;
       });
 
     devShells = forAllSystems (system: {
