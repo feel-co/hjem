@@ -18,10 +18,15 @@
     # be avoided, because it allows specifying systems Hjem is not tested on.
     forAllSystems = nixpkgs.lib.genAttrs ["x86_64-linux" "aarch64-linux" "aarch64-darwin"];
     pkgsFor = system: nixpkgs.legacyPackages.${system};
-    smfhFor = pkgs: pkgs.callPackage ((import ./npins).smfh + "/package.nix") {};
+    smfhPin = (import ./npins).smfh;
+    smfhFor = pkgs: pkgs.callPackage (smfhPin + "/package.nix") {};
   in {
     nixosModules = import ./modules/nixos;
     darwinModules = import ./modules/nix-darwin;
+
+    overlays = [
+      (import smfhPin).overlays.default
+    ];
 
     packages = forAllSystems (system:
       import ./internal/packages.nix rec {
