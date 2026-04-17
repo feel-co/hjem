@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  osConfig,
   utils,
   ...
 }: let
@@ -49,14 +48,20 @@ in {
     };
 
   config = mkIf cfg.enable {
-    xdg.config.files."systemd/user".source = utils.systemdUtils.lib.generateUnits {
-      type = "user";
-      inherit (cfg) units;
-      inherit (osConfig.systemd) package;
-      packages = [];
-      upstreamUnits = [];
-      upstreamWants = [];
-    };
+    xdg.config.files = listToAttrs (
+      flatten (
+        mapAttrsToList (name: unit: let
+          src = "${utils.systemdUtils.lib.makeUnit name unit}/${name}";
+          mkEntry = path: nameValuePair path {source = src;};
+        in
+          [mkEntry "systemd/user/${name}"]
+          ++ map (w: mkEntry "systemd/user/${w}.wants/${name}") (unit.wantedBy or [])
+          ++ map (r: mkEntry "systemd/user/${r}.requires/${name}") (unit.requiredBy or [])
+          ++ map (u: mkEntry "systemd/user/${u}.upholds/${name}") (unit.upheldBy or [])
+          ++ map (a: nameValuePair "systemd/user/${a}" {source = src;}) (unit.aliases or []))
+        cfg.units
+      )
+    );
 
     systemd.units = pipe unitTypes [
       (map
