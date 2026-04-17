@@ -5,6 +5,7 @@
 }: let
   user = "alice";
   userHome = "/home/${user}";
+  uid = 1000;
 in
   hjemTest {
     name = "hjem-linker";
@@ -20,6 +21,7 @@ in
           isNormalUser = true;
           home = userHome;
           password = "";
+          inherit uid;
         };
 
         hjem = {
@@ -50,6 +52,7 @@ in
                 text = ''
                   test content
                 '';
+                inherit uid;
               };
               bar = {
                 type = "delete";

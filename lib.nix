@@ -8,7 +8,7 @@
   inherit (lib.modules) mkDefault mkDerivedConfig mkIf mkMerge;
   inherit (lib.options) literalExpression mkEnableOption mkOption;
   inherit (lib.strings) concatMapStringsSep hasPrefix;
-  inherit (lib.types) addCheck anything attrsOf bool coercedTo either enum functionTo int lines listOf nullOr oneOf path str submodule;
+  inherit (lib.types) addCheck anything attrsOf bool coercedTo either enum functionTo int ints lines listOf nullOr oneOf path str submodule;
 in rec {
   addCheckForTypes = {
     baseType,
@@ -138,13 +138,15 @@ in rec {
         };
 
         uid = mkOption {
-          type = fileAttrType (nullOr str) "uid";
+          # UIDs and GIDs are unsigned 32-bit ints
+          # https://serverfault.com/a/105265
+          type = fileAttrType (nullOr ints.u32) "uid";
           default = null;
           description = "User ID to set as owner on the target path.";
         };
 
         gid = mkOption {
-          type = fileAttrType (nullOr str) "gid";
+          type = fileAttrType (nullOr ints.u32) "gid";
           default = null;
           description = "Group ID to set as owner on the target path.";
         };
