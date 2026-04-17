@@ -239,27 +239,17 @@ in {
                 exit 0
               fi
 
-              # head -1: there is exactly one systemd/user entry per user; guard
-              # against pathological manifests with duplicate matches.
-              old_units=$(jq -re \
-                '.files[] | select((.type == "symlink") and (.target | endswith("/systemd/user"))) | .source' \
-                "$old_manifest" 2>/dev/null | head -1 || true)
-              new_units=$(jq -re \
-                '.files[] | select((.type == "symlink") and (.target | endswith("/systemd/user"))) | .source' \
-                "$new_manifest" 2>/dev/null | head -1 || true)
+              # Compare trigger values for each individually-linked systemd unit file.
+              # Only act on units that existed before; no auto-start for new ones.
+              while IFS=$'\t' read -r unit_name new_file; do
+                old_file=$(jq -re \
+                  --arg name "$unit_name" \
+                  '.files[] | select((.type == "symlink") and (.target | endswith("/systemd/user/" + $name))) | .source' \
+                  "$old_manifest" 2>/dev/null || true)
 
-              if [ -z "$old_units" ] || [ -z "$new_units" ]; then
-                echo "No systemd user unit directory in manifest for $1; skipping."
-                exit 0
-              fi
-
-              for new_file in "$new_units"/*.service "$new_units"/*.timer "$new_units"/*.socket; do
-                [ -f "$new_file" ] || continue
-                unit_name=$(basename "$new_file")
-                old_file="$old_units/$unit_name"
-
-                # Only act on services that existed before; no auto-start for new ones.
-                [ -f "$old_file" ] || continue
+                if [ -z "$old_file" ] || [ ! -f "$old_file" ] || [ ! -f "$new_file" ]; then
+                  continue
+                fi
 
                 # Extract trigger values from old and new unit files (empty string if not present)
                 old_restart=$(grep "^X-Restart-Triggers=" "$old_file" 2>/dev/null | cut -d= -f2- || true)
@@ -277,7 +267,12 @@ in {
                   systemctl --user reload-or-try-restart "$unit_name" \
                     || echo "Warning: reload-or-try-restart of $unit_name failed"
                 fi
-              done
+              done < <(jq -re \
+                '.files[] | select(
+                  (.type == "symlink") and
+                  (.target | test(".+/systemd/user/[^/]+\\.(service|timer|socket)$"))
+                ) | [(.target | split("/") | last), .source] | @tsv' \
+                "$new_manifest" 2>/dev/null || true)
             '';
           };
 
