@@ -15,11 +15,13 @@
 
   checks =
     packagesFromDirectoryRecursive {
-      callPackage = pkgs.newScope (checks
+      callPackage = pkgs.newScope (
+        checks
         // {
           inherit hjemTest;
           hjemModule = (import (self + "/modules/nixos")).default;
-        });
+        }
+      );
       directory = ../tests;
     }
     // {
@@ -31,9 +33,11 @@
       # Formatting checks to run as a part of 'nix flake check' or manually
       # via 'nix build .#checks.<system>.formatting'.
       formatting =
-        pkgs.runCommandLocal "hjem-formatting-check" {
+        pkgs.runCommandLocal "hjem-formatting-check"
+        {
           nativeBuildInputs = [pkgs.alejandra];
-        } ''
+        }
+        ''
           alejandra --check ${self}
           touch $out;
         '';
