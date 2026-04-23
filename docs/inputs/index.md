@@ -112,10 +112,7 @@ or if you use finix:
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    finix = {
-      url = "github:finix-community/finix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    finix.url = "github:finix-community/finix";
 
     hjem = {
       url = "github:feel-co/hjem";
