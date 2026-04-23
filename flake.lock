@@ -1,20 +1,5 @@
 {
   "nodes": {
-    "finix": {
-      "locked": {
-        "lastModified": 1776763205,
-        "narHash": "sha256-WPYuyd3yFD5lO+wi9Dse3ruQ7Zn2CtCI4X+2fQ1Im40=",
-        "owner": "finix-community",
-        "repo": "finix",
-        "rev": "f17ab1b95958a5b6c5d64e14991811ab78e8e2f3",
-        "type": "github"
-      },
-      "original": {
-        "owner": "finix-community",
-        "repo": "finix",
-        "type": "github"
-      }
-    },
     "nix-darwin": {
       "inputs": {
         "nixpkgs": [
@@ -50,7 +35,6 @@
     },
     "root": {
       "inputs": {
-        "finix": "finix",
         "nix-darwin": "nix-darwin",
         "nixpkgs": "nixpkgs"
       }

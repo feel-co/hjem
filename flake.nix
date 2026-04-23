@@ -6,8 +6,6 @@
       url = "github:nix-darwin/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    finix.url = "github:finix-community/finix";
   };
 
   outputs = {
@@ -23,6 +21,7 @@
       "aarch64-linux"
       "aarch64-darwin"
     ];
+    finix = (import ./npins).finix;
     pkgsFor = system: nixpkgs.legacyPackages.${system};
     smfhFor = pkgs: pkgs.callPackage ((import ./npins).smfh + "/package.nix") {};
   in {
@@ -48,9 +47,8 @@
           smfh = smfhFor pkgs;
         }
         // import ./internal/finix-checks.nix {
-          inherit self;
+          inherit self finix;
           pkgs = pkgsFor system;
-          finix = inputs.finix;
         }
     );
 
