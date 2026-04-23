@@ -1,7 +1,7 @@
 # take `pkgs` as arg to allow injection of other nixpkgs instances, without flakes
 {
   pkgs ? import (import ./internal/flake-parse.nix "nixpkgs") {},
-  finix ? (import ./internal/flake-parse.nix "finix"),
+  finix ? (import ./npins).finix,
   smfh ? pkgs.callPackage ((import ./npins).smfh + "/package.nix") {},
 }: rec {
   checks =
