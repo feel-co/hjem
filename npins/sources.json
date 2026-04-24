@@ -1,5 +1,18 @@
 {
   "pins": {
+    "finix": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "finix-community",
+        "repo": "finix"
+      },
+      "branch": "main",
+      "submodules": false,
+      "revision": "b7a33ff6b856c85fb13c7e9dc03fd41c824299ba",
+      "url": "https://github.com/finix-community/finix/archive/b7a33ff6b856c85fb13c7e9dc03fd41c824299ba.tar.gz",
+      "hash": "sha256-R7U2A+Q2cQOAvnVJ0WzTYwB6Udqeyr/sNoad8k1Im1A="
+    },
     "ndg": {
       "type": "GitRelease",
       "repository": {
