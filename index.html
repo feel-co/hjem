@@ -5,17 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Index</title>
      
+    
     <script>
       // Apply sidebar state immediately to prevent flash
       (function () {
-        if (localStorage.getItem("sidebar-collapsed") === "true") {
-          document.documentElement.classList.add("sidebar-collapsed");
+        try {
+          if (localStorage.getItem("sidebar-collapsed") === "true") {
+            document.documentElement.classList.add("sidebar-collapsed");
+          }
+        } catch (e) {
+          // localStorage unavailable
         }
       })();
     </script>
     <link rel="stylesheet" href="assets/style.css" />
     <script defer src="assets/main.js"></script>
     
+    <script>
+      window.searchNamespace = window.searchNamespace || {};
+      window.searchNamespace.rootPath = "";
+    </script>
     <script defer src="assets/search.js"></script>
     
   </head>
@@ -59,30 +68,34 @@
           </svg>
         </div>
         <nav class="sidebar">
-          <div class="docs-nav">
-            <h2>Documents</h2>
-            <ul>
-              <li><a href="index.html">Index</a></li>
+          <details class="sidebar-section" data-section="docs" open>
+            <summary>Documents</summary>
+            <div class="sidebar-section-content">
+              <ul>
+                <li><a href="index.html">Index</a></li>
 <li><a href="extending.html">Extending Hjem</a></li>
 <li><a href="search.html">Search</a></li>
 
-            </ul>
-          </div>
+              </ul>
+            </div>
+          </details>
 
-          <div class="toc">
-            <h2>Contents</h2>
-            <ul class="toc-list">
-              <li><a href="#index">Index</a>
+          <details class="sidebar-section" data-section="toc" open>
+            <summary>Contents</summary>
+            <div class="sidebar-section-content">
+              <ul class="toc-list">
+                <li><a href="#index">Index</a>
 <ul><li><a href="#preface">Preface</a>
 <li><a href="#installing-hjem">Installing Hjem</a>
 <li><a href="#usage">Usage</a>
 <ul><li><a href="#hjem-users">hjem.users</a>
 </li></ul></li></ul></li>
-            </ul>
-          </div>
+              </ul>
+            </div>
+          </details>
         </nav>
 
-        <main class="content"><html><head></head><body><h1>Index</h1>
+        <main class="content"><html><head></head><body><h1 id="index">Index</h1>
 <h2 id="preface">Preface</h2>
 <p>Welcome to the Hjem documentation. This online manual aims to describe how to
 get started with, use, and extend Hjem per your needs.</p>
@@ -97,7 +110,7 @@ to take a look at <a href="https://github.com/snugnug/hjem-rum">Hjem Rum</a></p>
 <p>This page is still in early beta. If you think some things should be better
 explained, or find bugs in the site please report them
 <a href="https://github.com/feel-co/hjem/issues">over at our issue tracker</a>.</p>
-<h2>Installing Hjem</h2>
+<h2 id="installing-hjem">Installing Hjem</h2>
 <p>The primary method of installing Hjem is through <a href="https://nix.dev/concepts/flakes.html">Nix Flakes</a>. To get started,
 you must first add Hjem as a flake input in your <code>flake.nix</code>.</p>
 <pre class="highlight"><code class="language-nix"><span style="color:rgb(92,99,112);font-style: italic;">#&nbsp;flake.nix</span><br><span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;<span style="color:rgb(86,182,194);">inputs</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">nixpkgs</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">url</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">github:NixOS/nixpkgs/nixos-unstable</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(92,99,112);font-style: italic;">#&nbsp;↓&nbsp;&nbsp;Add&nbsp;here&nbsp;in&nbsp;the&nbsp;'inputs'&nbsp;section.&nbsp;The&nbsp;name&nbsp;is&nbsp;arbitrary.</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">hjem</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">url</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">github:feel-co/hjem</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">inputs</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">nixpkgs</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">follows</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">nixpkgs</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(132,139,152);">}</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;<span style="color:rgb(132,139,152);">}</span><span style="color:rgb(132,139,152);">;</span><br><span style="color:rgb(132,139,152);">}</span><br></code></pre>
@@ -115,30 +128,30 @@ import it from inside the <code>nixosSystem</code> call.</p>
 <p>nix-darwin support is currently experimental;
 please report any issues to <a href="https://github.com/feel-co/hjem/issues">the tracker</a>.</p>
 </div>
-<h2>Usage</h2>
+<h2 id="usage">Usage</h2>
 <p>Hjem achieves its signature simplicity and robustness by shaving off the
 unnecessary complexity and the boilerplate. Instead we expose a simple interface
-used to link files: <a class="option-reference" href="options.html#option-hjem-users-<username>-files"><code class="nixos-option">hjem.users.&lt;username&gt;.files</code></a>. This is the core of
+used to link files: <a class="option-reference" href="options.html#option-hjem.users._username_.files"><code class="nixos-option">hjem.users.&lt;username&gt;.files</code></a>. This is the core of
 Hjem―file linking.</p>
-<h3><code>hjem.users</code></h3>
-<p><a class="option-reference" href="options.html#option-hjem-users"><code class="nixos-option">hjem.users</code></a> is the main entry point used to declare individual users
+<h3 id="hjem-users"><code>hjem.users</code></h3>
+<p><a class="option-reference" href="options.html#option-hjem.users"><code class="nixos-option">hjem.users</code></a> is the main entry point used to declare individual users
 for Hjem. It contains several sub-options that may be used to control Hjem's
 behaviour per user. You may refer to the option documentation for more details
 on each bell and whistle. Important options to be aware of are as follows:</p>
 <ul>
-<li><a class="option-reference" href="options.html#option-hjem-users-<username>-enable"><code class="nixos-option">hjem.users.&lt;username&gt;.enable</code></a> allows toggling file linking for individual
+<li><a class="option-reference" href="options.html#option-hjem.users._username_.enable"><code class="nixos-option">hjem.users.&lt;username&gt;.enable</code></a> allows toggling file linking for individual
 users. Set to <code>true</code> by default, but can be used to toggle off file linking
 for individual users on a multi-tenant system.</li>
-<li><a class="option-reference" href="options.html#option-hjem-users-<username>-user"><code class="nixos-option">hjem.users.&lt;username&gt;.user</code></a> is the name of the user that will be defined.
+<li><a class="option-reference" href="options.html#option-hjem.users._username_.user"><code class="nixos-option">hjem.users.&lt;username&gt;.user</code></a> is the name of the user that will be defined.
 Set to <code>&lt;username&gt;</code> by default.</li>
-<li><a class="option-reference" href="options.html#option-hjem-users-<username>-directory"><code class="nixos-option">hjem.users.&lt;username&gt;.directory</code></a> is your home directory. Files in
+<li><a class="option-reference" href="options.html#option-hjem.users._username_.directory"><code class="nixos-option">hjem.users.&lt;username&gt;.directory</code></a> is your home directory. Files in
 <code>hjem.users.&lt;username&gt;.files</code> will always be relative to this directory.</li>
-<li><a class="option-reference" href="options.html#option-hjem-users-<username>-clobberFiles"><code class="nixos-option">hjem.users.&lt;username&gt;.clobberFiles</code></a> decides whether Hjem should override
+<li><a class="option-reference" href="options.html#option-hjem.users._username_.clobberFiles"><code class="nixos-option">hjem.users.&lt;username&gt;.clobberFiles</code></a> decides whether Hjem should override
 if a file already exists at a target location. This default to <code>false</code>, but
-this can be enabled for all users by setting <a class="option-reference" href="options.html#option-hjem-clobberByDefault"><code class="nixos-option">hjem.clobberByDefault</code></a>
+this can be enabled for all users by setting <a class="option-reference" href="options.html#option-hjem.clobberByDefault"><code class="nixos-option">hjem.clobberByDefault</code></a>
 to <code>true</code>.</li>
 </ul>
-<h4>Example</h4>
+<h4 id="example">Example</h4>
 <p>Now, let's go over an example. In this case we have a user named "alice" whose
 home directory we are looking to manage. Alice's home directory is
 <code>/home/alice</code>, so we should first tell Hjem to look there in the configuration.
@@ -182,7 +195,7 @@ files in specific formats expected by your programs. You could, say, use
 <p>This, of course, works with other formats and generators as well.</p>
 </li>
 </ol>
-<h4>Bringing it together</h4>
+<h4 id="bringing-it-together">Bringing it together</h4>
 <p>Now that we have gone over individual examples, here is a more <em>complete</em>
 example to give an idea of the bigger picture. By using (or abusing, up to you)
 the <code>files</code> submodule you can write files anywhere in your home directory.</p>
@@ -203,6 +216,20 @@ users in one place, but <strong>this may be subject to change!</strong>. Please 
 issues.</p>
 </body></html></main>
       </div>
+
+      <aside class="page-toc">
+        <nav class="page-toc-nav">
+          <h3>On this page</h3>
+          <ul class="page-toc-list">
+            <li><a href="#index">Index</a>
+<ul><li><a href="#preface">Preface</a>
+<li><a href="#installing-hjem">Installing Hjem</a>
+<li><a href="#usage">Usage</a>
+<ul><li><a href="#hjem-users">hjem.users</a>
+</li></ul></li></ul></li>
+          </ul>
+        </nav>
+      </aside>
 
       <footer>
   <p>Generated with ndg</p>

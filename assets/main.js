@@ -1,8 +1,8 @@
 // Polyfill for requestIdleCallback for Safari and unsupported browsers
 if (typeof window.requestIdleCallback === "undefined") {
   window.requestIdleCallback = function (cb) {
-    var start = Date.now();
-    var idlePeriod = 50;
+    const start = Date.now();
+    const idlePeriod = 50;
     return setTimeout(function () {
       cb({
         didTimeout: false,
@@ -61,13 +61,16 @@ function createMobileElements() {
   const mobileSearchPopup = document.createElement("div");
   mobileSearchPopup.id = "mobile-search-popup";
   mobileSearchPopup.className = "mobile-search-popup";
+  mobileSearchPopup.setAttribute("role", "dialog");
+  mobileSearchPopup.setAttribute("aria-modal", "true");
+  mobileSearchPopup.setAttribute("aria-label", "Search");
   mobileSearchPopup.innerHTML = `
-    <div class="mobile-search-container">
+    <div class="mobile-search-container" role="document">
       <div class="mobile-search-header">
-        <input type="text" id="mobile-search-input" placeholder="Search..." />
-        <button id="close-mobile-search" class="close-mobile-search" aria-label="Close search">&times;</button>
+        <input type="search" id="mobile-search-input" placeholder="Search..." aria-label="Search" autocomplete="off" />
+        <button type="button" id="close-mobile-search" class="close-mobile-search" aria-label="Close search">&times;</button>
       </div>
-      <div id="mobile-search-results" class="mobile-search-results"></div>
+      <div id="mobile-search-results" class="mobile-search-results" role="region" aria-live="polite" aria-label="Search results"></div>
     </div>
   `;
 
@@ -85,15 +88,232 @@ function createMobileElements() {
   }
 }
 
+// Highlight search terms on target pages
+function highlightTextInContent(container, terms) {
+  if (!container || !terms || terms.length === 0) return;
+
+  // Create a case-insensitive regex pattern
+  const pattern = terms
+    .map((term) => term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+    .join("|");
+  const regex = new RegExp(`(${pattern})`, "gi");
+
+  // Elements to skip highlighting
+  const skipTags = new Set(["SCRIPT", "STYLE", "CODE", "PRE", "MARK"]);
+
+  function highlightNode(node) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const text = node.textContent;
+      // Use match instead of test to avoid regex state issues
+      if (text.match(regex)) {
+        const span = document.createElement("span");
+        // Create a fresh regex for replace to avoid state issues
+        const replaceRegex = new RegExp(`(${pattern})`, "gi");
+        span.innerHTML = text.replace(
+          replaceRegex,
+          '<mark class="search-highlight">$1</mark>',
+        );
+        node.replaceWith(...Array.from(span.childNodes));
+      }
+    } else if (
+      node.nodeType === Node.ELEMENT_NODE &&
+      !skipTags.has(node.tagName)
+    ) {
+      Array.from(node.childNodes).forEach(highlightNode);
+    }
+  }
+
+  highlightNode(container);
+
+  // Scroll to first highlight after a brief delay
+  setTimeout(() => {
+    const firstHighlight = container.querySelector(".search-highlight");
+    if (firstHighlight) {
+      firstHighlight.scrollIntoView({ behavior: "smooth", block: "center" });
+      firstHighlight.classList.add("search-highlight-active");
+    }
+  }, 100);
+}
+
+// Initialize scroll spy
+function initScrollSpy() {
+  const pageToc = document.querySelector(".page-toc");
+  if (!pageToc) return;
+
+  const tocLinks = pageToc.querySelectorAll(".page-toc-list a");
+  const content = document.querySelector(".content");
+  if (!tocLinks.length || !content) return;
+
+  const headings = Array.from(
+    content.querySelectorAll("h1[id], h2[id], h3[id]"),
+  );
+
+  if (!headings.length) return;
+
+  // Build a map of heading IDs to TOC links for quick lookup
+  const linkMap = new Map();
+  tocLinks.forEach((link) => {
+    const href = link.getAttribute("href");
+    if (href && href.startsWith("#")) {
+      linkMap.set(href.slice(1), link);
+    }
+  });
+
+  let activeLink = null;
+
+  // Update active link based on scroll position
+  function updateActiveLink() {
+    const threshold = 120; // threshold from the top of the viewport
+
+    let currentHeading = null;
+
+    // Find the last heading that is at or above the threshold
+    for (const heading of headings) {
+      const rect = heading.getBoundingClientRect();
+      if (rect.top <= threshold) {
+        currentHeading = heading;
+      }
+    }
+
+    // If no heading is above threshold, use first heading if it's in view
+    if (!currentHeading && headings.length > 0) {
+      const firstRect = headings[0].getBoundingClientRect();
+      if (firstRect.top < window.innerHeight) {
+        currentHeading = headings[0];
+      }
+    }
+
+    const newLink = currentHeading ? linkMap.get(currentHeading.id) : null;
+
+    if (newLink !== activeLink) {
+      if (activeLink) {
+        activeLink.classList.remove("active");
+      }
+      if (newLink) {
+        newLink.classList.add("active");
+      }
+      activeLink = newLink;
+    }
+  }
+
+  // Scroll event handler
+  let ticking = false;
+  function onScroll() {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        updateActiveLink();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+
+  // Also update on hash change (direct link navigation)
+  window.addEventListener("hashchange", () => {
+    requestAnimationFrame(updateActiveLink);
+  });
+
+  // Set initial active state after a small delay to ensure
+  // browser has completed any hash-based scrolling
+  setTimeout(updateActiveLink, 100);
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   // Apply sidebar state immediately before DOM rendering
-  if (localStorage.getItem("sidebar-collapsed") === "true") {
-    document.documentElement.classList.add("sidebar-collapsed");
-    document.body.classList.add("sidebar-collapsed");
+  try {
+    if (localStorage.getItem("sidebar-collapsed") === "true") {
+      document.documentElement.classList.add("sidebar-collapsed");
+      document.body.classList.add("sidebar-collapsed");
+    }
+  } catch {
+    // localStorage unavailable
   }
 
   if (!document.querySelector(".mobile-sidebar-fab")) {
     createMobileElements();
+  }
+
+  // Initialize scroll spy for page TOC
+  initScrollSpy();
+
+  // Template container for collapsed sidebar content (prevents Ctrl+F from finding hidden content)
+  const sidebarHiddenContainer = document.createElement("template");
+
+  // Handle sidebar section toggles - move content to template when collapsed
+  document
+    .querySelectorAll(".sidebar-section > .sidebar-section-content")
+    .forEach((content) => {
+      const details = content.parentElement;
+      const toggleContent = () => {
+        if (details.hasAttribute("open")) {
+          // Section opened - move content back to DOM
+          if (sidebarHiddenContainer.content.contains(content)) {
+            const summary = details.querySelector("summary");
+            details.insertBefore(
+              content,
+              summary ? summary.nextSibling : details.firstChild,
+            );
+          }
+        } else {
+          // Section closed - move content to template (removes from DOM, Ctrl+F won't find it)
+          if (content.parentElement === details) {
+            sidebarHiddenContainer.content.appendChild(content);
+          }
+        }
+      };
+
+      // Use MutationObserver to detect open/close changes
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.attributeName === "open") {
+            toggleContent();
+          }
+        });
+      });
+
+      observer.observe(details, { attributes: true });
+
+      // Initial state check
+      if (!details.hasAttribute("open")) {
+        sidebarHiddenContainer.content.appendChild(content);
+      }
+    });
+
+  // Handle sidebar collapse/expand - move entire sidebar to template when collapsed
+  const sidebar = document.querySelector(".sidebar");
+  const sidebarObserver = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.attributeName === "class") {
+        const isCollapsed =
+          document.documentElement.classList.contains("sidebar-collapsed");
+        if (isCollapsed) {
+          // Sidebar collapsed - move to template
+          if (sidebar.parentElement) {
+            sidebarHiddenContainer.content.appendChild(sidebar);
+          }
+        } else {
+          // Sidebar expanded - move back to DOM
+          if (sidebarHiddenContainer.content.contains(sidebar)) {
+            const layout = document.querySelector(".layout");
+            const contentEl = document.querySelector(".content");
+            if (layout) {
+              layout.insertBefore(sidebar, contentEl);
+            }
+          }
+        }
+      }
+    });
+  });
+
+  if (sidebar) {
+    sidebarObserver.observe(document.documentElement, { attributes: true });
+
+    // Initial state - if collapsed, move sidebar to template
+    if (document.documentElement.classList.contains("sidebar-collapsed")) {
+      sidebarHiddenContainer.content.appendChild(sidebar);
+    }
   }
 
   // Desktop Sidebar Toggle
@@ -113,7 +333,11 @@ document.addEventListener("DOMContentLoaded", function () {
       // Use documentElement to check state and save to localStorage
       const isCollapsed =
         document.documentElement.classList.contains("sidebar-collapsed");
-      localStorage.setItem("sidebar-collapsed", isCollapsed);
+      try {
+        localStorage.setItem("sidebar-collapsed", isCollapsed);
+      } catch {
+        // localStorage unavailable
+      }
     });
   }
 
@@ -144,7 +368,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       // Make the entire heading clickable
-      heading.addEventListener("click", function (e) {
+      heading.addEventListener("click", function () {
         const id = this.id;
         history.pushState(null, null, "#" + id);
 
@@ -257,19 +481,10 @@ document.addEventListener("DOMContentLoaded", function () {
     ".mobile-sidebar-container",
   );
   const mobileSidebarFab = document.querySelector(".mobile-sidebar-fab");
-  const mobileSidebarContent = document.querySelector(
-    ".mobile-sidebar-content",
-  );
   const mobileSidebarHandle = document.querySelector(".mobile-sidebar-handle");
-  const desktopSidebar = document.querySelector(".sidebar");
 
   // Always set up FAB if it exists
   if (mobileSidebarFab && mobileSidebarContainer) {
-    // Populate content if desktop sidebar exists
-    if (desktopSidebar && mobileSidebarContent) {
-      mobileSidebarContent.innerHTML = desktopSidebar.innerHTML;
-    }
-
     const openMobileSidebar = () => {
       mobileSidebarContainer.classList.add("active");
       mobileSidebarFab.setAttribute("aria-expanded", "true");
@@ -379,21 +594,16 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  
-
   // Options filter functionality
   const optionsFilter = document.getElementById("options-filter");
   if (optionsFilter) {
     const optionsContainer = document.querySelector(".options-container");
     if (!optionsContainer) return;
 
-    // Only inject the style if it doesn't already exist
-    if (!document.head.querySelector("style[data-options-hidden]")) {
-      const styleEl = document.createElement("style");
-      styleEl.setAttribute("data-options-hidden", "");
-      styleEl.textContent = ".option-hidden{display:none!important}";
-      document.head.appendChild(styleEl);
-    }
+    // Template container for hidden options
+    const hiddenOptionsContainer = document.createElement("template");
+    hiddenOptionsContainer.id = "hidden-options-container";
+    document.body.appendChild(hiddenOptionsContainer);
 
     // Create filter results counter
     const filterResults = document.createElement("div");
@@ -462,25 +672,23 @@ document.addEventListener("DOMContentLoaded", function () {
       const endIdx = Math.min(startIdx + CHUNK_SIZE, itemsToProcess.length);
 
       if (startIdx < itemsToProcess.length) {
-        // Process current chunk
+        // Move visible items to container, hide others
         for (let i = startIdx; i < endIdx; i++) {
           const item = itemsToProcess[i];
           if (item.visible) {
-            item.element.classList.remove("option-hidden");
+            optionsContainer.appendChild(item.element);
           } else {
-            item.element.classList.add("option-hidden");
+            hiddenOptionsContainer.content.appendChild(item.element);
           }
         }
 
         currentChunk++;
         pendingRender = requestAnimationFrame(processNextChunk);
       } else {
-        // Finished processing all chunks
         pendingRender = null;
         currentChunk = 0;
         itemsToProcess = [];
 
-        // Update counter at the very end for best performance
         if (filterResults.visibleCount !== undefined) {
           if (filterResults.visibleCount < totalCount) {
             filterResults.textContent = `Showing ${filterResults.visibleCount} of ${totalCount} options`;
@@ -492,8 +700,16 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
+    // Initialize: keep all options visible by default
+    // They will be moved to hidden container only when filtering
     function filterOptions() {
       const searchTerm = optionsFilter.value.toLowerCase().trim();
+
+      // Skip if search term hasn't changed
+      if (filterOptions.lastTerm === searchTerm) {
+        return;
+      }
+      filterOptions.lastTerm = searchTerm;
 
       if (pendingRender) {
         cancelAnimationFrame(pendingRender);
@@ -503,12 +719,14 @@ document.addEventListener("DOMContentLoaded", function () {
       itemsToProcess = [];
 
       if (searchTerm === "") {
-        // Restore original DOM order when filter is cleared
+        // Restore to original order
         const fragment = document.createDocumentFragment();
         originalOptionOrder.forEach((option) => {
-          option.classList.remove("option-hidden");
-          fragment.appendChild(option);
+          hiddenOptionsContainer.content.appendChild(option);
         });
+        while (hiddenOptionsContainer.content.firstChild) {
+          fragment.appendChild(hiddenOptionsContainer.content.firstChild);
+        }
         optionsContainer.appendChild(fragment);
         filterResults.style.display = "none";
         return;
@@ -521,56 +739,51 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const titleMatches = [];
       const descMatches = [];
-      optionsData.forEach((data) => {
-        let isTitleMatch = false;
-        let isDescMatch = false;
-        if (searchTerms.length === 1) {
-          const term = searchTerms[0];
-          isTitleMatch = data.name.includes(term);
-          isDescMatch = !isTitleMatch && data.description.includes(term);
-        } else {
-          isTitleMatch = searchTerms.every((term) => data.name.includes(term));
-          isDescMatch =
-            !isTitleMatch &&
-            searchTerms.every((term) => data.description.includes(term));
-        }
+      const term = searchTerms[0];
+
+      for (let i = 0; i < optionsData.length; i++) {
+        const data = optionsData[i];
+        const isTitleMatch = data.name.includes(term);
+        const isDescMatch = !isTitleMatch && data.description.includes(term);
+
         if (isTitleMatch) {
+          visibleCount++;
           titleMatches.push(data);
         } else if (isDescMatch) {
+          visibleCount++;
           descMatches.push(data);
         }
-      });
-
-      if (searchTerms.length === 1) {
-        const term = searchTerms[0];
-        titleMatches.sort(
-          (a, b) => a.name.indexOf(term) - b.name.indexOf(term),
-        );
-        descMatches.sort(
-          (a, b) => a.description.indexOf(term) - b.description.indexOf(term),
-        );
       }
 
+      titleMatches.sort((a, b) => a.name.indexOf(term) - b.name.indexOf(term));
+      descMatches.sort(
+        (a, b) => a.description.indexOf(term) - b.description.indexOf(term),
+      );
+
+      const visibleElements = new Set();
       itemsToProcess = [];
-      titleMatches.forEach((data) => {
-        visibleCount++;
+      for (let i = 0; i < titleMatches.length; i++) {
+        const data = titleMatches[i];
+        visibleElements.add(data.element);
         itemsToProcess.push({ element: data.element, visible: true });
-      });
-      descMatches.forEach((data) => {
-        visibleCount++;
+      }
+      for (let i = 0; i < descMatches.length; i++) {
+        const data = descMatches[i];
+        visibleElements.add(data.element);
         itemsToProcess.push({ element: data.element, visible: true });
-      });
-      optionsData.forEach((data) => {
-        if (!itemsToProcess.some((item) => item.element === data.element)) {
+      }
+      for (let i = 0; i < optionsData.length; i++) {
+        const data = optionsData[i];
+        if (!visibleElements.has(data.element)) {
           itemsToProcess.push({ element: data.element, visible: false });
         }
-      });
+      }
 
       // Reorder DOM so all title matches, then desc matches, then hidden
       const fragment = document.createDocumentFragment();
-      itemsToProcess.forEach((item) => {
-        fragment.appendChild(item.element);
-      });
+      for (let i = 0; i < itemsToProcess.length; i++) {
+        fragment.appendChild(itemsToProcess[i].element);
+      }
       optionsContainer.appendChild(fragment);
 
       filterResults.visibleCount = visibleCount;
@@ -582,7 +795,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Set up event listeners
     optionsFilter.addEventListener("input", debouncedFilter);
-    optionsFilter.addEventListener("change", filterOptions);
 
     // Allow clearing with Escape key
     optionsFilter.addEventListener("keydown", function (e) {
@@ -599,7 +811,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
-    // Initially trigger filter if there's a value
+    // Run initial filter if there's a value
     if (optionsFilter.value) {
       filterOptions();
     }
@@ -617,6 +829,234 @@ document.addEventListener("DOMContentLoaded", function () {
           }
         }
       });
+    }
+  }
+
+  // Lib filter functionality
+  const libFilter = document.getElementById("lib-filter");
+  if (libFilter && document.querySelector(".lib-container")) {
+    const libContainer = document.querySelector(".lib-container");
+
+    const hiddenLibContainer = document.createElement("template");
+    hiddenLibContainer.id = "hidden-lib-container";
+    document.body.appendChild(hiddenLibContainer);
+
+    const filterResults = document.createElement("div");
+    filterResults.className = "filter-results";
+    libFilter.parentNode.insertBefore(filterResults, libFilter.nextSibling);
+
+    const isMobile =
+      window.innerWidth < 768 || /Mobi|Android/i.test(navigator.userAgent);
+
+    const libEntries = Array.from(document.querySelectorAll(".lib-entry"));
+    const totalCount = libEntries.length;
+    const originalLibOrder = libEntries.slice();
+
+    const libData = libEntries.map((entry) => {
+      const nameElem = entry.querySelector(".lib-entry-name");
+      const descriptionElem = entry.querySelector(".lib-entry-description");
+      const id = entry.id ? entry.id.toLowerCase() : "";
+      const name = nameElem ? nameElem.textContent.toLowerCase() : "";
+      const description = descriptionElem
+        ? descriptionElem.textContent.toLowerCase()
+        : "";
+
+      const keywords = (id + " " + name + " " + description)
+        .toLowerCase()
+        .split(/\s+/)
+        .filter((word) => word.length > 1);
+
+      return {
+        element: entry,
+        id,
+        name,
+        description,
+        keywords,
+        searchText: (id + " " + name + " " + description).toLowerCase(),
+      };
+    });
+
+    const CHUNK_SIZE = isMobile ? 15 : 40;
+    let pendingRender = null;
+    let currentChunk = 0;
+    let itemsToProcess = [];
+
+    function debounceLib(func, wait) {
+      let timeout;
+      return function () {
+        const context = this;
+        const args = arguments;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(context, args), wait);
+      };
+    }
+
+    function processNextChunkLib() {
+      const startIdx = currentChunk * CHUNK_SIZE;
+      const endIdx = Math.min(startIdx + CHUNK_SIZE, itemsToProcess.length);
+
+      if (startIdx < itemsToProcess.length) {
+        for (let i = startIdx; i < endIdx; i++) {
+          const item = itemsToProcess[i];
+          if (item.visible) {
+            libContainer.appendChild(item.element);
+          } else {
+            hiddenLibContainer.content.appendChild(item.element);
+          }
+        }
+
+        currentChunk++;
+        pendingRender = requestAnimationFrame(processNextChunkLib);
+      } else {
+        pendingRender = null;
+        currentChunk = 0;
+        itemsToProcess = [];
+
+        if (filterResults.visibleCount !== undefined) {
+          if (filterResults.visibleCount < totalCount) {
+            filterResults.textContent = `Showing ${filterResults.visibleCount} of ${totalCount} functions`;
+            filterResults.style.display = "block";
+          } else {
+            filterResults.style.display = "none";
+          }
+        }
+      }
+    }
+
+    function filterLib() {
+      const searchTerm = libFilter.value.toLowerCase().trim();
+
+      if (filterLib.lastTerm === searchTerm) {
+        return;
+      }
+      filterLib.lastTerm = searchTerm;
+
+      if (pendingRender) {
+        cancelAnimationFrame(pendingRender);
+        pendingRender = null;
+      }
+      currentChunk = 0;
+      itemsToProcess = [];
+
+      if (searchTerm === "") {
+        const fragment = document.createDocumentFragment();
+        originalLibOrder.forEach((entry) => {
+          hiddenLibContainer.content.appendChild(entry);
+        });
+        while (hiddenLibContainer.content.firstChild) {
+          fragment.appendChild(hiddenLibContainer.content.firstChild);
+        }
+        libContainer.appendChild(fragment);
+        filterResults.style.display = "none";
+        return;
+      }
+
+      const searchTerms = searchTerm
+        .split(/\s+/)
+        .filter((term) => term.length > 0);
+      let visibleCount = 0;
+
+      const titleMatches = [];
+      const descMatches = [];
+      const term = searchTerms[0];
+
+      for (let i = 0; i < libData.length; i++) {
+        const data = libData[i];
+        const isTitleMatch = data.name.includes(term);
+        const isDescMatch = !isTitleMatch && data.description.includes(term);
+
+        if (isTitleMatch) {
+          visibleCount++;
+          titleMatches.push(data);
+        } else if (isDescMatch) {
+          visibleCount++;
+          descMatches.push(data);
+        }
+      }
+
+      titleMatches.sort((a, b) => a.name.indexOf(term) - b.name.indexOf(term));
+      descMatches.sort(
+        (a, b) => a.description.indexOf(term) - b.description.indexOf(term),
+      );
+
+      const visibleElements = new Set();
+      itemsToProcess = [];
+      for (let i = 0; i < titleMatches.length; i++) {
+        const data = titleMatches[i];
+        visibleElements.add(data.element);
+        itemsToProcess.push({ element: data.element, visible: true });
+      }
+      for (let i = 0; i < descMatches.length; i++) {
+        const data = descMatches[i];
+        visibleElements.add(data.element);
+        itemsToProcess.push({ element: data.element, visible: true });
+      }
+      for (let i = 0; i < libData.length; i++) {
+        const data = libData[i];
+        if (!visibleElements.has(data.element)) {
+          itemsToProcess.push({ element: data.element, visible: false });
+        }
+      }
+
+      const fragment = document.createDocumentFragment();
+      for (let i = 0; i < itemsToProcess.length; i++) {
+        fragment.appendChild(itemsToProcess[i].element);
+      }
+      libContainer.appendChild(fragment);
+
+      filterResults.visibleCount = visibleCount;
+      pendingRender = requestAnimationFrame(processNextChunkLib);
+    }
+
+    const debouncedFilter = debounceLib(filterLib, isMobile ? 200 : 100);
+
+    libFilter.addEventListener("input", debouncedFilter);
+
+    libFilter.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") {
+        libFilter.value = "";
+        filterLib();
+      }
+    });
+
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden && libFilter.value) {
+        filterLib();
+      }
+    });
+
+    if (libFilter.value) {
+      filterLib();
+    }
+
+    if (isMobile && totalCount > 50) {
+      requestIdleCallback(() => {
+        const sampleEntry = libEntries[0];
+        if (sampleEntry) {
+          const height = sampleEntry.offsetHeight;
+          if (height > 0) {
+            libEntries.forEach((entry) => {
+              entry.style.containIntrinsicSize = `0 ${height}px`;
+            });
+          }
+        }
+      });
+    }
+  }
+
+  // URL-based search highlighting
+  const urlParams = new URLSearchParams(window.location.search);
+  const highlightQuery = urlParams.get("highlight");
+  if (highlightQuery && content) {
+    // Simple tokenizer that doesn't depend on search engine
+    const queryTerms = highlightQuery
+      .toLowerCase()
+      .trim()
+      .split(/\s+/)
+      .filter((term) => term.length >= 2); // min 2 chars like search engine
+
+    if (queryTerms.length > 0) {
+      highlightTextInContent(content, queryTerms);
     }
   }
 });
