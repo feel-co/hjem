@@ -35,8 +35,8 @@
   linker = getExe cfg.linker;
 
   newManifests = let
-    writeManifest = username: let
-      name = "manifest-${username}.json";
+    writeManifest = user: let
+      name = "manifest-${user.user}.json";
     in
       pkgs.writeTextFile {
         inherit name;
@@ -49,7 +49,7 @@
               (filter (x: x.enable))
               (map fileToJson)
             ]
-          ) (userFiles cfg.users.${username});
+          ) (userFiles user);
         };
         checkPhase = ''
           set -e
@@ -63,7 +63,7 @@
     pkgs.symlinkJoin
     {
       name = "hjem-manifests";
-      paths = map writeManifest (attrNames enabledUsers);
+      paths = map writeManifest (attrValues enabledUsers);
     };
 
   hjemSubmodule = submoduleWith {
@@ -148,7 +148,7 @@ in {
             "hjem-copy@${name}.service"
           ];
         in
-          concatMap requiredUserServices (attrNames enabledUsers)
+          concatMap requiredUserServices (map (u: u.user) (attrValues enabledUsers))
           ++ ["hjem-cleanup.service"];
       };
 
@@ -156,7 +156,7 @@ in {
         oldManifests = "/var/lib/hjem";
         checkEnabledUsers = ''
           case "$1" in
-            ${concatStringsSep "|" (attrNames enabledUsers)}) ;;
+            ${concatStringsSep "|" (map (u: u.user) (attrValues enabledUsers))}) ;;
             *) echo "User '%i' is not configured for Hjem" >&2; exit 0 ;;
           esac
         '';
