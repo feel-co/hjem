@@ -13,6 +13,8 @@ in
       node1 = {
         imports = [hjemModule];
 
+        services.mdevd.enable = true;
+
         users.groups.alice = {};
         users.users.alice = {
           isNormalUser = true;
