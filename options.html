@@ -135,7 +135,7 @@
     <details class="toc-category">
       <summary title="hjem.users.&lt;username&gt;">
         <span>hjem.users.&lt;username&gt;</span>
-        <span class="toc-count">267</span>
+        <span class="toc-count">268</span>
       </summary>
       <ul>
         
@@ -176,6 +176,14 @@
         <li>
           <a href='#option-hjem.users._username_.environment.sessionVariables' title="hjem.users.&lt;username&gt;.environment.sessionVariables">
             environment.sessionVariables
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem.users._username_.extraDependencies' title="hjem.users.&lt;username&gt;.extraDependencies">
+            extraDependencies
             
             
           </a>
@@ -2466,6 +2474,22 @@ characters.</p>
   EDITOR = "nvim";
   VISUAL = "nvim";
 }</code></pre></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem.users._username_.extraDependencies">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.extraDependencies" class="option-anchor">hjem.users.&lt;username&gt;.extraDependencies</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>list of package</code></div>
+  <div class="option-description"><html><head></head><body><p>A list of paths/packages that should be included in the system closure
+but generally not visible to users.</p>
+<p>On NixOS these paths are forwarded to <code class="nixos-option">system.extraDependencies</code>.
+On nix-darwin, which has no equivalent host option, the paths are pinned
+to the system closure by listing them in <code>/etc/hjem/extra-dependencies</code>.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>[ ]</code></div>
   <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank">&lt;hjem/modules/common/user.nix&gt;</a></code></div>
 </div>
 <div class="option" id="option-hjem.users._username_.files">
