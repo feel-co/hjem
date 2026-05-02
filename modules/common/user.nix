@@ -217,6 +217,19 @@ in {
       description = "Packages to install for this user.";
     };
 
+    extraDependencies = mkOption {
+      type = listOf package;
+      default = [];
+      description = ''
+        A list of paths/packages that should be included in the system closure
+        but generally not visible to users.
+
+        On NixOS these paths are forwarded to {option}`system.extraDependencies`.
+        On nix-darwin, which has no equivalent host option, the paths are pinned
+        to the system closure by listing them in `/etc/hjem/extra-dependencies`.
+      '';
+    };
+
     environment = {
       loadEnv = mkOption {
         type = path;

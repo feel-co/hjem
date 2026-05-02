@@ -11,7 +11,7 @@
   inherit (lib.attrsets) filterAttrs;
   inherit (lib.meta) getExe getExe';
   inherit (lib.modules) importApply mkAfter mkDefault;
-  inherit (lib.strings) concatMapAttrsStringSep escapeShellArgs;
+  inherit (lib.strings) concatLines concatMapAttrsStringSep escapeShellArgs;
   inherit (lib.trivial) flip pipe;
   inherit (lib.types) submoduleWith;
 
@@ -105,6 +105,11 @@ in {
   ];
 
   config = {
+    # nix-darwin has no `system.extraDependencies` equivalent. Best we can do is this.
+    environment.etc."hjem/extra-dependencies".text = concatLines (
+      concatMap (u: map (p: "${p}") u.extraDependencies) (attrValues enabledUsers)
+    );
+
     # Temporary requirement: choose a primary user, pick the first enabled user.
     # This option will be deprecated in the future.
     system.primaryUser = mkDefault (head (attrNames enabledUsers));
