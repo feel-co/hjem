@@ -113,6 +113,10 @@ in {
   ];
 
   config = mkMerge [
+    {
+      system.extraDependencies = concatMap (u: u.extraDependencies) (attrValues enabledUsers);
+    }
+
     # Constructed rule string that consists of the type, target, and source
     # of a tmpfile. Files with 'null' sources are filtered before the rule
     # is constructed.
