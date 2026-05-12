@@ -161,27 +161,20 @@ linking capabilities with some basic examples.
    location with the `text` attribute as its contents. For example we can set
    `files.".config/foo".text = "Hello World!` to create
    `/home/alice/.config/foo` and it's contents will read "Hello World".
-2. Similar to NixOS' `environment.etc`, Hjem supports a `.source` attribute with
-   which you can link files from your store. For example we can use Nixpkgs'
-   writers to create derivations that will be used as the source. A good example
-   would be using `pkgs.writeTextFile`.
+2. Similar to NixOS's `environment.etc`, Hjem files support a `.source` option
+   which accepts a store path. For example:
 
    ```nix
-   ".config/bar".source = pkgs.writeTextFile "file-foo" "file contents";
+   ".config/bar".source = pkgs.writeTextFile {
+     name = "file-foo";
+     text = ''
+       file contents
+     '';
+   }
    ```
 
-   With the above example, you can link the store path resulting from
-   `pkgs.writeTextFile` in `$HOME/.config/bar`, with the contents "file
-   contents".
-
-   Do note, the `source` attribute also supports passing paths directly:
-
-   ```nix
-   ".config/bar".source = ./foo;
-   ```
-
-   In this case `./foo` will be copied to the store, and `$HOME/.config/foo`
-   will be a symlink to its store location.
+   Here, Hjem will link the store path `(pkgs.writeTextFile { ... }).outPath` to
+   `$HOME/.config/bar`, and the store path will have the contents "file contents".
 
 3. The most recent addition to Hjem's file linking interface is the `generator`
    attribute. It allows feeding a generator by which your values will be
