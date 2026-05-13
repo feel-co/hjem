@@ -26,9 +26,9 @@
     darwinModules = import ./modules/nix-darwin;
     finixModules = import ./modules/finix;
 
-    overlays = [
-      (import smfhPin).overlays.default
-    ];
+    overlays = {
+      smfh = (import smfhPin).overlays.default;
+    };
 
     packages = forAllSystems (system:
       import ./internal/packages.nix rec {
