@@ -38,9 +38,9 @@
       },
       "branch": "main",
       "submodules": false,
-      "revision": "3440d2940b4c4aa1ee0bf5fcc52c57a1d3ef81f7",
-      "url": "https://github.com/feel-co/smfh/archive/3440d2940b4c4aa1ee0bf5fcc52c57a1d3ef81f7.tar.gz",
-      "hash": "sha256-RgszLC/p9uov6aXnPGbFRkPzT5xleX17wBCdoMT1wcA="
+      "revision": "ed2dea049b06dcd44cb93a443432c02c42b4b882",
+      "url": "https://github.com/feel-co/smfh/archive/ed2dea049b06dcd44cb93a443432c02c42b4b882.tar.gz",
+      "hash": "sha256-OKpQnhlzwcXH1aJvu1NKlepXVPALkZx5GoyhJ8aKLKs="
     }
   },
   "version": 7
