@@ -12,7 +12,7 @@
     self,
     nixpkgs,
     ...
-  } @ inputs: let
+  }: let
     # We should only specify the modules Hjem explicitly supports, or we risk
     # allowing not-so-defined behaviour. For example, adding nix-systems should
     # be avoided, because it allows specifying systems Hjem is not tested on.

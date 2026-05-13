@@ -6,7 +6,7 @@
   pkgs,
   ...
 }: let
-  inherit (builtins) attrNames attrValues concatLists concatMap filter getAttr head isAttrs toJSON;
+  inherit (builtins) attrNames attrValues concatLists concatMap filter getAttr isAttrs toJSON;
   inherit (hjem-lib) fileToJson;
   inherit (lib.attrsets) filterAttrs;
   inherit (lib.meta) getExe getExe';

@@ -12,7 +12,7 @@
   ...
 }: let
   inherit (hjem-lib) envVarType listOrSingletonOf toEnv;
-  inherit (lib.attrsets) attrValues mapAttrs mapAttrsToList;
+  inherit (lib.attrsets) attrValues mapAttrsToList;
   inherit (lib.lists) any;
   inherit (lib.modules) mkIf;
   inherit (lib.options) literalExpression mkEnableOption mkOption;
