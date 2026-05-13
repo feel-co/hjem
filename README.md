@@ -114,7 +114,7 @@ In fact, one [already does!]
 Below is a live implementation of the module.
 
 ```sh
-$ nix eval .#nixosConfigurations.test.config.hjem.users.alice.files.'".foo"' --json | jq
+$ nix eval .#nixosConfigurations.test.config.hjem.users.alice.files.'".foo"' --json | jaq
 {
   "clobber": false,
   "enable": true,

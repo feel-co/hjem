@@ -215,7 +215,7 @@ in {
             };
             requires = ["hjem-activate@%i.service"];
             after = ["hjem-activate@%i.service"];
-            path = [config.systemd.package pkgs.coreutils-full pkgs.jq pkgs.gnugrep];
+            path = [config.systemd.package pkgs.coreutils-full pkgs.jaq pkgs.gnugrep];
             scriptArgs = "%i";
             script = ''
               ${checkEnabledUsers}
@@ -246,7 +246,7 @@ in {
               # Compare trigger values for each individually-linked systemd unit file.
               # Only act on units that existed before; no auto-start for new ones.
               while IFS=$'\t' read -r unit_name new_file; do
-                old_file=$(jq -re \
+                old_file=$(jaq -re \
                   --arg name "$unit_name" \
                   '.files[] | select((.type == "symlink") and (.target | endswith("/systemd/user/" + $name))) | .source' \
                   "$old_manifest" 2>/dev/null || true)
@@ -271,7 +271,7 @@ in {
                   systemctl --user reload-or-try-restart "$unit_name" \
                     || echo "Warning: reload-or-try-restart of $unit_name failed"
                 fi
-              done < <(jq -re \
+              done < <(jaq -re \
                 '.files[] | select(
                   (.type == "symlink") and
                   (.target | test(".+/systemd/user/[^/]+\\.(service|timer|socket)$"))
