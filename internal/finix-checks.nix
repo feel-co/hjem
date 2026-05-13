@@ -11,7 +11,9 @@
 
   inherit (pkgs.lib.filesystem) packagesFromDirectoryRecursive;
 
-  checks = packagesFromDirectoryRecursive {
+  prefixAttrs = prefix: pkgs.lib.mapAttrs' (name: pkgs.lib.nameValuePair "${prefix}-${name}");
+
+  checks = prefixAttrs "finix" (packagesFromDirectoryRecursive {
     callPackage = pkgs.newScope (
       checks
       // {
@@ -20,6 +22,6 @@
       }
     );
     directory = ../finix-tests;
-  };
+  });
 in
   checks
