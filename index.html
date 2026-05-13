@@ -168,18 +168,11 @@ location with the <code>text</code> attribute as its contents. For example we ca
 <code>/home/alice/.config/foo</code> and it's contents will read "Hello World".</p>
 </li>
 <li>
-<p>Similar to NixOS' <code>environment.etc</code>, Hjem supports a <code>.source</code> attribute with
-which you can link files from your store. For example we can use Nixpkgs'
-writers to create derivations that will be used as the source. A good example
-would be using <code>pkgs.writeTextFile</code>.</p>
-<pre class="highlight"><code class="language-nix"><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">.config/bar</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(97,175,239);">source</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(171,178,191);">pkgs</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">writeTextFile</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">file-foo</span><span style="color:rgb(152,195,121);">"</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">file&nbsp;contents</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br></code></pre>
-<p>With the above example, you can link the store path resulting from
-<code>pkgs.writeTextFile</code> in <code>$HOME/.config/bar</code>, with the contents "file
-contents".</p>
-<p>Do note, the <code>source</code> attribute also supports passing paths directly:</p>
-<pre class="highlight"><code class="language-nix"><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">.config/bar</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(97,175,239);">source</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(232,102,113);">./foo</span><span style="color:rgb(132,139,152);">;</span><br></code></pre>
-<p>In this case <code>./foo</code> will be copied to the store, and <code>$HOME/.config/foo</code>
-will be a symlink to its store location.</p>
+<p>Similar to NixOS's <code>environment.etc</code>, Hjem files support a <code>.source</code> option
+which accepts a store path. For example:</p>
+<pre class="highlight"><code class="language-nix"><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">.config/bar</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(97,175,239);">source</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(171,178,191);">pkgs</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">writeTextFile</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;<span style="color:rgb(86,182,194);">name</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">file-foo</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;<span style="color:rgb(86,182,194);">text</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">''</span><span style="color:rgb(152,195,121);"></span><br><span style="color:rgb(152,195,121);">&nbsp;&nbsp;&nbsp;&nbsp;file&nbsp;contents</span><br><span style="color:rgb(152,195,121);">&nbsp;&nbsp;</span><span style="color:rgb(152,195,121);">''</span><span style="color:rgb(132,139,152);">;</span><br><span style="color:rgb(132,139,152);">}</span><br></code></pre>
+<p>Here, Hjem will link the store path <code>(pkgs.writeTextFile { ... }).outPath</code> to
+<code>$HOME/.config/bar</code>, and the store path will have the contents "file contents".</p>
 </li>
 <li>
 <p>The most recent addition to Hjem's file linking interface is the <code>generator</code>
