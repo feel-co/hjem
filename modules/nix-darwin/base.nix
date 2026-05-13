@@ -110,9 +110,8 @@ in {
       concatMap (u: map (p: "${p}") u.extraDependencies) (attrValues enabledUsers)
     );
 
-    # Temporary requirement: choose a primary user, pick the first enabled user.
-    # This option will be deprecated in the future.
-    system.primaryUser = mkDefault (head (attrNames enabledUsers));
+    # Force users to set `primaryUser` for now, as Hjem should not automatically set it
+    system.primaryUser = mkDefault (throw "Hjem no longer automatically sets `system.primaryUser`; ensure it is set correctly in your configuration.");
 
     # launchd agent to apply/diff the manifest per logged-in user
     # https://github.com/nix-darwin/nix-darwin/issues/871#issuecomment-2340443820
