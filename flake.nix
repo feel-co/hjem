@@ -17,16 +17,18 @@
     # allowing not-so-defined behaviour. For example, adding nix-systems should
     # be avoided, because it allows specifying systems Hjem is not tested on.
     forAllSystems = nixpkgs.lib.genAttrs ["x86_64-linux" "aarch64-linux" "aarch64-darwin"];
+    finix = (import ./npins).finix;
     pkgsFor = system: nixpkgs.legacyPackages.${system};
     smfhPin = (import ./npins).smfh;
     smfhFor = pkgs: pkgs.callPackage (smfhPin + "/package.nix") {};
   in {
     nixosModules = import ./modules/nixos;
     darwinModules = import ./modules/nix-darwin;
+    finixModules = import ./modules/finix;
 
-    overlays = [
-      (import smfhPin).overlays.default
-    ];
+    overlays = {
+      smfh = (import smfhPin).overlays.default;
+    };
 
     packages = forAllSystems (system:
       import ./internal/packages.nix rec {
@@ -41,6 +43,10 @@
         inherit self;
         pkgs = pkgsFor system;
         smfh = smfhFor pkgs;
+      }
+      // import ./internal/finix-checks.nix {
+        inherit self finix;
+        pkgs = pkgsFor system;
       });
 
     devShells = forAllSystems (system: {
