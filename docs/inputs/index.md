@@ -197,7 +197,7 @@ linking capabilities with some basic examples.
 
    ```nix
    ".config/baz" = {
-      generator = (pkgs.formats.toTOML {}).generate;
+      generator = (pkgs.formats.toml {}).generate "baz";
       value = {
         "ui.graph".style = "curved";
         "ui.movement".edit = true;
