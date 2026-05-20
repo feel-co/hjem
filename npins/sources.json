@@ -11,10 +11,10 @@
       "version_upper_bound": null,
       "release_prefix": null,
       "submodules": false,
-      "version": "v2.7.0",
-      "revision": "ea2526307ad6c7462310e418cee8a6a9bc4003f3",
-      "url": "https://api.github.com/repos/feel-co/ndg/tarball/refs/tags/v2.7.0",
-      "hash": "sha256-PAu6tX0PxuPKro4WJWzxfHCUvsmWuJtgI+msmkNA9AI="
+      "version": "v2.8.0",
+      "revision": "86f6644411a64d5413711895b7cf6e0e1be465b6",
+      "url": "https://api.github.com/repos/feel-co/ndg/tarball/refs/tags/v2.8.0",
+      "hash": "sha256-YIKEyzh0NFQlD0O92LQQNMoVCDwV8yw1Xz0Iu+4ZC5U="
     },
     "smfh": {
       "type": "Git",
@@ -25,9 +25,9 @@
       },
       "branch": "main",
       "submodules": false,
-      "revision": "3440d2940b4c4aa1ee0bf5fcc52c57a1d3ef81f7",
-      "url": "https://github.com/feel-co/smfh/archive/3440d2940b4c4aa1ee0bf5fcc52c57a1d3ef81f7.tar.gz",
-      "hash": "sha256-RgszLC/p9uov6aXnPGbFRkPzT5xleX17wBCdoMT1wcA="
+      "revision": "ed2dea049b06dcd44cb93a443432c02c42b4b882",
+      "url": "https://github.com/feel-co/smfh/archive/ed2dea049b06dcd44cb93a443432c02c42b4b882.tar.gz",
+      "hash": "sha256-OKpQnhlzwcXH1aJvu1NKlepXVPALkZx5GoyhJ8aKLKs="
     }
   },
   "version": 7
