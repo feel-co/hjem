@@ -1,11 +1,10 @@
 {
   hjemModule,
-  ndg ? (import ((import ../npins).ndg + "/nix") {inherit pkgs;}).packages.default,
   nixpkgs,
   pkgs,
   smfh,
 }: let
-  docs = pkgs.callPackage ../docs/package.nix {inherit hjemModule ndg nixpkgs;};
+  docs = pkgs.callPackage ../docs/package.nix {inherit hjemModule nixpkgs;};
 in {
   # Expose the 'smfh' instance used by Hjem as a package.
   # This allows consuming the exact copy of smfh used by Hjem.
