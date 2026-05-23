@@ -1,21 +1,5 @@
 {
   "pins": {
-    "ndg": {
-      "type": "GitRelease",
-      "repository": {
-        "type": "GitHub",
-        "owner": "feel-co",
-        "repo": "ndg"
-      },
-      "pre_releases": false,
-      "version_upper_bound": null,
-      "release_prefix": null,
-      "submodules": false,
-      "version": "v2.8.0",
-      "revision": "86f6644411a64d5413711895b7cf6e0e1be465b6",
-      "url": "https://api.github.com/repos/feel-co/ndg/tarball/refs/tags/v2.8.0",
-      "hash": "sha256-YIKEyzh0NFQlD0O92LQQNMoVCDwV8yw1Xz0Iu+4ZC5U="
-    },
     "smfh": {
       "type": "Git",
       "repository": {
