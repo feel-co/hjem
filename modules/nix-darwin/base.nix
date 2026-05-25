@@ -4,6 +4,7 @@
   lib,
   options,
   pkgs,
+  hjem-package,
   ...
 }: let
   inherit (builtins) attrValues concatLists concatMap filter getAttr head isAttrs toJSON;
@@ -11,7 +12,7 @@
   inherit (lib.attrsets) filterAttrs;
   inherit (lib.meta) getExe getExe';
   inherit (lib.modules) importApply mkAfter mkDefault;
-  inherit (lib.strings) concatLines concatMapAttrsStringSep escapeShellArgs;
+  inherit (lib.strings) concatLines concatMapAttrsStringSep concatMapStringsSep;
   inherit (lib.trivial) flip pipe;
   inherit (lib.types) submoduleWith;
 
@@ -28,7 +29,26 @@
     user.xdg.state.files
   ];
 
-  linker = getExe cfg.linker;
+  hjemCli = getExe hjem-package;
+  hjemPkg = hjem-package;
+  useExternalLinker = cfg.linker != hjemPkg;
+  linkerExe = getExe cfg.linker;
+  prefix =
+    if isAttrs cfg.linkerOptions && cfg.linkerOptions ? prefix
+    then cfg.linkerOptions.prefix
+    else ".backup-";
+  linkerArgFlags =
+    if !useExternalLinker
+    then ""
+    else if isAttrs cfg.linkerOptions
+    then let
+      optsFile = pkgs.writeText "hjem-linker-options.json" (toJSON cfg.linkerOptions);
+    in ''--linker-arg --linker-opts --linker-arg ${optsFile}''
+    else concatMapStringsSep " " (arg: ''--linker-arg "${arg}"'') cfg.linkerOptions;
+  externalLinkerFlags =
+    if useExternalLinker
+    then ''--external-linker "${linkerExe}" ${linkerArgFlags}''
+    else "";
 
   newManifests = let
     writeManifest = user: let
@@ -90,15 +110,6 @@
         cfg.extraModules
       ];
   };
-
-  linkerArgs =
-    if isAttrs cfg.linkerOptions
-    then let
-      f = pkgs.writeText "smfh-opts.json" (toJSON cfg.linkerOptions);
-    in ["--linker-opts" f]
-    else cfg.linkerOptions;
-
-  argsStr = escapeShellArgs linkerArgs;
 in {
   imports = [
     (importApply ../common/top-level.nix {inherit hjemSubmodule _class;})
@@ -120,8 +131,7 @@ in {
         serviceConfig = {
           Program = getExe (pkgs.writeShellApplication {
             name = "hjem-activate";
-            # Maybe the kickstart is broken because a runtimeInput is missing?
-            runtimeInputs = with pkgs; [coreutils-full bash];
+            runtimeInputs = with pkgs; [coreutils-full];
             text = ''
               set -euo pipefail
 
@@ -136,13 +146,12 @@ in {
               mkdir -p "$STATE_DIR"
               CUR="$STATE_DIR/manifest.json"
 
-              if [ ! -f "$CUR" ]; then
-                ${linker} ${argsStr} activate "$NEW"
-              else
-                ${linker} ${argsStr} diff "$NEW" "$CUR"
-              fi
-
-              cp -f "$NEW" "$CUR"
+              ${hjemCli} internal activate \
+                --manifest "$NEW" \
+                --state "$CUR" \
+                --actions-file "$STATE_DIR/actions.json" \
+                --prefix "${prefix}" \
+                ${externalLinkerFlags}
             '';
           });
           Label = "org.hjem.activate";
