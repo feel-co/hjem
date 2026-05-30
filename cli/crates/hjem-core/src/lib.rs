@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use smfh_core::manifest::{File, FileKind, Manifest};
 use std::collections::{BTreeSet, HashMap};
+use std::ffi::OsString;
 use std::fs;
 use std::io::{BufRead, BufReader};
 use std::path::{Path, PathBuf};
@@ -229,9 +230,9 @@ struct ReloadResult {
     applied: usize,
 }
 
-fn main() {
-    let cli = Cli::parse();
-    let result = match cli.command {
+pub fn run() -> Result<(), String> {
+    let cli = parse_multicall_cli();
+    match cli.command {
         Command::Manifest { command } => run_manifest(command),
         Command::Activate {
             manifest,
@@ -251,12 +252,29 @@ fn main() {
         }),
         Command::Internal { command } => run_internal(command),
         Command::Standalone { command } => run_standalone(command),
+    }
+}
+
+fn parse_multicall_cli() -> Cli {
+    let argv: Vec<OsString> = std::env::args_os().collect();
+    let Some(prog) = argv.first() else {
+        return Cli::parse();
     };
 
-    if let Err(err) = result {
-        eprintln!("{err}");
-        std::process::exit(1);
+    let prog_name = Path::new(prog)
+        .file_name()
+        .and_then(|x| x.to_str())
+        .unwrap_or_default();
+
+    let mut remapped = Vec::<OsString>::with_capacity(argv.len() + 1);
+    remapped.push(prog.clone());
+    match prog_name {
+        "hjem-internal" => remapped.push(OsString::from("internal")),
+        "hjem-standalone" => remapped.push(OsString::from("standalone")),
+        _ => {}
     }
+    remapped.extend(argv.into_iter().skip(1));
+    Cli::parse_from(remapped)
 }
 
 fn run_manifest(command: ManifestCommand) -> Result<(), String> {
@@ -387,7 +405,10 @@ fn run_standalone(command: StandaloneCommand) -> Result<(), String> {
                 }
             }
 
-            println!("Initialized Hjem standalone config in {}", conf_dir.display());
+            println!(
+                "Initialized Hjem standalone config in {}",
+                conf_dir.display()
+            );
             if created_files.is_empty() {
                 println!("No new files were created (existing config kept as-is).");
             } else {
@@ -401,7 +422,10 @@ fn run_standalone(command: StandaloneCommand) -> Result<(), String> {
                     home_nix.display()
                 );
             } else {
-                println!("Next step: hjem standalone switch --flake {}", conf_dir.display());
+                println!(
+                    "Next step: hjem standalone switch --flake {}",
+                    conf_dir.display()
+                );
             }
 
             if switch {
@@ -499,7 +523,10 @@ fn run_standalone(command: StandaloneCommand) -> Result<(), String> {
             let base = standalone_state_dir(state_dir)?;
             let gens = list_generations(&base)?;
             if gens.is_empty() {
-                println!("No generations found in {}", base.join("generations").display());
+                println!(
+                    "No generations found in {}",
+                    base.join("generations").display()
+                );
                 return Ok(());
             }
             for g in gens {
@@ -989,9 +1016,15 @@ fn run_reload_actions(
         return Ok(());
     }
 
-    let parsed: ActivateResult =
-        serde_json::from_slice(&fs::read(actions_file).map_err(|e| e.to_string())?)
-            .map_err(|e| format!("failed to parse actions file '{}': {e}", actions_file.display()))?;
+    let parsed: ActivateResult = serde_json::from_slice(
+        &fs::read(actions_file).map_err(|e| e.to_string())?,
+    )
+    .map_err(|e| {
+        format!(
+            "failed to parse actions file '{}': {e}",
+            actions_file.display()
+        )
+    })?;
 
     let mut applied = 0usize;
     for action in parsed.actions {
@@ -1077,7 +1110,10 @@ fn read_verified(path: &Path, impure: bool) -> Result<Manifest, String> {
             .map(std::string::ToString::to_string)
             .collect::<Vec<_>>()
             .join("\n");
-        Err(format!("manifest '{}' failed validation:\n{errors}", path.display()))
+        Err(format!(
+            "manifest '{}' failed validation:\n{errors}",
+            path.display()
+        ))
     }
 }
 
@@ -1198,8 +1234,13 @@ fn atomic_copy(src: &Path, dst: &Path) -> Result<(), String> {
     fs::create_dir_all(parent).map_err(|e| e.to_string())?;
 
     let tmp = parent.join(format!(".hjem-manifest-{}.tmp", std::process::id()));
-    fs::copy(src, &tmp)
-        .map_err(|e| format!("failed to copy '{}' to '{}': {e}", src.display(), tmp.display()))?;
+    fs::copy(src, &tmp).map_err(|e| {
+        format!(
+            "failed to copy '{}' to '{}': {e}",
+            src.display(),
+            tmp.display()
+        )
+    })?;
     fs::rename(&tmp, dst).map_err(|e| {
         format!(
             "failed to replace state manifest '{}' with '{}': {e}",

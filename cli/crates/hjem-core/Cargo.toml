@@ -1,0 +1,11 @@
+[package]
+name = "hjem-core"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+clap.workspace = true
+chrono.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+smfh-core.workspace = true

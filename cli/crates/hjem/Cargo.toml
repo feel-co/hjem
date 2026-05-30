@@ -1,0 +1,7 @@
+[package]
+name = "hjem"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+hjem-core.workspace = true
