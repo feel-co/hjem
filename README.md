@@ -38,7 +38,50 @@ No compromises, only comfort.
 
 ### How to use
 
-Refer to our documentation at https://hjem.feel-co.org/.
+Refer to our documentation at <https://hjem.feel-co.org>.
+
+### Standalone CLI
+
+Hjem ships a standalone CLI, `hjem`, for non-NixOS and mixed setups.
+
+The standalone entrypoint supports three manifest sources for `switch`/`build`;
+use exactly one of:
+
+1. `--manifest` for a pre-generated manifest
+2. `--config` for a `hjem.nix` file
+3. `--flake` for a flake output
+
+Examples:
+
+```sh
+# Evaluate a local hjem.nix and apply it
+$ hjem standalone switch --config ./hjem.nix
+
+# Evaluate a flake with the default attr:
+# hjemConfigurations."<USER>".manifest
+$ hjem standalone switch --flake .
+
+# Evaluate a custom flake attribute explicitly
+$ hjem standalone switch \
+  --flake . \
+  --flake-attr 'hjemConfigurations."alice@laptop".manifest'
+```
+
+Other standalone lifecycle commands:
+
+```sh
+# Build-only (no apply)
+$ hjem standalone build --config ./hjem.nix
+
+# List stored generations
+$ hjem standalone generations
+
+# Roll back to the latest stored generation
+$ hjem standalone rollback
+
+# Keep only the newest N generations
+$ hjem standalone expire-generations --keep-last 10
+```
 
 ### Implementation
 
@@ -106,12 +149,13 @@ may use to manage individual users' homes by leveraging the module system.
 
 The interface for the `hjem` module is conceptually very similar to prior art
 (e.g., Home Manager), but it does not act as a collection of modules like Home
-Manager. Instead, we implement minimal features, and leave
-application-specific abstractions to the user to do as they see fit.
-This, of course, does not mean that a module collection cannot exist.
-In fact, one [already does!]
+Manager. Instead, we implement minimal features, and leave application-specific
+abstractions to the user to do as they see fit. This, of course, does not mean
+that a module collection cannot exist. In fact, one [already does!]
 
 Below is a live implementation of the module.
+
+<!--markdownlint-disable MD013-->
 
 ```sh
 $ nix eval .#nixosConfigurations.test.config.hjem.users.alice.files.'".foo"' --json | jq
@@ -127,6 +171,8 @@ $ nix eval .#nixosConfigurations.test.config.hjem.users.alice.files.'".foo"' --j
   "value": null
 }
 ```
+
+<!--markdownlint-enable MD013-->
 
 ### Linker Implementation
 
@@ -149,17 +195,19 @@ configurations.
 
 ## Usage without flakes
 
-We support usage without flakes.
-Specifically, you can use the following shell commands:
+We support usage without flakes. Specifically, you can use the following shell
+commands:
 
-| With flakes | Without flakes |
-| --- | --- |
-| `nix flake check` | `nix-build -A checks` |
-| `nix develop` | `nix-shell -A shell` |
+| With flakes        | Without flakes               |
+| ------------------ | ---------------------------- |
+| `nix flake check`  | `nix-build -A checks`        |
+| `nix develop`      | `nix-shell -A shell`         |
+| `nix build .#hjem` | `nix-build -A packages.hjem` |
 | `nix build .#smfh` | `nix-build -A packages.smfh` |
-| `nix fmt` | `nix run -f . formatter` |
+| `nix fmt`          | `nix run -f . formatter`     |
 
-You can also `import` the root of the repo and get all of the same attributes as the flake (without `system`).
+You can also `import` the root of the repo and get all of the same attributes as
+the flake (without `system`).
 
 ## Things to do
 
@@ -170,16 +218,15 @@ abstracting files into modules.
 ### Alternative or/and configurable file linking mechanisms
 
 [Gerg-l]: https://github.com/gerg-l
+[`hjem.linker`]: https://hjem.feel-co.org/options.html#option-hjem-linker
 
 Hjem previously utilized [systemd-tmpfiles] to ensure files are linked in place.
-This served us well for the short duration that we relied on them, but we
-have ultimately decided to go with our in-house file linker developed by
-[Gerg-l]. The new linker is, of course, infinitely more powerful and while we
-are _not_ looking back, we understand that some users might be interested in
-alternative linking mechanisms that they can customize as they prefer.
-
-You can set [`hjem.linker`](https://hjem.feel-co.org/options.html#option-hjem-linker)
-to use a custom linker if desired.
+This served us well for the short duration that we relied on them, but we have
+ultimately decided to go with our in-house file linker developed by [Gerg-l].
+The new linker is, of course, infinitely more powerful and while we are _not_
+looking back, we understand that some users might be interested in alternative
+linking mechanisms that they can customize as they prefer. You can set the
+[`hjem.linker`] option to use a custom linker if desired.
 
 ## Attributions / Prior Art
 
@@ -207,7 +254,7 @@ to or just talked about Hjem in public spaces. Thank you for the support!
 
 This project is made available under Mozilla Public License (MPL) version 2.0.
 See [LICENSE](LICENSE) for more details on the exact conditions. An online copy
-is provided [here](https://www.mozilla.org/en-US/MPL/2.0/).
+is [provided here](https://www.mozilla.org/en-US/MPL/2.0/).
 
 <div align="right">
   <a href="#doc-begin">Back to the Top</a>
