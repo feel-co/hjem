@@ -42,7 +42,7 @@ Then add the corresponding module for your system to your
 system configuration.
 
 
-Hjem is distributed as a **NixOS module** or **nix-darwin** module
+Hjem is distributed as a **NixOS module**, **nix-darwin** or **finix** module
 for the time being, and you must import it as such.
 For the sake of brevity, this guide will demonstrate how to
 import it from inside the `nixosSystem` call.
@@ -104,8 +104,37 @@ Alternatively, if you use nix-darwin:
 }
 ```
 
+or if you use finix:
+
+```nix
+# flake.nix
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+    finix.url = "github:finix-community/finix";
+
+    hjem = {
+      url = "github:feel-co/hjem";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+
+  outputs = inputs: {
+    nixosConfigurations."<your_configuration>" = inputs.finix.lib.finixSystem {
+      # ...
+      modules = [
+        inputs.hjem.finixModules.default # <- needed for 'config.hjem' options
+        # ...
+      ];
+      # ...
+    };
+  };
+}
+```
+
 > [!WARNING]
-> nix-darwin support is currently experimental;
+> nix-darwin and finix support is currently experimental;
 > please report any issues to [the tracker](https://github.com/feel-co/hjem/issues).
 
 ## Usage
@@ -211,7 +240,7 @@ linking capabilities with some basic examples.
 
 Now that we have gone over individual examples, here is a more _complete_
 example to give an idea of the bigger picture. By using (or abusing, up to you)
-the `files` submodule you can write files anywhere in your home directory.
+the `files` submodule you can write files and/or folders anywhere in your home directory.
 
 ```nix
 {
@@ -240,16 +269,20 @@ the `files` submodule you can write files anywhere in your home directory.
           some = "contents";
         };
       };
+
+      # Write a folder in '/home/alice/.config/qux'
+      ".config/qux".source = ./qux-folder;
     };
   };
 }
 ```
 
-With such a configuration, we can expect three files:
+With such a configuration, we can expect three files and one directory:
 
 1. `~/.config/foo` with the contents "bar"
 2. `~/.config/bar` with the contents "file contents"
 3. `~/.config/baz` with the contents `"{\"some\":\"contents\"}"`
+4. `~/.config/qux` with the contents of `./qux-folder`
 
 #### Using Hjem To Install Packages {#installing-packages}
 

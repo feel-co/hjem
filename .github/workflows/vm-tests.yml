@@ -15,53 +15,64 @@ jobs:
         include:
           - os: ubuntu-latest # x86
             system: "x86_64-linux"
-            test: basic
+            test: nixos-basic
           - os: ubuntu-22.04-arm # aarch64
             system: "aarch64-linux"
-            test: basic
+            test: nixos-basic
           - os: ubuntu-latest
             system: "x86_64-linux"
-            test: special-args
+            test: nixos-special-args
           - os: ubuntu-22.04-arm
             system: "aarch64-linux"
-            test: special-args
+            test: nixos-special-args
           - os: ubuntu-latest
             system: "x86_64-linux"
-            test: linker
+            test: nixos-linker
           - os: ubuntu-22.04-arm
             system: "aarch64-linux"
-            test: linker
+            test: nixos-linker
           - os: ubuntu-latest
             system: "x86_64-linux"
-            test: xdg-linker
+            test: nixos-xdg-linker
           - os: ubuntu-22.04-arm
             system: "aarch64-linux"
-            test: xdg-linker
+            test: nixos-xdg-linker
           - os: ubuntu-latest
             system: "x86_64-linux"
-            test: xdg
+            test: nixos-xdg
           - os: ubuntu-22.04-arm
             system: "aarch64-linux"
-            test: xdg
+            test: nixos-xdg
           - os: ubuntu-latest
             system: "x86_64-linux"
-            test: no-users-linker
+            test: nixos-no-users-linker
           - os: ubuntu-22.04-arm
             system: "aarch64-linux"
-            test: no-users-linker
+            test: nixos-no-users-linker
           - os: ubuntu-latest
             system: "x86_64-linux"
-            test: systemd-reload
+            test: nixos-systemd-reload
           - os: ubuntu-22.04-arm
             system: "aarch64-linux"
-            test: systemd-reload
+            test: nixos-systemd-reload
           - os: ubuntu-latest
             system: "x86_64-linux"
-            test: standalone
+            test: nixos-standalone
           - os: ubuntu-22.04-arm
             system: "aarch64-linux"
-            test: standalone
-
+            test: nixos-standalone
+          - os: ubuntu-latest
+            system: "x86_64-linux"
+            test: finix-basic
+          - os: ubuntu-22.04-arm
+            system: "aarch64-linux"
+            test: finix-basic
+          - os: ubuntu-latest
+            system: "x86_64-linux"
+            test: finix-xdg
+          - os: ubuntu-22.04-arm
+            system: "aarch64-linux"
+            test: finix-xdg
 
     runs-on: ${{ matrix.os }}
     steps:

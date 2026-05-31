@@ -13,15 +13,17 @@
 
   inherit (pkgs.lib.filesystem) packagesFromDirectoryRecursive;
 
+  prefixAttrs = prefix: pkgs.lib.mapAttrs' (name: pkgs.lib.nameValuePair "${prefix}-${name}");
+
   checks =
-    packagesFromDirectoryRecursive {
+    prefixAttrs "nixos" (packagesFromDirectoryRecursive {
       callPackage = pkgs.newScope (checks
         // {
           inherit hjemTest;
           hjemModule = (import (self + "/modules/nixos")).default;
         });
-      directory = ../tests;
-    }
+      directory = ../tests/nixos;
+    })
     // {
       # Build the 'smfh' package as a part of Hjem's test suite.
       # If 'nix flake check' is ran in the CI, this might inflate build times
