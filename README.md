@@ -44,8 +44,8 @@ Refer to our documentation at <https://hjem.feel-co.org>.
 
 Hjem ships a standalone CLI, `hjem`, for non-NixOS and mixed setups.
 
-The standalone entrypoint supports three manifest sources for `switch`/`build`;
-use exactly one of:
+The standalone entrypoint evaluates a Hjem manifest and applies it directly to
+the current user. `switch` and `build` accept exactly one manifest source:
 
 1. `--manifest` for a pre-generated manifest
 2. `--config` for a `hjem.nix` file
@@ -54,34 +54,63 @@ use exactly one of:
 Examples:
 
 ```sh
-# Evaluate a local hjem.nix and apply it
+# Evaluate a local hjem.nix and apply it.
 $ hjem standalone switch --config ./hjem.nix
 
 # Evaluate a flake with the default attr:
-# hjemConfigurations."<USER>".manifest
+# hjemConfigurations."<USER>".manifest.
 $ hjem standalone switch --flake .
 
-# Evaluate a custom flake attribute explicitly
+# Evaluate a custom flake attribute explicitly.
 $ hjem standalone switch \
   --flake . \
   --flake-attr 'hjemConfigurations."alice@laptop".manifest'
 ```
 
+`hjem.nix` may evaluate to either a manifest directly or to an attribute set
+with a `manifest` attribute:
+
+```nix
+{
+  version = 3;
+  files = [
+    {
+      type = "symlink";
+      source = ./dotfiles/example;
+      target = "/home/alice/.config/example";
+    }
+  ];
+}
+```
+
 Other standalone lifecycle commands:
 
 ```sh
-# Build-only (no apply)
+# Build-only: evaluate and validate the manifest without applying it.
 $ hjem standalone build --config ./hjem.nix
 
-# List stored generations
+# List stored generations.
 $ hjem standalone generations
 
-# Roll back to the latest stored generation
+# Roll back to the previous generation.
 $ hjem standalone rollback
 
-# Keep only the newest N generations
+# Roll back to a specific generation id.
+$ hjem standalone rollback --generation generation-1780000000-123456789
+
+# Remove old generations by timestamp, while preserving the current generation.
+$ hjem standalone expire-generations '-30 days'
+
+# Keep only the newest N generations, while preserving the current generation.
 $ hjem standalone expire-generations --keep-last 10
+
+# Remove explicit generation ids. The current generation cannot be removed.
+$ hjem standalone remove-generations generation-1780000000-123456789
 ```
+
+Standalone state lives in `$XDG_STATE_HOME/hjem/standalone`, or
+`~/.local/state/hjem/standalone` when `XDG_STATE_HOME` is unset. Use
+`--state-dir` on standalone commands to override that location.
 
 ### Implementation
 
