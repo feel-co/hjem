@@ -22,7 +22,7 @@
           inherit hjemTest;
           hjemModule = (import (self + "/modules/nixos")).default;
         });
-      directory = ../tests;
+      directory = ../tests/nixos;
     })
     // {
       # Build the 'smfh' package as a part of Hjem's test suite.

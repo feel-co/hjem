@@ -21,7 +21,7 @@
         hjemModule = (import (self + "/modules/finix")).default;
       }
     );
-    directory = ../finix-tests;
+    directory = ../tests/finix;
   });
 in
   checks
