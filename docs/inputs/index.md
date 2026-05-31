@@ -240,7 +240,7 @@ linking capabilities with some basic examples.
 
 Now that we have gone over individual examples, here is a more _complete_
 example to give an idea of the bigger picture. By using (or abusing, up to you)
-the `files` submodule you can write files anywhere in your home directory.
+the `files` submodule you can write files and/or folders anywhere in your home directory.
 
 ```nix
 {
@@ -269,16 +269,20 @@ the `files` submodule you can write files anywhere in your home directory.
           some = "contents";
         };
       };
+
+      # Write a folder in '/home/alice/.config/qux'
+      ".config/qux".source = ./qux-folder;
     };
   };
 }
 ```
 
-With such a configuration, we can expect three files:
+With such a configuration, we can expect three files and one directory:
 
 1. `~/.config/foo` with the contents "bar"
 2. `~/.config/bar` with the contents "file contents"
 3. `~/.config/baz` with the contents `"{\"some\":\"contents\"}"`
+4. `~/.config/qux` with the contents of `./qux-folder`
 
 #### Using Hjem To Install Packages {#installing-packages}
 
