@@ -1,0 +1,27 @@
+{
+  pkgs,
+  self ? ../.,
+  finix,
+}: let
+  testLib = import (finix + "/tests/lib") {
+    inherit pkgs;
+    lib = pkgs.lib;
+  };
+  hjemTest = test: testLib.mkTest test;
+
+  inherit (pkgs.lib.filesystem) packagesFromDirectoryRecursive;
+
+  prefixAttrs = prefix: pkgs.lib.mapAttrs' (name: pkgs.lib.nameValuePair "${prefix}-${name}");
+
+  checks = prefixAttrs "finix" (packagesFromDirectoryRecursive {
+    callPackage = pkgs.newScope (
+      checks
+      // {
+        inherit hjemTest;
+        hjemModule = (import (self + "/modules/finix")).default;
+      }
+    );
+    directory = ../tests/finix;
+  });
+in
+  checks
