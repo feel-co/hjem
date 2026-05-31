@@ -186,7 +186,10 @@ enum StandaloneCommand {
         impure: bool,
     },
     ExpireGenerations {
-        timestamp: String,
+        #[arg(allow_hyphen_values = true)]
+        timestamp: Option<String>,
+        #[arg(long)]
+        keep_last: Option<usize>,
         #[arg(long)]
         state_dir: Option<PathBuf>,
     },
@@ -539,8 +542,14 @@ fn run_standalone(command: StandaloneCommand) -> Result<(), String> {
                 return Err("remove-generations expects at least one generation id".to_string());
             }
             let base = standalone_state_dir(state_dir)?;
+            let current = read_current_generation_id(&base)?;
             let mut removed = 0usize;
             for id in ids {
+                if current.as_deref() == Some(id.as_str()) {
+                    return Err(format!(
+                        "Refusing to remove current generation {id}; roll back first"
+                    ));
+                }
                 let path = base.join("generations").join(&id);
                 if path.exists() {
                     fs::remove_dir_all(&path).map_err(|e| e.to_string())?;
@@ -559,11 +568,12 @@ fn run_standalone(command: StandaloneCommand) -> Result<(), String> {
             impure,
         } => {
             let base = standalone_state_dir(state_dir)?;
-            let target = resolve_generation_manifest(&base, generation.as_deref())?;
-            let target_id = target
-                .parent()
-                .and_then(generation_id_from_path)
-                .ok_or_else(|| "Failed to determine generation id".to_string())?;
+            let target_id = if let Some(generation) = generation {
+                generation
+            } else {
+                previous_generation_id(&base)?
+            };
+            let target = generation_manifest_path(&base, &target_id)?;
             let state = base.join("current").join("manifest.json");
             run_activate_internal(ActivateArgs {
                 manifest: target.clone(),
@@ -581,12 +591,24 @@ fn run_standalone(command: StandaloneCommand) -> Result<(), String> {
         }
         StandaloneCommand::ExpireGenerations {
             timestamp,
+            keep_last,
             state_dir,
         } => {
             let base = standalone_state_dir(state_dir)?;
             let mut gens = list_generations(&base)?;
-            let cutoff = parse_expire_timestamp(&timestamp)?;
+            if timestamp.is_none() && keep_last.is_none() {
+                return Err(
+                    "expire-generations expects a timestamp and/or --keep-last N".to_string(),
+                );
+            }
+            let cutoff = timestamp
+                .as_deref()
+                .map(parse_expire_timestamp)
+                .transpose()?;
             let current = read_current_generation_id(&base)?;
+            let protected_by_keep_last = keep_last
+                .map(|keep_last| newest_generation_ids(&gens, keep_last))
+                .unwrap_or_default();
             let mut removed = 0usize;
 
             for path in gens.drain(..) {
@@ -596,10 +618,13 @@ fn run_standalone(command: StandaloneCommand) -> Result<(), String> {
                 if current.as_deref() == Some(id.as_str()) {
                     continue;
                 }
+                if protected_by_keep_last.contains(&id) {
+                    continue;
+                }
                 let Some(gen_ts) = generation_timestamp_from_id(&id) else {
                     continue;
                 };
-                if gen_ts <= cutoff {
+                if cutoff.is_none_or(|cutoff| gen_ts <= cutoff) {
                     fs::remove_dir_all(path).map_err(|e| e.to_string())?;
                     removed += 1;
                 }
@@ -1300,22 +1325,11 @@ fn list_generations(base: &Path) -> Result<Vec<PathBuf>, String> {
     Ok(out)
 }
 
-fn resolve_generation_manifest(base: &Path, generation: Option<&str>) -> Result<PathBuf, String> {
-    let generations = list_generations(base)?;
-    if generations.is_empty() {
-        return Err("No generations available".to_string());
-    }
-
-    let chosen = if let Some(generation) = generation {
-        base.join("generations").join(generation)
-    } else {
-        generations
-            .last()
-            .cloned()
-            .ok_or_else(|| "No generations available".to_string())?
-    };
-
-    let manifest = chosen.join("manifest.json");
+fn generation_manifest_path(base: &Path, generation: &str) -> Result<PathBuf, String> {
+    let manifest = base
+        .join("generations")
+        .join(generation)
+        .join("manifest.json");
     if !manifest.exists() {
         return Err(format!(
             "Generation manifest missing: {}",
@@ -1330,8 +1344,18 @@ fn generation_id_from_path(path: &Path) -> Option<String> {
 }
 
 fn generation_timestamp_from_id(id: &str) -> Option<u64> {
-    let (_, ts) = id.rsplit_once('-')?;
-    ts.parse::<u64>().ok()
+    generation_order_key(id).map(|(ts, _)| ts)
+}
+
+fn generation_order_key(id: &str) -> Option<(u64, u32)> {
+    let mut parts = id.split('-');
+    let _prefix = parts.next()?;
+    let ts = parts.next()?.parse::<u64>().ok()?;
+    let nanos = parts
+        .next()
+        .map(|part| part.parse::<u32>().ok())
+        .unwrap_or(Some(0))?;
+    Some((ts, nanos))
 }
 
 fn parse_expire_timestamp(input: &str) -> Result<u64, String> {
@@ -1343,8 +1367,7 @@ fn parse_expire_timestamp(input: &str) -> Result<u64, String> {
 
     if let Some(days_str) = trimmed
         .strip_prefix('-')
-        .and_then(|s| s.strip_suffix(" days"))
-        .or_else(|| trimmed.strip_suffix("d"))
+        .and_then(|s| s.strip_suffix(" days").or_else(|| s.strip_suffix('d')))
     {
         let days = days_str
             .trim()
@@ -1403,7 +1426,7 @@ fn previous_generation_id(base: &Path) -> Result<String, String> {
         .into_iter()
         .filter_map(|p| generation_id_from_path(&p))
         .collect::<Vec<_>>();
-    ids.sort();
+    sort_generation_ids(&mut ids);
     if ids.len() < 2 {
         return Err("No previous generation available for rollback".to_string());
     }
@@ -1418,6 +1441,24 @@ fn previous_generation_id(base: &Path) -> Result<String, String> {
     }
 
     Ok(ids[ids.len() - 2].clone())
+}
+
+fn newest_generation_ids(generations: &[PathBuf], keep_last: usize) -> BTreeSet<String> {
+    let mut ids = generations
+        .iter()
+        .filter_map(|path| generation_id_from_path(path))
+        .collect::<Vec<_>>();
+    sort_generation_ids(&mut ids);
+    ids.into_iter().rev().take(keep_last).collect()
+}
+
+fn sort_generation_ids(ids: &mut [String]) {
+    ids.sort_by(
+        |a, b| match (generation_order_key(a), generation_order_key(b)) {
+            (Some(a_key), Some(b_key)) => a_key.cmp(&b_key).then_with(|| a.cmp(b)),
+            _ => a.cmp(b),
+        },
+    );
 }
 
 fn write_last_source(base: &Path, source: &StandaloneSource) -> Result<(), String> {
@@ -1452,9 +1493,12 @@ fn home_dir() -> Result<PathBuf, String> {
 }
 
 fn now_id(prefix: &str) -> String {
-    let ts = SystemTime::now()
+    let duration = SystemTime::now()
         .duration_since(UNIX_EPOCH)
-        .map(|d| d.as_secs())
-        .unwrap_or(0);
-    format!("{prefix}-{ts}")
+        .unwrap_or_default();
+    format!(
+        "{prefix}-{}-{}",
+        duration.as_secs(),
+        duration.subsec_nanos()
+    )
 }
