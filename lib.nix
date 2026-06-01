@@ -8,7 +8,7 @@
   inherit (lib.modules) mkDefault mkDerivedConfig mkIf mkMerge;
   inherit (lib.options) literalExpression mkEnableOption mkOption;
   inherit (lib.strings) concatMapStringsSep hasPrefix;
-  inherit (lib.types) addCheck anything attrsOf bool coercedTo either enum functionTo int ints lines listOf nullOr oneOf path str submodule;
+  inherit (lib.types) addCheck anything attrsOf bool coercedTo either enum functionTo int ints lines listOf nullOr oneOf path str submodule uniq;
 in rec {
   addCheckForTypes = {
     baseType,
@@ -153,7 +153,7 @@ in rec {
 
         generator = mkOption {
           # functionTo doesn't actually check the return type, so do that ourselves
-          type = addCheck (nullOr (functionTo (either options.source.type options.text.type))) (x: let
+          type = addCheck (uniq (nullOr (functionTo (either options.source.type options.text.type)))) (x: let
             generatedValue = x config.value;
             generatesDrv = options.source.type.check generatedValue;
             generatesStr = options.text.type.check generatedValue;
