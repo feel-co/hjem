@@ -38,7 +38,9 @@ No compromises, only comfort.
 
 ### How to use
 
-Refer to our documentation at https://hjem.feel-co.org/.
+Hjem features _extensive_ documentation, meticulously describing each component
+and how to use them. Refer to our documentation at <https://hjem.feel-co.org>
+for an overview, usage guides and an options reference.
 
 ### Implementation
 
@@ -106,14 +108,13 @@ may use to manage individual users' homes by leveraging the module system.
 
 The interface for the `hjem` module is conceptually very similar to prior art
 (e.g., Home Manager), but it does not act as a collection of modules like Home
-Manager. Instead, we implement minimal features, and leave
-application-specific abstractions to the user to do as they see fit.
-This, of course, does not mean that a module collection cannot exist.
-In fact, one [already does!]
+Manager. Instead, we implement minimal features, and leave application-specific
+abstractions to the user to do as they see fit. This, of course, does not mean
+that a module collection cannot exist. In fact, one [already does!]
 
 Below is a live implementation of the module.
 
-```sh
+```bash
 $ nix eval .#nixosConfigurations.test.config.hjem.users.alice.files.'".foo"' --json | jq
 {
   "clobber": false,
@@ -149,37 +150,61 @@ configurations.
 
 ## Usage without flakes
 
-We support usage without flakes.
-Specifically, you can use the following shell commands:
+We support usage without flakes. Specifically, you can use the following shell
+commands:
 
-| With flakes | Without flakes |
-| --- | --- |
-| `nix flake check` | `nix-build -A checks` |
-| `nix develop` | `nix-shell -A shell` |
+| With flakes        | Without flakes               |
+| ------------------ | ---------------------------- |
+| `nix flake check`  | `nix-build -A checks`        |
+| `nix develop`      | `nix-shell -A shell`         |
 | `nix build .#smfh` | `nix-build -A packages.smfh` |
-| `nix fmt` | `nix run -f . formatter` |
+| `nix fmt`          | `nix run -f . formatter`     |
 
-You can also `import` the root of the repo and get all of the same attributes as the flake (without `system`).
+You can also `import` the root of the repo and get all of the same attributes as
+the flake (without `system`).
 
 ## Things to do
 
-Hjem is _mostly_ feature-complete, in the sense that it is a clean
-implementation of `home.files` in Home Manager: it was never a goal to dive into
-abstracting files into modules.
+Hjem is considered _mostly_ feature complete, in the sense that it is a clean,
+modular and reliable system for managing your `$HOME` and a clean implementation
+of the `home.files` API in Home Manager. It was never a goal to dive into
+abstracting files into modules, so the core functionality is entirely complete
+with clean linking semantics and Systemd user service management.
+
+There are, however, things that we might be interested in doing. Below is a list
+of things that are currently on the agenda.
 
 ### Alternative or/and configurable file linking mechanisms
 
 [Gerg-l]: https://github.com/gerg-l
 
 Hjem previously utilized [systemd-tmpfiles] to ensure files are linked in place.
-This served us well for the short duration that we relied on them, but we
-have ultimately decided to go with our in-house file linker developed by
-[Gerg-l]. The new linker is, of course, infinitely more powerful and while we
-are _not_ looking back, we understand that some users might be interested in
-alternative linking mechanisms that they can customize as they prefer.
+This served us well for the short duration that we relied on them, but we have
+ultimately decided to go with our in-house file linker developed by [Gerg-l].
+The new linker is, of course, infinitely more powerful and while we are _not_
+looking back, we understand that some users might be interested in alternative
+linking mechanisms that they can customize as they prefer.
 
-You can set [`hjem.linker`](https://hjem.feel-co.org/options.html#option-hjem-linker)
-to use a custom linker if desired.
+You can set
+[`hjem.linker`](https://hjem.feel-co.org/options.html#option-hjem-linker) to use
+a custom linker if desired.
+
+### Hjem Standalone
+
+Tracking issue: [#116](https://github.com/feel-co/hjem/issues/116)
+
+Hjem was primarily designed for Linux, and more specifically NixOS. This is why
+the experience for the NixOS target is more streamlined compared to other Linux
+distributions with Nix by itself, or Darwin. Nevertheless, Hjem considers Darwin
+a first-class citizen and considers support for other Linux distributions via
+Nix, dubbed "Hjem Standalone", a **must have** due to the demand for a clean,
+reliable and robust module system on those platforms.
+
+Fortunately, [smfh] is cross-platform and can be extended for platforms
+_independently_ of Nix or Hjem. Thanks to its powerful nature, our path is
+unblocked for Hjem Standalone through a simple CLI interface that is **currently
+in discussion phase**. You are, of course, welcome to provide feedback and share
+your experiences if this is important to you.
 
 ## Attributions / Prior Art
 
@@ -195,19 +220,24 @@ Special thanks to [Nixpkgs] and [Home Manager]. The interface of the
 addition to Nixpkgs' `users.users`. Hjem would not be possible without any of
 those projects, thank you!
 
-A project worthy of note is [Hjem Rum], by [@Lunarnovaa] and [@nezia1], which
-establishes a Home Manager-like module system for users less comfortable with
-manually linking files in place. If you wish to utilize the power of Hjem, but
-want an easier interface, we encourage you to take a look at Hjem Rum.
+A project worthy of note is [Hjem Rum], by [@Lunarnovaa] and [@nezia1] (who have
+also contributed to Hjem and the surrounding ecosystem!), which establishes a
+Home Manager-like module system for users less comfortable with manually linking
+files in place. If you wish to utilize the power of Hjem, but want an easier
+interface, we encourage you to take a look at Hjem Rum.
 
 Last but not least, our sincerest thanks to everyone who has used, contributed
 to or just talked about Hjem in public spaces. Thank you for the support!
 
 ## License
 
+<!--markdownlint-disable MD059-->
+
 This project is made available under Mozilla Public License (MPL) version 2.0.
 See [LICENSE](LICENSE) for more details on the exact conditions. An online copy
 is provided [here](https://www.mozilla.org/en-US/MPL/2.0/).
+
+<!--markdownlint-enable MD059-->
 
 <div align="right">
   <a href="#doc-begin">Back to the Top</a>
