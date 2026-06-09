@@ -3,8 +3,8 @@
   pkgs,
 }: let
   inherit (builtins) elem isList match toJSON;
-  inherit (lib.attrsets) filterAttrs;
-  inherit (lib.lists) toList;
+  inherit (lib.attrsets) filterAttrs recursiveUpdate;
+  inherit (lib.lists) foldl' toList;
   inherit (lib.modules) mkDefault mkDerivedConfig mkIf mkMerge;
   inherit (lib.options) literalExpression mkEnableOption mkOption;
   inherit (lib.strings) concatMapStringsSep hasPrefix;
@@ -154,7 +154,11 @@ in rec {
         generator = mkOption {
           # functionTo doesn't actually check the return type, so do that ourselves
           type = addCheck (nullOr (functionTo (either options.source.type options.text.type))) (x: let
-            generatedValue = x config.value;
+            checkValue =
+              if config.value != null
+              then config.value
+              else {};
+            generatedValue = x checkValue;
             generatesDrv = options.source.type.check generatedValue;
             generatesStr = options.text.type.check generatedValue;
           in
@@ -166,6 +170,35 @@ in rec {
             Detection is automatic, as we check if the `generator` generates a derivation or a string after applying to `value`.
           '';
           example = literalExpression "lib.generators.toGitINI";
+        };
+
+        parser = mkOption {
+          type = nullOr (functionTo (attrsOf anything));
+          default = null;
+          description = ''
+            Function that parses each path in `sources` into an attribute set.
+            All parsed results are merged in order, then `value` takes
+            precedence over all of them. The final merged set is passed to
+            `generator`.
+
+            The function receives a path and must return an attribute set.
+
+            Requires `generator` to be set. Has no effect without `sources`.
+          '';
+          example = literalExpression "path: builtins.fromJSON (builtins.readFile path)";
+        };
+
+        sources = mkOption {
+          type = listOf path;
+          default = [];
+          description = ''
+            List of existing files to parse and merge as the base configuration.
+            Parsed in order using `parser`; later entries override earlier ones.
+            `value` then takes precedence over all parsed entries.
+
+            Only meaningful when `parser` is also set.
+          '';
+          example = literalExpression "[ ./base.json ./overrides.json ]";
         };
 
         value = mkOption {
@@ -210,8 +243,27 @@ in rec {
       };
 
       config = let
-        generatedValue = config.generator config.value;
+        hasParser = config.parser != null;
         hasGenerator = config.generator != null;
+
+        # Fold all sources into a single base attrset. config.sources is
+        # independent of config.source, so there is no evaluation cycle.
+        parsedBase =
+          if hasParser
+          then foldl' (acc: path: recursiveUpdate acc (config.parser path)) {} config.sources
+          else {};
+
+        effectiveValue =
+          if hasParser
+          then
+            recursiveUpdate parsedBase (
+              if config.value != null
+              then config.value
+              else {}
+            )
+          else config.value;
+
+        generatedValue = config.generator effectiveValue;
         generatesDrv = options.source.type.check generatedValue;
         generatesStr = options.text.type.check generatedValue;
       in
