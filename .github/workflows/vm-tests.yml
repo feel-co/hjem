@@ -57,6 +57,12 @@ jobs:
             test: nixos-systemd-reload
           - os: ubuntu-latest
             system: "x86_64-linux"
+            test: nixos-standalone
+          - os: ubuntu-22.04-arm
+            system: "aarch64-linux"
+            test: nixos-standalone
+          - os: ubuntu-latest
+            system: "x86_64-linux"
             test: finix-basic
           - os: ubuntu-22.04-arm
             system: "aarch64-linux"
