@@ -69,10 +69,10 @@ jobs:
             test: finix-xdg
           - os: ubuntu-latest
             system: "x86_64-linux"
-            test: standalone
+            test: nixos-standalone
           - os: ubuntu-22.04-arm
             system: "aarch64-linux"
-            test: standalone
+            test: nixos-standalone
 
     runs-on: ${{ matrix.os }}
     steps:
