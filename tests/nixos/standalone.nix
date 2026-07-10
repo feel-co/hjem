@@ -67,7 +67,7 @@ in
 
         environment = {
           systemPackages = [
-            (pkgs.callPackage ../cli/package.nix {})
+            (pkgs.callPackage ../../cli/package.nix {})
           ];
 
           etc = {
@@ -113,5 +113,10 @@ in
         machine.fail("su - ${user} -c 'hjem standalone remove-generations $(cat ~/.local/state/hjem/standalone/current-generation)'")
         machine.succeed("su - ${user} -c 'hjem standalone expire-generations --keep-last 1'")
         machine.succeed("su - ${user} -c 'test -f ~/.local/state/hjem/standalone/generations/$(cat ~/.local/state/hjem/standalone/current-generation)/manifest.json'")
+
+      with subtest("Standalone init creates a switchable example"):
+        machine.succeed("su - ${user} -c 'hjem standalone init --dir ~/.config/hjem-init-test --switch --no-flake'")
+        machine.succeed("test -L ${userHome}/.config/example")
+        machine.succeed("grep -q 'Example Hjem standalone configuration.' ${userHome}/.config/example")
     '';
   }

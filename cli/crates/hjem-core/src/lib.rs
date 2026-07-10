@@ -382,6 +382,16 @@ fn run_standalone(command: StandaloneCommand) -> Result<(), String> {
             let home_nix = conf_dir.join("hjem.nix");
             let mut created_files = Vec::new();
             if !home_nix.exists() {
+                let example = conf_dir.join("dotfiles/example");
+                let example_parent = example
+                    .parent()
+                    .ok_or_else(|| format!("invalid example path: {}", example.display()))?;
+                fs::create_dir_all(example_parent).map_err(|e| e.to_string())?;
+                if !example.exists() {
+                    fs::write(&example, "Example Hjem standalone configuration.\n")
+                        .map_err(|e| e.to_string())?;
+                    created_files.push(example);
+                }
                 fs::write(
                     &home_nix,
                     format!(
@@ -482,17 +492,7 @@ fn run_standalone(command: StandaloneCommand) -> Result<(), String> {
                     impure,
                 )?;
             } else {
-                let manifest =
-                    resolve_manifest_input(manifest, config, flake, flake_attr.clone(), impure)?;
-                let source = if let Some(path) = manifest._resolved_from_manifest {
-                    StandaloneSource::Manifest(path)
-                } else if let Some(path) = manifest._resolved_from_config {
-                    StandaloneSource::Config(path)
-                } else if let Some(flake_ref) = manifest._resolved_from_flake {
-                    StandaloneSource::FlakeWithAttr(flake_ref, flake_attr)
-                } else {
-                    StandaloneSource::Manifest(manifest.path)
-                };
+                let source = standalone_source(manifest, config, flake, flake_attr)?;
                 standalone_switch_from_source(
                     source,
                     state_dir,
@@ -576,7 +576,7 @@ fn run_standalone(command: StandaloneCommand) -> Result<(), String> {
             let target = generation_manifest_path(&base, &target_id)?;
             let state = base.join("current").join("manifest.json");
             run_activate_internal(ActivateArgs {
-                manifest: target.clone(),
+                manifest: target,
                 state,
                 actions_file: Some(base.join("current").join("actions.json")),
                 prefix,
@@ -638,9 +638,6 @@ fn run_standalone(command: StandaloneCommand) -> Result<(), String> {
 struct ResolvedManifest {
     path: PathBuf,
     _temp_dir: Option<PathBuf>,
-    _resolved_from_manifest: Option<PathBuf>,
-    _resolved_from_config: Option<PathBuf>,
-    _resolved_from_flake: Option<String>,
 }
 
 enum StandaloneSource {
@@ -650,6 +647,27 @@ enum StandaloneSource {
     FlakeWithAttr(String, Option<String>),
 }
 
+fn standalone_source(
+    manifest: Option<PathBuf>,
+    config: Option<PathBuf>,
+    flake: Option<String>,
+    flake_attr: Option<String>,
+) -> Result<StandaloneSource, String> {
+    if flake_attr.is_some() && flake.is_none() {
+        return Err("--flake-attr requires --flake".to_string());
+    }
+
+    match (manifest, config, flake) {
+        (Some(path), None, None) => Ok(StandaloneSource::Manifest(path)),
+        (None, Some(path), None) => Ok(StandaloneSource::Config(path)),
+        (None, None, Some(flake)) => Ok(StandaloneSource::FlakeWithAttr(flake, flake_attr)),
+        _ => Err(
+            "Provide exactly one of --manifest, --config, or --flake for standalone commands"
+                .to_string(),
+        ),
+    }
+}
+
 fn resolve_manifest_input(
     manifest: Option<PathBuf>,
     config: Option<PathBuf>,
@@ -657,6 +675,10 @@ fn resolve_manifest_input(
     flake_attr: Option<String>,
     impure: bool,
 ) -> Result<ResolvedManifest, String> {
+    if flake_attr.is_some() && flake.is_none() {
+        return Err("--flake-attr requires --flake".to_string());
+    }
+
     let set_count = usize::from(manifest.is_some())
         + usize::from(config.is_some())
         + usize::from(flake.is_some());
@@ -667,13 +689,10 @@ fn resolve_manifest_input(
         );
     }
 
-    if let Some(path) = manifest.clone() {
+    if let Some(path) = manifest {
         return Ok(ResolvedManifest {
             path,
             _temp_dir: None,
-            _resolved_from_manifest: manifest,
-            _resolved_from_config: None,
-            _resolved_from_flake: None,
         });
     }
 
@@ -697,9 +716,6 @@ fn resolve_manifest_input(
     Ok(ResolvedManifest {
         path: manifest_path,
         _temp_dir: Some(temp_dir),
-        _resolved_from_manifest: None,
-        _resolved_from_config: config,
-        _resolved_from_flake: flake,
     })
 }
 
@@ -899,13 +915,12 @@ struct ActivateArgs {
 }
 
 fn run_activate_internal(args: ActivateArgs) -> Result<(), String> {
-    let new_manifest_for_apply = read_verified(&args.manifest, args.impure)?;
-    let new_manifest_for_diff = read_verified(&args.manifest, args.impure)?;
+    let new_manifest = read_verified(&args.manifest, args.impure)?;
     let had_state = args.state.exists();
 
     let actions = if had_state {
         let old_manifest = read_verified(&args.state, args.impure)?;
-        trigger_actions(&old_manifest, &new_manifest_for_diff)
+        trigger_actions(&old_manifest, &new_manifest)
     } else {
         Vec::new()
     };
@@ -919,7 +934,7 @@ fn run_activate_internal(args: ActivateArgs) -> Result<(), String> {
             had_state,
         )?;
     } else {
-        new_manifest_for_apply
+        new_manifest
             .diff(&args.state, &args.prefix, true)
             .map_err(|e| format!("built-in linker activation failed: {e}"))?;
     }
@@ -1108,11 +1123,11 @@ fn run_cleanup_state(state_dir: &Path, enabled_users: &[String], json: bool) -> 
                     .and_then(|s| s.strip_suffix(".json"))
             });
 
-        if let Some(user) = user {
-            if !enabled.contains(user) {
-                fs::remove_file(entry.path()).map_err(|e| e.to_string())?;
-                removed.push(file_name.to_string());
-            }
+        if let Some(user) = user
+            && !enabled.contains(user)
+        {
+            fs::remove_file(entry.path()).map_err(|e| e.to_string())?;
+            removed.push(file_name.to_string());
         }
     }
 
@@ -1326,6 +1341,10 @@ fn list_generations(base: &Path) -> Result<Vec<PathBuf>, String> {
 }
 
 fn generation_manifest_path(base: &Path, generation: &str) -> Result<PathBuf, String> {
+    if generation_order_key(generation).is_none() {
+        return Err(format!("invalid generation id: {generation}"));
+    }
+
     let manifest = base
         .join("generations")
         .join(generation)
@@ -1349,12 +1368,13 @@ fn generation_timestamp_from_id(id: &str) -> Option<u64> {
 
 fn generation_order_key(id: &str) -> Option<(u64, u32)> {
     let mut parts = id.split('-');
-    let _prefix = parts.next()?;
-    let ts = parts.next()?.parse::<u64>().ok()?;
-    let nanos = parts
-        .next()
-        .map(|part| part.parse::<u32>().ok())
-        .unwrap_or(Some(0))?;
+    let (Some("generation"), Some(seconds), Some(nanoseconds), None) =
+        (parts.next(), parts.next(), parts.next(), parts.next())
+    else {
+        return None;
+    };
+    let ts = seconds.parse::<u64>().ok()?;
+    let nanos = nanoseconds.parse::<u32>().ok()?;
     Some((ts, nanos))
 }
 
@@ -1431,13 +1451,13 @@ fn previous_generation_id(base: &Path) -> Result<String, String> {
         return Err("No previous generation available for rollback".to_string());
     }
 
-    if let Some(current) = read_current_generation_id(base)? {
-        if let Some(idx) = ids.iter().position(|id| id == &current) {
-            if idx == 0 {
-                return Err("No previous generation available for rollback".to_string());
-            }
-            return Ok(ids[idx - 1].clone());
+    if let Some(current) = read_current_generation_id(base)?
+        && let Some(idx) = ids.iter().position(|id| id == &current)
+    {
+        if idx == 0 {
+            return Err("No previous generation available for rollback".to_string());
         }
+        return Ok(ids[idx - 1].clone());
     }
 
     Ok(ids[ids.len() - 2].clone())
@@ -1469,7 +1489,7 @@ fn write_last_source(base: &Path, source: &StandaloneSource) -> Result<(), Strin
         StandaloneSource::Config(path) => format!("config={}\n", path.display()),
         StandaloneSource::Flake(path) => format!("flake={}\n", path.display()),
         StandaloneSource::FlakeWithAttr(flake, attr) => {
-            let attr = attr.clone().unwrap_or_default();
+            let attr = attr.as_deref().unwrap_or_default();
             format!("flake={flake}\nflakeAttr={attr}\n")
         }
     };
@@ -1501,4 +1521,30 @@ fn now_id(prefix: &str) -> String {
         duration.as_secs(),
         duration.subsec_nanos()
     )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{generation_manifest_path, generation_order_key, standalone_source};
+    use std::path::Path;
+
+    #[test]
+    fn generation_paths_reject_invalid_ids() {
+        assert!(generation_manifest_path(Path::new("/state"), "../../outside").is_err());
+        assert!(generation_manifest_path(Path::new("/state"), "generation-1-2-extra").is_err());
+        assert_eq!(generation_order_key("generation-1-2"), Some((1, 2)));
+    }
+
+    #[test]
+    fn flake_attr_requires_a_flake_source() {
+        assert!(
+            standalone_source(
+                None,
+                Some("hjem.nix".into()),
+                None,
+                Some("hjemConfigurations.alice.manifest".to_string()),
+            )
+            .is_err()
+        );
+    }
 }
