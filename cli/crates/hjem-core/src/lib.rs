@@ -1,196 +1,195 @@
-use chrono::{DateTime, NaiveDate, Utc};
-use clap::{Parser, Subcommand};
+use jiff::{Timestamp, civil::Date};
+use pound::Parse;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use smfh_core::manifest::{File, FileKind, Manifest};
 use std::collections::{BTreeSet, HashMap};
-use std::ffi::OsString;
 use std::fs;
 use std::io::{BufRead, BufReader};
 use std::path::{Path, PathBuf};
 use std::process::Command as ProcCommand;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-#[derive(Parser, Debug)]
-#[command(version, about = "Hjem standalone CLI")]
+#[derive(Parse, Debug)]
+#[pound(name = "hjem", version = "0.1.0")]
+/// Hjem standalone CLI.
 struct Cli {
-    #[command(subcommand)]
+    #[pound(subcommand)]
     command: Command,
 }
 
-#[derive(Subcommand, Debug)]
+#[derive(Parse, Debug)]
 enum Command {
     Standalone {
-        #[command(subcommand)]
+        #[pound(subcommand)]
         command: StandaloneCommand,
     },
     Internal {
-        #[command(subcommand)]
+        #[pound(subcommand)]
         command: InternalCommand,
     },
     Manifest {
-        #[command(subcommand)]
+        #[pound(subcommand)]
         command: ManifestCommand,
     },
     Activate {
-        #[arg(long)]
+        #[pound(long)]
         manifest: PathBuf,
-        #[arg(long)]
+        #[pound(long)]
         state: PathBuf,
-        #[arg(long, default_value = ".backup-")]
+        #[pound(long, default = ".backup-")]
         prefix: String,
-        #[arg(long, default_value_t = false)]
+        #[pound(long)]
         impure: bool,
-        #[arg(long, default_value_t = false)]
+        #[pound(long)]
         json: bool,
     },
 }
 
-#[derive(Subcommand, Debug)]
+#[derive(Parse, Debug)]
 enum ManifestCommand {
     Validate {
-        #[arg(long)]
+        #[pound(long)]
         manifest: PathBuf,
-        #[arg(long, default_value_t = false)]
+        #[pound(long)]
         impure: bool,
-        #[arg(long, default_value_t = false)]
+        #[pound(long)]
         json: bool,
     },
     Diff {
-        #[arg(long = "new")]
+        #[pound(long = "new")]
         new_manifest: PathBuf,
-        #[arg(long = "old")]
+        #[pound(long = "old")]
         old_manifest: PathBuf,
-        #[arg(long, default_value_t = false)]
+        #[pound(long)]
         impure: bool,
-        #[arg(long, default_value_t = false)]
+        #[pound(long)]
         json: bool,
     },
 }
 
-#[derive(Subcommand, Debug)]
+#[derive(Parse, Debug)]
 enum InternalCommand {
     ValidateManifest {
-        #[arg(long)]
+        #[pound(long)]
         manifest: PathBuf,
-        #[arg(long, default_value_t = false)]
+        #[pound(long)]
         impure: bool,
-        #[arg(long, default_value_t = false)]
+        #[pound(long)]
         json: bool,
     },
     Activate {
-        #[arg(long)]
+        #[pound(long)]
         manifest: PathBuf,
-        #[arg(long)]
+        #[pound(long)]
         state: PathBuf,
-        #[arg(long)]
+        #[pound(long)]
         actions_file: Option<PathBuf>,
-        #[arg(long, default_value = ".backup-")]
+        #[pound(long, default = ".backup-")]
         prefix: String,
-        #[arg(long, default_value_t = false)]
+        #[pound(long)]
         impure: bool,
-        #[arg(long)]
+        #[pound(long)]
         external_linker: Option<PathBuf>,
-        #[arg(long = "linker-arg")]
+        #[pound(long = "linker-arg")]
         linker_args: Vec<String>,
-        #[arg(long, default_value_t = false)]
+        #[pound(long)]
         json: bool,
     },
     ReloadActions {
-        #[arg(long)]
+        #[pound(long)]
         actions_file: PathBuf,
-        #[arg(long)]
+        #[pound(long)]
         user: String,
-        #[arg(long, default_value_t = false)]
+        #[pound(long)]
         require_running_systemd: bool,
-        #[arg(long, default_value_t = false)]
+        #[pound(long)]
         json: bool,
     },
     CleanupState {
-        #[arg(long)]
+        #[pound(long)]
         state_dir: PathBuf,
-        #[arg(long = "enabled-user")]
+        #[pound(long = "enabled-user")]
         enabled_users: Vec<String>,
-        #[arg(long, default_value_t = false)]
+        #[pound(long)]
         json: bool,
     },
 }
 
-#[derive(Subcommand, Debug)]
+#[derive(Parse, Debug)]
 enum StandaloneCommand {
     Init {
-        #[arg(long)]
+        #[pound(long)]
         dir: Option<PathBuf>,
-        #[arg(long, default_value_t = false)]
+        #[pound(long)]
         no_flake: bool,
-        #[arg(long, default_value_t = false)]
+        #[pound(long)]
         switch: bool,
     },
     Switch {
-        #[arg(long)]
+        #[pound(long)]
         manifest: Option<PathBuf>,
-        #[arg(long)]
+        #[pound(long)]
         config: Option<PathBuf>,
-        #[arg(long)]
+        #[pound(long)]
         flake: Option<String>,
-        #[arg(long)]
+        #[pound(long)]
         flake_attr: Option<String>,
-        #[arg(long)]
+        #[pound(long)]
         state_dir: Option<PathBuf>,
-        #[arg(long, default_value_t = false)]
+        #[pound(long)]
         rollback: bool,
-        #[arg(long)]
+        #[pound(long)]
         external_linker: Option<PathBuf>,
-        #[arg(long = "linker-arg")]
+        #[pound(long = "linker-arg")]
         linker_args: Vec<String>,
-        #[arg(long, default_value = ".backup-")]
+        #[pound(long, default = ".backup-")]
         prefix: String,
-        #[arg(long, default_value_t = false)]
+        #[pound(long)]
         impure: bool,
     },
     Build {
-        #[arg(long)]
+        #[pound(long)]
         manifest: Option<PathBuf>,
-        #[arg(long)]
+        #[pound(long)]
         config: Option<PathBuf>,
-        #[arg(long)]
+        #[pound(long)]
         flake: Option<String>,
-        #[arg(long)]
+        #[pound(long)]
         flake_attr: Option<String>,
-        #[arg(long)]
+        #[pound(long)]
         state_dir: Option<PathBuf>,
-        #[arg(long, default_value_t = false)]
+        #[pound(long)]
         impure: bool,
     },
     Generations {
-        #[arg(long)]
+        #[pound(long)]
         state_dir: Option<PathBuf>,
     },
     RemoveGenerations {
         ids: Vec<String>,
-        #[arg(long)]
+        #[pound(long)]
         state_dir: Option<PathBuf>,
     },
     Rollback {
-        #[arg(long)]
+        #[pound(long)]
         state_dir: Option<PathBuf>,
-        #[arg(long)]
+        #[pound(long)]
         generation: Option<String>,
-        #[arg(long)]
+        #[pound(long)]
         external_linker: Option<PathBuf>,
-        #[arg(long = "linker-arg")]
+        #[pound(long = "linker-arg")]
         linker_args: Vec<String>,
-        #[arg(long, default_value = ".backup-")]
+        #[pound(long, default = ".backup-")]
         prefix: String,
-        #[arg(long, default_value_t = false)]
+        #[pound(long)]
         impure: bool,
     },
     ExpireGenerations {
-        #[arg(allow_hyphen_values = true)]
         timestamp: Option<String>,
-        #[arg(long)]
+        #[pound(long)]
         keep_last: Option<usize>,
-        #[arg(long)]
+        #[pound(long)]
         state_dir: Option<PathBuf>,
     },
 }
@@ -259,25 +258,49 @@ pub fn run() -> Result<(), String> {
 }
 
 fn parse_multicall_cli() -> Cli {
-    let argv: Vec<OsString> = std::env::args_os().collect();
-    let Some(prog) = argv.first() else {
-        return Cli::parse();
-    };
+    match parse_multicall_args(std::env::args()) {
+        Ok(cli) => cli,
+        Err(error) => error.exit(),
+    }
+}
 
-    let prog_name = Path::new(prog)
-        .file_name()
-        .and_then(|x| x.to_str())
+fn parse_multicall_args(args: impl IntoIterator<Item = String>) -> Result<Cli, pound::Error> {
+    let mut args = args.into_iter();
+    let program = args.next();
+    let prog_name = program
+        .as_deref()
+        .and_then(|prog| Path::new(prog).file_name())
+        .and_then(|name| name.to_str())
         .unwrap_or_default();
+    let mut remapped = args.collect::<Vec<_>>();
 
-    let mut remapped = Vec::<OsString>::with_capacity(argv.len() + 1);
-    remapped.push(prog.clone());
     match prog_name {
-        "hjem-internal" => remapped.push(OsString::from("internal")),
-        "hjem-standalone" => remapped.push(OsString::from("standalone")),
+        "hjem-internal" => remapped.insert(0, "internal".to_string()),
+        "hjem-standalone" => remapped.insert(0, "standalone".to_string()),
         _ => {}
     }
-    remapped.extend(argv.into_iter().skip(1));
-    Cli::parse_from(remapped)
+    normalize_expire_timestamp(&mut remapped);
+    Cli::try_parse_from(remapped.iter().map(String::as_str))
+}
+
+fn normalize_expire_timestamp(args: &mut Vec<String>) {
+    let Some(command_index) = args
+        .windows(2)
+        .position(|args| args == ["standalone", "expire-generations"])
+    else {
+        return;
+    };
+
+    let Some(timestamp_index) = args[command_index + 2..]
+        .iter()
+        .position(|arg| {
+            arg.starts_with('-') && arg.as_bytes().get(1).is_some_and(u8::is_ascii_digit)
+        })
+        .map(|index| command_index + 2 + index)
+    else {
+        return;
+    };
+    args.insert(timestamp_index, "--".to_string());
 }
 
 fn run_manifest(command: ManifestCommand) -> Result<(), String> {
@@ -1400,22 +1423,27 @@ fn parse_expire_timestamp(input: &str) -> Result<u64, String> {
         return Ok(now.saturating_sub(days.saturating_mul(24 * 60 * 60)));
     }
 
-    if let Ok(dt) = DateTime::parse_from_rfc3339(trimmed) {
-        let ts = dt.timestamp();
-        return u64::try_from(ts).map_err(|_| format!("Timestamp is before epoch: {input}"));
+    if let Ok(timestamp) = trimmed.parse::<Timestamp>() {
+        return timestamp_to_seconds(timestamp.as_second(), input);
     }
 
-    if let Ok(date) = NaiveDate::parse_from_str(trimmed, "%Y-%m-%d") {
-        let Some(dt) = date.and_hms_opt(0, 0, 0) else {
-            return Err(format!("Invalid date: {input}"));
-        };
-        let ts = DateTime::<Utc>::from_naive_utc_and_offset(dt, Utc).timestamp();
-        return u64::try_from(ts).map_err(|_| format!("Timestamp is before epoch: {input}"));
+    if let Ok(date) = Date::strptime("%F", trimmed) {
+        return timestamp_to_seconds(
+            date.in_tz("UTC")
+                .map_err(|error| format!("Invalid date: {input}: {error}"))?
+                .timestamp()
+                .as_second(),
+            input,
+        );
     }
 
     Err(format!(
         "Unsupported timestamp format '{input}'. Use unix seconds, YYYY-MM-DD, RFC3339, or -N days"
     ))
+}
+
+fn timestamp_to_seconds(timestamp: i64, input: &str) -> Result<u64, String> {
+    u64::try_from(timestamp).map_err(|_| format!("Timestamp is before epoch: {input}"))
 }
 
 fn read_current_generation_id(base: &Path) -> Result<Option<String>, String> {
@@ -1525,7 +1553,10 @@ fn now_id(prefix: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::{generation_manifest_path, generation_order_key, standalone_source};
+    use super::{
+        Command, StandaloneCommand, generation_manifest_path, generation_order_key,
+        parse_expire_timestamp, parse_multicall_args, standalone_source,
+    };
     use std::path::Path;
 
     #[test]
@@ -1546,5 +1577,30 @@ mod tests {
             )
             .is_err()
         );
+    }
+
+    #[test]
+    fn multicall_accepts_relative_expiry_timestamps() {
+        let cli = parse_multicall_args(
+            ["hjem-standalone", "expire-generations", "-30 days"].map(str::to_owned),
+        )
+        .expect("relative expiry timestamp should parse");
+        let Command::Standalone {
+            command:
+                StandaloneCommand::ExpireGenerations {
+                    timestamp: Some(timestamp),
+                    ..
+                },
+        } = cli.command
+        else {
+            panic!("expected expire-generations command");
+        };
+        assert_eq!(timestamp, "-30 days");
+    }
+
+    #[test]
+    fn expiry_timestamps_accept_rfc3339_and_dates() {
+        assert_eq!(parse_expire_timestamp("1970-01-01T00:00:01Z"), Ok(1));
+        assert_eq!(parse_expire_timestamp("2024-01-02"), Ok(1_704_153_600));
     }
 }
