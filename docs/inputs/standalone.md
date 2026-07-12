@@ -31,8 +31,7 @@ Pass `--switch` to `init` to apply the generated configuration immediately, or
 - `--manifest PATH` reads an already-generated manifest JSON file.
 - `--config PATH` evaluates a Nix expression such as `hjem.nix`.
 - `--flake REF` evaluates a flake output. By default this is
-  `hjemConfigurations."$USER".manifest`; use `--flake-attr` to select another
-  output.
+  `hjemConfigurations."$USER"`; use `--flake-attr` to select another output.
 
 The Nix value may be either the manifest itself or an attribute set containing
 `manifest`. A manifest has a version and a list of files, for example:
@@ -49,6 +48,36 @@ The Nix value may be either the manifest itself or an attribute set containing
   ];
 }
 ```
+
+When using `--config` or `--flake`, the same value may also contain `packages`.
+Standalone packages are installed into a Hjem-managed profile for the active
+generation:
+
+```nix
+{
+  manifest = {
+    version = 3;
+    files = [ ];
+  };
+
+  packages = [
+    pkgs.hello
+  ];
+}
+```
+
+> [!TIP]
+> Add the current profile to your login environment to expose package binaries:
+>
+> ```sh
+> export PATH="$XDG_STATE_HOME/hjem/standalone/current-profile/bin:$PATH"
+> ```
+>
+> If `XDG_STATE_HOME` is unset, use
+> `$HOME/.local/state/hjem/standalone/current-profile/bin`.
+
+Package support is not available for `--manifest`; manifest JSON remains a
+file-linking format and cannot represent Nix derivations.
 
 Use `--impure` only when that Nix evaluation requires impure builtins.
 
