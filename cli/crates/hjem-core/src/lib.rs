@@ -1,4 +1,4 @@
-use jiff::{Timestamp, civil::Date};
+use jiff::{Timestamp, civil::Date, tz::TimeZone};
 use pound::Parse;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -1429,7 +1429,7 @@ fn parse_expire_timestamp(input: &str) -> Result<u64, String> {
 
     if let Ok(date) = Date::strptime("%F", trimmed) {
         return timestamp_to_seconds(
-            date.in_tz("UTC")
+            date.to_zoned(TimeZone::UTC)
                 .map_err(|error| format!("Invalid date: {input}: {error}"))?
                 .timestamp()
                 .as_second(),
