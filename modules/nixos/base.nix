@@ -169,6 +169,7 @@ in {
           requiredUserServices = name: [
             "hjem-activate@${name}.service"
             "hjem-reload@${name}.service"
+            "hjem-update-state@${name}.service"
           ];
         in
           concatMap requiredUserServices (map (u: u.user) (attrValues enabledUsers))
@@ -207,12 +208,11 @@ in {
               ${checkEnabledUsers}
               new_manifest="${newManifests}/manifest-$1.json"
               old_manifest="${oldManifests}/manifest-$1.json"
-              actions_file="${oldManifests}/actions-$1.json"
 
               ${hjemCli} internal activate \
                 --manifest "$new_manifest" \
                 --state "$old_manifest" \
-                --actions-file "$actions_file" \
+                --skip-state-update \
                 --prefix "${prefix}" \
                 ${externalLinkerFlags} \
                 --json
@@ -246,11 +246,27 @@ in {
                 exit 0
               fi
 
-              actions_file="${oldManifests}/actions-$1.json"
               ${hjemCli} internal reload-actions \
-                --actions-file "$actions_file" \
+                --old-manifest "${oldManifests}/manifest-$1.json" \
+                --new-manifest "${newManifests}/manifest-$1.json" \
                 --user "$1" \
                 --require-running-systemd
+            '';
+          };
+
+          "hjem-update-state@" = {
+            description = "Update Hjem state manifest for %i";
+            enableStrictShellChecks = true;
+            serviceConfig.Type = "oneshot";
+            requires = ["hjem-reload@%i.service"];
+            after = ["hjem-reload@%i.service"];
+            scriptArgs = "%i";
+            script = ''
+              ${checkEnabledUsers}
+
+              ${hjemCli} internal update-state \
+                --manifest "${newManifests}/manifest-$1.json" \
+                --state "${oldManifests}/manifest-$1.json"
             '';
           };
 

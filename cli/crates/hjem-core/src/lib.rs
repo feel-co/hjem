@@ -84,6 +84,8 @@ enum InternalCommand {
         #[pound(long)]
         state: PathBuf,
         #[pound(long)]
+        skip_state_update: bool,
+        #[pound(long)]
         actions_file: Option<PathBuf>,
         #[pound(long, default = ".backup-")]
         prefix: String,
@@ -98,11 +100,25 @@ enum InternalCommand {
     },
     ReloadActions {
         #[pound(long)]
-        actions_file: PathBuf,
+        actions_file: Option<PathBuf>,
+        #[pound(long)]
+        old_manifest: Option<PathBuf>,
+        #[pound(long)]
+        new_manifest: Option<PathBuf>,
+        #[pound(long)]
+        impure: bool,
         #[pound(long)]
         user: String,
         #[pound(long)]
         require_running_systemd: bool,
+        #[pound(long)]
+        json: bool,
+    },
+    UpdateState {
+        #[pound(long)]
+        manifest: PathBuf,
+        #[pound(long)]
+        state: PathBuf,
         #[pound(long)]
         json: bool,
     },
@@ -245,6 +261,7 @@ pub fn run() -> Result<(), String> {
         } => run_activate_internal(ActivateArgs {
             manifest,
             state,
+            update_state: true,
             actions_file: None,
             prefix,
             impure,
@@ -362,6 +379,7 @@ fn run_internal(command: InternalCommand) -> Result<(), String> {
         InternalCommand::Activate {
             manifest,
             state,
+            skip_state_update,
             actions_file,
             prefix,
             impure,
@@ -371,6 +389,7 @@ fn run_internal(command: InternalCommand) -> Result<(), String> {
         } => run_activate_internal(ActivateArgs {
             manifest,
             state,
+            update_state: !skip_state_update,
             actions_file,
             prefix,
             impure,
@@ -380,10 +399,26 @@ fn run_internal(command: InternalCommand) -> Result<(), String> {
         }),
         InternalCommand::ReloadActions {
             actions_file,
+            old_manifest,
+            new_manifest,
+            impure,
             user,
             require_running_systemd,
             json,
-        } => run_reload_actions(&actions_file, &user, require_running_systemd, json),
+        } => run_reload_actions(ReloadActionsArgs {
+            actions_file,
+            old_manifest,
+            new_manifest,
+            impure,
+            user,
+            require_running_systemd,
+            json,
+        }),
+        InternalCommand::UpdateState {
+            manifest,
+            state,
+            json,
+        } => run_update_state(&manifest, &state, json),
         InternalCommand::CleanupState {
             state_dir,
             enabled_users,
@@ -601,6 +636,7 @@ fn run_standalone(command: StandaloneCommand) -> Result<(), String> {
             run_activate_internal(ActivateArgs {
                 manifest: target,
                 state,
+                update_state: true,
                 actions_file: Some(base.join("current").join("actions.json")),
                 prefix,
                 impure,
@@ -789,6 +825,7 @@ fn standalone_switch_from_source(
     run_activate_internal(ActivateArgs {
         manifest: manifest.path.clone(),
         state,
+        update_state: true,
         actions_file: Some(actions_file),
         prefix,
         impure,
@@ -829,6 +866,7 @@ fn standalone_switch_rollback(
     run_activate_internal(ActivateArgs {
         manifest: target_manifest,
         state,
+        update_state: true,
         actions_file: Some(base.join("current").join("actions.json")),
         prefix,
         impure,
@@ -929,6 +967,7 @@ fn mk_temp_dir(prefix: &str) -> Result<PathBuf, String> {
 struct ActivateArgs {
     manifest: PathBuf,
     state: PathBuf,
+    update_state: bool,
     actions_file: Option<PathBuf>,
     prefix: String,
     impure: bool,
@@ -962,7 +1001,9 @@ fn run_activate_internal(args: ActivateArgs) -> Result<(), String> {
             .map_err(|e| format!("built-in linker activation failed: {e}"))?;
     }
 
-    atomic_copy(&args.manifest, &args.state)?;
+    if args.update_state {
+        atomic_copy(&args.manifest, &args.state)?;
+    }
 
     let result = ActivateResult {
         mode: if had_state {
@@ -1029,13 +1070,18 @@ fn run_external_linker(
     }
 }
 
-fn run_reload_actions(
-    actions_file: &Path,
-    user: &str,
+struct ReloadActionsArgs {
+    actions_file: Option<PathBuf>,
+    old_manifest: Option<PathBuf>,
+    new_manifest: Option<PathBuf>,
+    impure: bool,
+    user: String,
     require_running_systemd: bool,
     json: bool,
-) -> Result<(), String> {
-    if require_running_systemd {
+}
+
+fn run_reload_actions(args: ReloadActionsArgs) -> Result<(), String> {
+    if args.require_running_systemd {
         let status = ProcCommand::new("systemctl")
             .args(["--user", "is-system-running"])
             .output()
@@ -1046,11 +1092,12 @@ fn run_reload_actions(
             let res = ReloadResult {
                 skipped: true,
                 reason: Some(format!(
-                    "User systemd for {user} is not running (status: {running})"
+                    "User systemd for {} is not running (status: {running})",
+                    args.user
                 )),
                 applied: 0,
             };
-            if json {
+            if args.json {
                 print_json(&res)?;
             } else if let Some(reason) = res.reason {
                 println!("{reason}");
@@ -1067,30 +1114,64 @@ fn run_reload_actions(
         return Err("systemctl --user daemon-reload failed".to_string());
     }
 
-    if !actions_file.exists() {
-        let res = ReloadResult {
-            skipped: true,
-            reason: Some(format!("No activation metadata for {user}; skipping.")),
-            applied: 0,
-        };
-        if json {
-            print_json(&res)?;
-        }
-        return Ok(());
-    }
+    let actions = match (args.actions_file, args.old_manifest, args.new_manifest) {
+        (Some(actions_file), None, None) => {
+            if !actions_file.exists() {
+                let res = ReloadResult {
+                    skipped: true,
+                    reason: Some(format!(
+                        "No activation metadata for {}; skipping.",
+                        args.user
+                    )),
+                    applied: 0,
+                };
+                if args.json {
+                    print_json(&res)?;
+                }
+                return Ok(());
+            }
 
-    let parsed: ActivateResult = serde_json::from_slice(
-        &fs::read(actions_file).map_err(|e| e.to_string())?,
-    )
-    .map_err(|e| {
-        format!(
-            "failed to parse actions file '{}': {e}",
-            actions_file.display()
-        )
-    })?;
+            let parsed: ActivateResult =
+                serde_json::from_slice(&fs::read(&actions_file).map_err(|e| e.to_string())?)
+                    .map_err(|e| {
+                        format!(
+                            "failed to parse actions file '{}': {e}",
+                            actions_file.display()
+                        )
+                    })?;
+
+            parsed.actions
+        }
+        (None, Some(old_manifest), Some(new_manifest)) => {
+            if !old_manifest.exists() {
+                let res = ReloadResult {
+                    skipped: true,
+                    reason: Some(format!(
+                        "No previous manifest for {}; skipping trigger-based restarts.",
+                        args.user
+                    )),
+                    applied: 0,
+                };
+                if args.json {
+                    print_json(&res)?;
+                }
+                return Ok(());
+            }
+
+            let old_manifest = read_verified(&old_manifest, args.impure)?;
+            let new_manifest = read_verified(&new_manifest, args.impure)?;
+            trigger_actions(&old_manifest, &new_manifest)
+        }
+        _ => {
+            return Err(
+                "provide either --actions-file or both --old-manifest and --new-manifest"
+                    .to_string(),
+            );
+        }
+    };
 
     let mut applied = 0usize;
-    for action in parsed.actions {
+    for action in actions {
         let mut cmd = ProcCommand::new("systemctl");
         cmd.arg("--user");
         match action.action.as_str() {
@@ -1115,12 +1196,22 @@ fn run_reload_actions(
         applied += 1;
     }
 
-    if json {
+    if args.json {
         print_json(&ReloadResult {
             skipped: false,
             reason: None,
             applied,
         })?;
+    }
+
+    Ok(())
+}
+
+fn run_update_state(manifest: &Path, state: &Path, json: bool) -> Result<(), String> {
+    atomic_copy(manifest, state)?;
+
+    if json {
+        print_json(&serde_json::json!({ "updated": true }))?;
     }
 
     Ok(())
