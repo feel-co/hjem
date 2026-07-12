@@ -644,6 +644,7 @@ fn run_standalone(command: StandaloneCommand) -> Result<(), String> {
                 linker_args,
                 json: false,
             })?;
+            set_current_package_profile(&base, &target_id)?;
             set_current_generation_id(&base, &target_id)?;
             println!("Rolled back to generation {target_id}");
             Ok(())
@@ -696,6 +697,7 @@ fn run_standalone(command: StandaloneCommand) -> Result<(), String> {
 
 struct ResolvedManifest {
     path: PathBuf,
+    packages: Vec<PathBuf>,
     _temp_dir: Option<PathBuf>,
 }
 
@@ -751,6 +753,7 @@ fn resolve_manifest_input(
     if let Some(path) = manifest {
         return Ok(ResolvedManifest {
             path,
+            packages: Vec::new(),
             _temp_dir: None,
         });
     }
@@ -763,6 +766,7 @@ fn resolve_manifest_input(
         return Err("No manifest source was provided".to_string());
     };
 
+    let packages = extract_package_paths(&json)?;
     let manifest_json = extract_manifest_json(json)?;
     let temp_dir = mk_temp_dir("hjem-manifest-eval")?;
     let manifest_path = temp_dir.join("manifest.json");
@@ -774,6 +778,7 @@ fn resolve_manifest_input(
 
     Ok(ResolvedManifest {
         path: manifest_path,
+        packages,
         _temp_dir: Some(temp_dir),
     })
 }
@@ -834,8 +839,9 @@ fn standalone_switch_from_source(
         json: false,
     })?;
 
-    let generation_id = record_generation(&base, &manifest.path)?;
+    let generation_id = record_generation(&base, &manifest.path, &manifest.packages)?;
     write_last_source(&base, &source_ref)?;
+    set_current_package_profile(&base, &generation_id)?;
     set_current_generation_id(&base, &generation_id)?;
     println!("Activated generation {generation_id}");
     Ok(())
@@ -874,6 +880,7 @@ fn standalone_switch_rollback(
         linker_args,
         json: false,
     })?;
+    set_current_package_profile(&base, &target_id)?;
     set_current_generation_id(&base, &target_id)?;
     Ok(())
 }
@@ -908,7 +915,7 @@ fn eval_nix_flake(
     let user = std::env::var("USER").unwrap_or_else(|_| "default".to_string());
     let attr = flake_attr
         .map(str::to_string)
-        .unwrap_or_else(|| format!("hjemConfigurations.\"{user}\".manifest"));
+        .unwrap_or_else(|| format!("hjemConfigurations.\"{user}\""));
     let full_ref = format!("{flake_ref}#{attr}");
     let mut cmd = ProcCommand::new("nix");
     cmd.arg("eval").arg("--json").arg(full_ref);
@@ -947,6 +954,25 @@ fn extract_manifest_json(value: Value) -> Result<Value, String> {
         "evaluated Nix value is not a manifest.\nExpected either:\n  1) { version = 3; files = [ ... ]; }\n  2) { manifest = { version = 3; files = [ ... ]; }; }"
             .to_string(),
     )
+}
+
+fn extract_package_paths(value: &Value) -> Result<Vec<PathBuf>, String> {
+    let Some(packages) = value.get("packages") else {
+        return Ok(Vec::new());
+    };
+
+    let packages = packages
+        .as_array()
+        .ok_or_else(|| "standalone packages must evaluate to a list".to_string())?;
+
+    packages
+        .iter()
+        .map(|package| {
+            package.as_str().map(PathBuf::from).ok_or_else(|| {
+                "standalone package entries must evaluate to store paths".to_string()
+            })
+        })
+        .collect()
 }
 
 fn mk_temp_dir(prefix: &str) -> Result<PathBuf, String> {
@@ -1429,12 +1455,101 @@ fn standalone_state_dir(override_dir: Option<PathBuf>) -> Result<PathBuf, String
         .join("standalone"))
 }
 
-fn record_generation(base: &Path, manifest: &Path) -> Result<String, String> {
+fn record_generation(base: &Path, manifest: &Path, packages: &[PathBuf]) -> Result<String, String> {
     let generation_id = now_id("generation");
     let generation_dir = base.join("generations").join(&generation_id);
     fs::create_dir_all(&generation_dir).map_err(|e| e.to_string())?;
     atomic_copy(manifest, &generation_dir.join("manifest.json"))?;
+    write_generation_packages(&generation_dir, packages)?;
+    install_package_profile(&generation_dir, packages)?;
     Ok(generation_id)
+}
+
+fn write_generation_packages(generation_dir: &Path, packages: &[PathBuf]) -> Result<(), String> {
+    if packages.is_empty() {
+        return Ok(());
+    }
+
+    let packages = packages
+        .iter()
+        .map(|path| path.display().to_string())
+        .collect::<Vec<_>>();
+    fs::write(
+        generation_dir.join("packages.json"),
+        serde_json::to_vec_pretty(&packages).map_err(|e| e.to_string())?,
+    )
+    .map_err(|e| e.to_string())
+}
+
+fn read_generation_packages(generation_dir: &Path) -> Result<Vec<PathBuf>, String> {
+    let path = generation_dir.join("packages.json");
+    if !path.exists() {
+        return Ok(Vec::new());
+    }
+
+    let bytes = fs::read(&path).map_err(|e| e.to_string())?;
+    let packages = serde_json::from_slice::<Vec<String>>(&bytes).map_err(|e| {
+        format!(
+            "failed to read generation packages '{}': {e}",
+            path.display()
+        )
+    })?;
+    Ok(packages.into_iter().map(PathBuf::from).collect())
+}
+
+fn install_package_profile(generation_dir: &Path, packages: &[PathBuf]) -> Result<(), String> {
+    if packages.is_empty() {
+        return Ok(());
+    }
+
+    let profile = generation_dir.join("profile");
+    let mut cmd = ProcCommand::new("nix");
+    cmd.arg("profile")
+        .arg("install")
+        .arg("--profile")
+        .arg(&profile);
+    for package in packages {
+        cmd.arg(package);
+    }
+
+    let output = cmd.output().map_err(|e| {
+        format!(
+            "failed to execute 'nix profile install' for standalone packages: {e}. Ensure Nix is installed and available in PATH"
+        )
+    })?;
+    if output.status.success() {
+        Ok(())
+    } else {
+        Err(format!(
+            "nix profile install failed for standalone packages: {}",
+            String::from_utf8_lossy(&output.stderr)
+        ))
+    }
+}
+
+fn set_current_package_profile(base: &Path, generation: &str) -> Result<(), String> {
+    let generation_dir = base.join("generations").join(generation);
+    let generation_profile = generation_dir.join("profile");
+    let current_profile = base.join("current-profile");
+
+    let packages = read_generation_packages(&generation_dir)?;
+    if packages.is_empty() {
+        if current_profile.exists() || current_profile.is_symlink() {
+            fs::remove_file(&current_profile).map_err(|e| e.to_string())?;
+        }
+        return Ok(());
+    }
+
+    if fs::symlink_metadata(&generation_profile).is_err() {
+        install_package_profile(&generation_dir, &packages)?;
+    }
+
+    let tmp = base.join(format!(".current-profile-{}", std::process::id()));
+    if tmp.exists() || tmp.is_symlink() {
+        fs::remove_file(&tmp).map_err(|e| e.to_string())?;
+    }
+    std::os::unix::fs::symlink(&generation_profile, &tmp).map_err(|e| e.to_string())?;
+    fs::rename(&tmp, &current_profile).map_err(|e| e.to_string())
 }
 
 fn list_generations(base: &Path) -> Result<Vec<PathBuf>, String> {
@@ -1626,9 +1741,7 @@ fn standalone_config_dir(dir: Option<PathBuf>) -> Result<PathBuf, String> {
 }
 
 fn home_dir() -> Result<PathBuf, String> {
-    std::env::var("HOME")
-        .map(PathBuf::from)
-        .map_err(|_| "HOME is not set".to_string())
+    std::env::home_dir().ok_or_else(|| "could not determine home directory".to_string())
 }
 
 fn now_id(prefix: &str) -> String {
