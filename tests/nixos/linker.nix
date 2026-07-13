@@ -110,6 +110,13 @@ in
         node1.succeed("test -L ${userHome}/.config/foo")
         node1.succeed("grep \"Hello world!\" ${userHome}/.config/foo")
 
+      with subtest("Same-generation switch repairs broken links"):
+        node1.succeed("rm ${userHome}/.config/foo")
+        node1.succeed("ln -s /nix/store/00000000000000000000000000000000-missing ${userHome}/.config/foo")
+        node1.succeed("${specialisations}/fileGetsLinked/bin/switch-to-configuration test")
+        node1.succeed("test -L ${userHome}/.config/foo")
+        node1.succeed("grep \"Hello world!\" ${userHome}/.config/foo")
+
       with subtest("File gets overwritten when changed"):
         node1.succeed("${specialisations}/fileGetsLinked/bin/switch-to-configuration test")
         node1.succeed("${specialisations}/fileGetsOverwritten/bin/switch-to-configuration test")
