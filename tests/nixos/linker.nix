@@ -117,10 +117,19 @@ in
           smfhLinker.succeed("test -L ${userHome}/.config/foo")
           smfhLinker.succeed("grep 'Hello world!' ${userHome}/.config/foo")
 
+      with subtest("Same-generation switch repairs broken links"):
+          smfhLinker.succeed("rm ${userHome}/.config/foo")
+          smfhLinker.succeed("ln -s /nix/store/00000000000000000000000000000000-missing ${userHome}/.config/foo")
+          smfhLinker.succeed("${smfhSpecialisations}/fileGetsLinked/bin/switch-to-configuration test")
+          smfhLinker.succeed("test -L ${userHome}/.config/foo")
+          smfhLinker.succeed("grep 'Hello world!' ${userHome}/.config/foo")
+
+      with subtest("File gets overwritten when changed"):
           smfhLinker.succeed("${smfhSpecialisations}/fileGetsOverwritten/bin/switch-to-configuration test")
           smfhLinker.succeed("test -L ${userHome}/.config/foo")
           smfhLinker.succeed("grep 'Hello new world!' ${userHome}/.config/foo")
 
+      with subtest("Various file type tests"):
           smfhLinker.succeed("touch ${userHome}/{bar,boop}")
           smfhLinker.succeed("chmod 644 ${userHome}/boop")
           smfhLinker.succeed("chown ${user} ${userHome}/{bar,boop}")
