@@ -178,6 +178,7 @@ in {
 
       systemd.services = let
         oldManifests = "/var/lib/hjem";
+        homeDirectories = map (u: u.directory) (attrValues enabledUsers);
         checkEnabledUsers = ''
           case "$1" in
             ${concatStringsSep "|" (map (u: u.user) (attrValues enabledUsers))}) ;;
@@ -197,6 +198,7 @@ in {
           "hjem-activate@" = {
             description = "Link files for %i from their manifest";
             enableStrictShellChecks = true;
+            unitConfig.RequiresMountsFor = homeDirectories;
             serviceConfig = {
               User = "%i";
               Type = "oneshot";
@@ -226,6 +228,7 @@ in {
               User = "%i";
               Type = "oneshot";
             };
+            unitConfig.RequiresMountsFor = homeDirectories;
             requires = ["hjem-activate@%i.service"];
             after = ["hjem-activate@%i.service"];
             path = [config.systemd.package pkgs.coreutils-full];
@@ -233,11 +236,11 @@ in {
             script = ''
               ${checkEnabledUsers}
 
-              # XXX: This assumes that the XDG runtime directory is /run/user/<uid> which is correct
-              # *most of the time* but we cannot guarantee it. In the future we should try to infer
-              # and respect the existing runtime directory.
-              uid=$(id -u)
-              XDG_RUNTIME_DIR="/run/user/$uid"
+              XDG_RUNTIME_DIR=$(loginctl show-user "$1" --property=RuntimePath --value 2>/dev/null || true)
+              if [ -z "$XDG_RUNTIME_DIR" ]; then
+                echo "Could not determine XDG runtime directory for $1. Skipping."
+                exit 0
+              fi
               export XDG_RUNTIME_DIR
 
               systemd_status=$(systemctl --user is-system-running 2>&1 || true)
@@ -259,6 +262,7 @@ in {
             enableStrictShellChecks = true;
             serviceConfig.Type = "oneshot";
             requires = ["hjem-reload@%i.service"];
+            unitConfig.RequiresMountsFor = homeDirectories;
             after = ["hjem-reload@%i.service"];
             scriptArgs = "%i";
             script = ''
