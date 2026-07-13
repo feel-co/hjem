@@ -24,11 +24,25 @@ in
           inherit uid;
         };
 
+        systemd.mounts = [
+          {
+            what = "tmpfs";
+            where = "/home";
+            type = "tmpfs";
+            options = "mode=0755";
+          }
+        ];
+
+        systemd.tmpfiles.rules = [
+          "d /home 0755 root root -"
+        ];
+
         hjem = {
           linker = smfh;
           users = {
             ${user} = {
               enable = true;
+              files.".config/requires-mounts-for".text = "linked after home.mount";
             };
           };
         };
@@ -75,6 +89,13 @@ in
       specialisations = "${baseSystem}/specialisation";
     in ''
       node1.succeed("loginctl enable-linger ${user}")
+
+      with subtest("Hjem activation mounts the user home before linking"):
+        # XXX: I'm not sure if this is the most appropriate test here. Revisit.
+        node1.succeed("${baseSystem}/bin/switch-to-configuration test")
+        node1.succeed("mountpoint -q /home")
+        node1.succeed("grep ' /home ' /proc/self/mountinfo | grep -qw tmpfs")
+        node1.succeed("grep 'linked after home.mount' ${userHome}/.config/requires-mounts-for")
 
       with subtest("Activation service runs correctly"):
         node1.succeed("${baseSystem}/bin/switch-to-configuration test")
