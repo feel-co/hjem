@@ -162,6 +162,7 @@ in {
       */
       systemd.targets.hjem = {
         description = "Hjem File Management";
+        unitConfig.X-StopOnReconfiguration = true;
         after = ["local-fs.target"];
         wantedBy = ["sysinit-reactivation.target" "multi-user.target"];
         before = ["sysinit-reactivation.target"];
