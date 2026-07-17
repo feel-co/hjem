@@ -110,41 +110,90 @@ in {
       concatMap (u: map (p: "${p}") u.extraDependencies) (attrValues enabledUsers)
     );
 
+    environment.etc."hjem/activate".source = getExe (pkgs.writeShellApplication {
+      name = "hjem-activate";
+      runtimeInputs = with pkgs; [coreutils-full bash];
+      text = ''
+        set -euo pipefail
+
+        USER="$(id -un)"
+        NEW="${newManifests}/manifest-''${USER}.json"
+
+        if [ ! -f "$NEW" ]; then
+          exit 0
+        fi
+
+        STATE_DIR="$HOME/Library/Application Support/Hjem"
+        mkdir -p "$STATE_DIR"
+        CUR="$STATE_DIR/manifest.json"
+
+        if [ ! -f "$CUR" ]; then
+          ${linker} ${argsStr} activate "$NEW"
+        else
+          ${linker} ${argsStr} diff "$NEW" "$CUR"
+        fi
+
+        cp -f "$NEW" "$CUR"
+      '';
+    });
+
+    environment.etc."hjem/link-nix-apps".source = getExe (pkgs.writeShellApplication {
+      name = "link-nix-apps";
+      runtimeInputs = with pkgs; [coreutils-full findutils gnugrep nix];
+      text = ''
+        set -euo pipefail
+
+        USER="$(id -un)"
+        GROUP="$(id -gn)"
+        DEST="$HOME/Applications/Nix User Apps"
+        PROFILE="/etc/profiles/per-user/$USER"
+
+        install -d -m 0755 -o "$USER" -g "$GROUP" "$DEST"
+
+        desired="$(mktemp -t desired-apps.XXXXXX)"
+        trap 'rm -f "$desired"' EXIT
+
+        nix-store -qR "$PROFILE" | while IFS= read -r p; do
+          apps="$p/Applications"
+          if [ -d "$apps" ]; then
+            find "$apps" -maxdepth 1 -type d -name "*.app" -print0 \
+            | while IFS= read -r -d "" app; do
+                bname="$(basename "$app")"
+                echo "$bname" >> "$desired"
+                ln -sfn "$app" "$DEST/$bname"
+              done
+          fi
+        done
+
+        sort -u "$desired" -o "$desired"
+
+        find "$DEST" -maxdepth 1 -type l -name "*.app" -print0 \
+        | while IFS= read -r -d "" link; do
+            name="$(basename "$link")"
+            if ! grep -Fxq "$name" "$desired"; then
+              rm -f "$link"
+            fi
+          done
+
+        # Remove broken links
+        find "$DEST" -maxdepth 1 -type l -name "*.app" -print0 \
+          | xargs -0 -I {} bash -c '[[ -e "{}" ]] || rm -f "{}"'
+      '';
+    });
+
     # Force users to set `primaryUser` for now, as Hjem should not automatically set it
     system.primaryUser = mkDefault (throw "Hjem no longer automatically sets `system.primaryUser`; ensure it is set correctly in your configuration.");
 
     # launchd agent to apply/diff the manifest per logged-in user
     # https://github.com/nix-darwin/nix-darwin/issues/871#issuecomment-2340443820
+    #
+    # We don't do `getExe (<script>)` here as plist bytes changing
+    # will create a "Background items added" notification that the
+    # user has to dismiss manually every system rebuild.
     launchd.user.agents = {
       hjem-activate = {
         serviceConfig = {
-          Program = getExe (pkgs.writeShellApplication {
-            name = "hjem-activate";
-            # Maybe the kickstart is broken because a runtimeInput is missing?
-            runtimeInputs = with pkgs; [coreutils-full bash];
-            text = ''
-              set -euo pipefail
-
-              USER="$(id -un)"
-              NEW="${newManifests}/manifest-''${USER}.json"
-
-              if [ ! -f "$NEW" ]; then
-                exit 0
-              fi
-
-              STATE_DIR="$HOME/Library/Application Support/Hjem"
-              mkdir -p "$STATE_DIR"
-              CUR="$STATE_DIR/manifest.json"
-
-              if [ ! -f "$CUR" ]; then
-                ${linker} ${argsStr} activate "$NEW"
-              else
-                ${linker} ${argsStr} diff "$NEW" "$CUR"
-              fi
-
-              cp -f "$NEW" "$CUR"
-            '';
-          });
+          Program = "/etc/hjem/activate";
           Label = "org.hjem.activate";
           RunAtLoad = true;
           StandardOutPath = "/var/tmp/hjem-activate.out";
@@ -156,49 +205,7 @@ in {
       # Leaving it be for now.
       link-nix-apps = {
         serviceConfig = {
-          Program = getExe (pkgs.writeShellApplication {
-            name = "link-nix-apps";
-            runtimeInputs = with pkgs; [coreutils-full findutils gnugrep nix];
-            text = ''
-              set -euo pipefail
-
-              USER="$(id -un)"
-              GROUP="$(id -gn)"
-              DEST="$HOME/Applications/Nix User Apps"
-              PROFILE="/etc/profiles/per-user/$USER"
-
-              install -d -m 0755 -o "$USER" -g "$GROUP" "$DEST"
-
-              desired="$(mktemp -t desired-apps.XXXXXX)"
-              trap 'rm -f "$desired"' EXIT
-
-              nix-store -qR "$PROFILE" | while IFS= read -r p; do
-                apps="$p/Applications"
-                if [ -d "$apps" ]; then
-                  find "$apps" -maxdepth 1 -type d -name "*.app" -print0 \
-                  | while IFS= read -r -d "" app; do
-                      bname="$(basename "$app")"
-                      echo "$bname" >> "$desired"
-                      ln -sfn "$app" "$DEST/$bname"
-                    done
-                fi
-              done
-
-              sort -u "$desired" -o "$desired"
-
-              find "$DEST" -maxdepth 1 -type l -name "*.app" -print0 \
-              | while IFS= read -r -d "" link; do
-                  name="$(basename "$link")"
-                  if ! grep -Fxq "$name" "$desired"; then
-                    rm -f "$link"
-                  fi
-                done
-
-              # Remove broken links
-              find "$DEST" -maxdepth 1 -type l -name "*.app" -print0 \
-                | xargs -0 -I {} bash -c '[[ -e "{}" ]] || rm -f "{}"'
-            '';
-          });
+          Program = "/etc/hjem/link-nix-apps";
           Label = "org.nix.link-nix-apps";
           RunAtLoad = true;
           StandardOutPath = "/var/tmp/link-nix-apps.out";
@@ -207,27 +214,15 @@ in {
       };
     };
 
-    system.activationScripts = {
-      hjem-activate-kick.text = mkAfter (
-        concatMapAttrsStringSep "\n"
-        (u: _: ''
-          if uid="$(${getExe' pkgs.coreutils-full "id"} -u ${u} 2>/dev/null)"; then
-            /bin/launchctl kickstart -k "gui/''${uid}/${config.launchd.user.agents.hjem-activate.serviceConfig.Label}" 2>/dev/null || true
-          fi
-        '')
-        enabledUsers
-      );
-
-      # Kick the user agent for every configured user at activation.
-      applications.text = mkAfter (
-        concatMapAttrsStringSep "\n"
-        (u: _: ''
-          if uid="$(${getExe' pkgs.coreutils-full "id"} -u ${u} 2>/dev/null)"; then
-            /bin/launchctl kickstart -k "gui/''${uid}/${config.launchd.user.agents.link-nix-apps.serviceConfig.Label}" 2>/dev/null || true
-          fi
-        '')
-        enabledUsers
-      );
-    };
+    system.activationScripts.postActivation.text = mkAfter (
+      concatMapAttrsStringSep "\n"
+      (u: _: ''
+        if uid="$(${getExe' pkgs.coreutils-full "id"} -u ${u} 2>/dev/null)"; then
+          /bin/launchctl kickstart -k "gui/''${uid}/${config.launchd.user.agents.hjem-activate.serviceConfig.Label}" 2>/dev/null || true
+          /bin/launchctl kickstart -k "gui/''${uid}/${config.launchd.user.agents.link-nix-apps.serviceConfig.Label}" 2>/dev/null || true
+        fi
+      '')
+      enabledUsers
+    );
   };
 }
