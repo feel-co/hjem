@@ -9,9 +9,9 @@
       },
       "branch": "main",
       "submodules": false,
-      "revision": "4a677e3cb95bcc84a75a4482b99952b19aefe3dc",
-      "url": "https://github.com/finix-community/finix/archive/4a677e3cb95bcc84a75a4482b99952b19aefe3dc.tar.gz",
-      "hash": "sha256-sCby8rU6ALfTBACBGv6vSDwRJPER/KJBkG7JeyzHNuQ="
+      "revision": "b890c8b9bdb1fd09a6c6375a713226e33203af40",
+      "url": "https://github.com/finix-community/finix/archive/b890c8b9bdb1fd09a6c6375a713226e33203af40.tar.gz",
+      "hash": "sha256-h0xpNVoFR07QXXpq4NO8iWmLJ7n9y4fsCCACWH9o2ow="
     },
     "smfh": {
       "type": "Git",
@@ -22,9 +22,9 @@
       },
       "branch": "main",
       "submodules": false,
-      "revision": "ed2dea049b06dcd44cb93a443432c02c42b4b882",
-      "url": "https://github.com/feel-co/smfh/archive/ed2dea049b06dcd44cb93a443432c02c42b4b882.tar.gz",
-      "hash": "sha256-OKpQnhlzwcXH1aJvu1NKlepXVPALkZx5GoyhJ8aKLKs="
+      "revision": "3fef284b6d973aac3473861ac70a60c4ab56e743",
+      "url": "https://github.com/feel-co/smfh/archive/3fef284b6d973aac3473861ac70a60c4ab56e743.tar.gz",
+      "hash": "sha256-tU8VxIXYgqN1Wt/P1IWTylRtg2ZYRN4hqEkHwL+NJ0Y="
     }
   },
   "version": 7
