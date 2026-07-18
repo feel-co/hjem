@@ -1,13 +1,17 @@
-name: Flake checks
+name: Checks
 on:
   workflow_dispatch:
   pull_request:
-      paths:
+    paths:
       - '**.nix'
+      - 'cli/**'
+      - '.github/workflows/checks.yml'
   push:
     branches: ["main"]
     paths:
       - '**.nix'
+      - 'cli/**'
+      - '.github/workflows/checks.yml'
 
 jobs:
   check-formatting:
@@ -28,3 +32,23 @@ jobs:
 
           # Evaluate formatting check to verify tree-wide formatting.
           nix build -L .#checks."${system}".formatting
+
+  check-rust:
+    name: check Rust
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          persist-credentials: false
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@8aa03977d8d733052d78f4e008a241fd1dbf36b3
+
+      - name: Check Rust CLI
+        run: |
+          eval "$(nix print-dev-env .#rust)"
+          cargo fmt --manifest-path cli/Cargo.toml --all -- --check
+          cargo check --manifest-path cli/Cargo.toml --workspace
+          cargo test --manifest-path cli/Cargo.toml --workspace
+          cargo clippy --manifest-path cli/Cargo.toml --workspace --all-targets -- -D warnings

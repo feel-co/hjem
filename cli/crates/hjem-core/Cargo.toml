@@ -1,0 +1,17 @@
+[package]
+name = "hjem-core"
+description = "Core library for Hjem, declarative $HOME management utility"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+keywords = ["hjem", "nix", "home", "user-home"]
+categories = ["command-line-utilities"]
+
+[dependencies]
+jiff.workspace = true
+pound.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+smfh-core.workspace = true

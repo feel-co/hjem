@@ -4,6 +4,7 @@
   lib,
   options,
   pkgs,
+  hjem-package,
   utils,
   ...
 }: let
@@ -11,7 +12,7 @@
   inherit (hjem-lib) fileToJson;
   inherit (lib.attrsets) filterAttrs optionalAttrs;
   inherit (lib.modules) importApply mkDefault mkIf mkMerge;
-  inherit (lib.strings) optionalString;
+  inherit (lib.strings) concatMapStringsSep optionalString;
   inherit (lib.trivial) flip pipe;
   inherit (lib.types) submoduleWith;
   inherit (lib.meta) getExe;
@@ -32,7 +33,26 @@
     user.xdg.state.files
   ];
 
-  linker = getExe cfg.linker;
+  hjemCli = getExe hjem-package;
+  hjemPkg = hjem-package;
+  useExternalLinker = cfg.linker != hjemPkg;
+  linkerExe = getExe cfg.linker;
+  prefix =
+    if (typeOf cfg.linkerOptions == "set") && cfg.linkerOptions ? prefix
+    then cfg.linkerOptions.prefix
+    else ".backup-";
+  linkerArgFlags =
+    if !useExternalLinker
+    then ""
+    else if typeOf cfg.linkerOptions == "set"
+    then let
+      optsFile = pkgs.writeText "hjem-linker-options.json" (toJSON cfg.linkerOptions);
+    in ''--linker-arg --linker-opts --linker-arg ${optsFile}''
+    else concatMapStringsSep " " (arg: ''--linker-arg "${arg}"'') cfg.linkerOptions;
+  externalLinkerFlags =
+    if useExternalLinker
+    then ''--external-linker "${linkerExe}" ${linkerArgFlags}''
+    else "";
 
   newManifests = let
     writeManifest = user: let
@@ -149,7 +169,7 @@ in {
           requiredUserServices = name: [
             "hjem-activate@${name}.service"
             "hjem-reload@${name}.service"
-            "hjem-copy@${name}.service"
+            "hjem-update-state@${name}.service"
           ];
         in
           concatMap requiredUserServices (map (u: u.user) (attrValues enabledUsers))
@@ -158,6 +178,7 @@ in {
 
       systemd.services = let
         oldManifests = "/var/lib/hjem";
+        homeDirectories = map (u: u.directory) (attrValues enabledUsers);
         checkEnabledUsers = ''
           case "$1" in
             ${concatStringsSep "|" (map (u: u.user) (attrValues enabledUsers))}) ;;
@@ -177,32 +198,26 @@ in {
           "hjem-activate@" = {
             description = "Link files for %i from their manifest";
             enableStrictShellChecks = true;
+            unitConfig.RequiresMountsFor = homeDirectories;
             serviceConfig = {
               User = "%i";
               Type = "oneshot";
             };
-            requires = [
-              "hjem-prepare.service"
-              "hjem-copy@%i.service"
-            ];
+            requires = ["hjem-prepare.service"];
             after = ["hjem-prepare.service"];
             scriptArgs = "%i";
-            script = let
-              linkerOpts =
-                if (typeOf cfg.linkerOptions == "set")
-                then ''--linker-opts "${toJSON cfg.linkerOptions}"''
-                else concatStringsSep " " cfg.linkerOptions;
-            in ''
+            script = ''
               ${checkEnabledUsers}
               new_manifest="${newManifests}/manifest-$1.json"
               old_manifest="${oldManifests}/manifest-$1.json"
 
-              if [ ! -f "$old_manifest" ]; then
-                ${linker} ${linkerOpts} activate "$new_manifest"
-                exit 0
-              fi
-
-              ${linker} ${linkerOpts} diff "$new_manifest" "$old_manifest"
+              ${hjemCli} internal activate \
+                --manifest "$new_manifest" \
+                --state "$old_manifest" \
+                --skip-state-update \
+                --prefix "${prefix}" \
+                ${externalLinkerFlags} \
+                --json
             '';
           };
 
@@ -213,18 +228,19 @@ in {
               User = "%i";
               Type = "oneshot";
             };
+            unitConfig.RequiresMountsFor = homeDirectories;
             requires = ["hjem-activate@%i.service"];
             after = ["hjem-activate@%i.service"];
-            path = [config.systemd.package pkgs.coreutils-full pkgs.jq pkgs.gnugrep];
+            path = [config.systemd.package pkgs.coreutils-full];
             scriptArgs = "%i";
             script = ''
               ${checkEnabledUsers}
 
-              # XXX: This assumes that the XDG runtime directory is /run/user/<uid> which is correct
-              # *most of the time* but we cannot guarantee it. In the future we should try to infer
-              # and respect the existing runtime directory.
-              uid=$(id -u)
-              XDG_RUNTIME_DIR="/run/user/$uid"
+              XDG_RUNTIME_DIR=$(loginctl show-user "$1" --property=RuntimePath --value 2>/dev/null || true)
+              if [ -z "$XDG_RUNTIME_DIR" ]; then
+                echo "Could not determine XDG runtime directory for $1. Skipping."
+                exit 0
+              fi
               export XDG_RUNTIME_DIR
 
               systemd_status=$(systemctl --user is-system-running 2>&1 || true)
@@ -233,79 +249,28 @@ in {
                 exit 0
               fi
 
-              new_manifest="${newManifests}/manifest-$1.json"
-              old_manifest="${oldManifests}/manifest-$1.json"
-
-              systemctl --user daemon-reload
-
-              if [ ! -f "$old_manifest" ]; then
-                echo "No previous manifest for $1; skipping trigger-based restarts."
-                exit 0
-              fi
-
-              # Compare trigger values for each individually-linked systemd unit file.
-              # Only act on units that existed before; no auto-start for new ones.
-              while IFS=$'\t' read -r unit_name new_file; do
-                old_file=$(jq -re \
-                  --arg name "$unit_name" \
-                  '.files[] | select((.type == "symlink") and (.target | endswith("/systemd/user/" + $name))) | .source' \
-                  "$old_manifest" 2>/dev/null || true)
-
-                if [ -z "$old_file" ] || [ ! -f "$old_file" ] || [ ! -f "$new_file" ]; then
-                  continue
-                fi
-
-                # Extract trigger values from old and new unit files (empty string if not present)
-                old_restart=$(grep "^X-Restart-Triggers=" "$old_file" 2>/dev/null | cut -d= -f2- || true)
-                new_restart=$(grep "^X-Restart-Triggers=" "$new_file" 2>/dev/null | cut -d= -f2- || true)
-                old_reload=$(grep "^X-Reload-Triggers=" "$old_file" 2>/dev/null | cut -d= -f2- || true)
-                new_reload=$(grep "^X-Reload-Triggers=" "$new_file" 2>/dev/null | cut -d= -f2- || true)
-
-                # Only restart/reload if the trigger values actually changed
-                if [ -n "$new_restart" ] && [ "$old_restart" != "$new_restart" ]; then
-                  echo "Restarting $unit_name for $1 (restart trigger changed)"
-                  systemctl --user try-restart "$unit_name" \
-                    || echo "Warning: try-restart of $unit_name failed"
-                elif [ -n "$new_reload" ] && [ "$old_reload" != "$new_reload" ]; then
-                  echo "Reloading $unit_name for $1 (reload trigger changed)"
-                  systemctl --user reload-or-try-restart "$unit_name" \
-                    || echo "Warning: reload-or-try-restart of $unit_name failed"
-                fi
-              done < <(jq -re \
-                '.files[] | select(
-                  (.type == "symlink") and
-                  (.target | test(".+/systemd/user/[^/]+\\.(service|timer|socket)$"))
-                ) | [(.target | split("/") | last), .source] | @tsv' \
-                "$new_manifest" 2>/dev/null || true)
+              ${hjemCli} internal reload-actions \
+                --old-manifest "${oldManifests}/manifest-$1.json" \
+                --new-manifest "${newManifests}/manifest-$1.json" \
+                --user "$1" \
+                --require-running-systemd
             '';
           };
 
-          "hjem-copy@" = {
-            description = "Copy the manifest into Hjem's state directory for %i";
+          "hjem-update-state@" = {
+            description = "Update Hjem state manifest for %i";
             enableStrictShellChecks = true;
             serviceConfig.Type = "oneshot";
+            requires = ["hjem-reload@%i.service"];
+            unitConfig.RequiresMountsFor = homeDirectories;
             after = ["hjem-reload@%i.service"];
             scriptArgs = "%i";
-            /*
-            TODO: remove the if condition in a while, this is in place because the first iteration of the
-            manifest used to simply point /var/lib/hjem to the aggregate symlinkJoin directory. Since
-            per-user manifest services have now been implemented, trying to copy singular files into
-            /var/lib/hjem will fail if the user was using the previous manifest handling.
-            */
             script = ''
               ${checkEnabledUsers}
-              new_manifest="${newManifests}/manifest-$1.json"
 
-              if ! cp "$new_manifest" ${oldManifests}; then
-                echo "Copying the manifest for $1 failed. This is likely due to using the previous\
-                version of the manifest handling. The manifest directory has been recreated and repopulated with\
-                %i's manifest. Please re-run the activation services for your other users, if you have ran this one manually."
-
-                rm -rf ${oldManifests}
-                mkdir -p ${oldManifests}
-
-                cp "$new_manifest" ${oldManifests}
-              fi
+              ${hjemCli} internal update-state \
+                --manifest "${newManifests}/manifest-$1.json" \
+                --state "${oldManifests}/manifest-$1.json"
             '';
           };
 
@@ -315,15 +280,11 @@ in {
             serviceConfig.Type = "oneshot";
             after = ["hjem.target"];
             unitConfig.RefuseManualStart = false;
-            script = let
-              manifestsToDelete =
-                map
-                (user: "${oldManifests}/manifest-${user}.json")
-                (attrNames disabledUsers);
-            in
-              if disabledUsers != {}
-              then "rm -f ${concatStringsSep " " manifestsToDelete}"
-              else "true";
+            script = ''
+              ${hjemCli} internal cleanup-state \
+                --state-dir ${oldManifests} \
+                ${concatMapStringsSep " " (u: ''--enabled-user "${u.user}"'') (attrValues enabledUsers)}
+            '';
           };
         };
     })

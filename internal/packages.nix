@@ -6,6 +6,8 @@
 }: let
   docs = pkgs.callPackage ../docs/package.nix {inherit hjemModule nixpkgs;};
 in {
+  hjem = pkgs.callPackage ../cli/package.nix {};
+
   # Expose the 'smfh' instance used by Hjem as a package.
   # This allows consuming the exact copy of smfh used by Hjem.
   inherit smfh;

@@ -44,6 +44,7 @@
 
     devShells = forAllSystems (system: {
       default = import ./internal/shell.nix (pkgsFor system);
+      rust = import ./internal/rust-shell.nix (pkgsFor system);
     });
 
     formatter =

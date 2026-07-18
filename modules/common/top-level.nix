@@ -4,14 +4,15 @@
 }: {
   lib,
   pkgs,
+  hjem-package,
   config,
   ...
 }: let
   inherit (builtins) concatLists mapAttrs;
   inherit (lib.attrsets) filterAttrs mapAttrsToList;
   inherit (lib.lists) optional;
-  inherit (lib.options) literalExpression mkOption mkPackageOption;
-  inherit (lib.types) attrs attrsWith bool deferredModule either listOf singleLineStr;
+  inherit (lib.options) literalExpression mkOption;
+  inherit (lib.types) attrs attrsWith bool deferredModule either listOf nullOr package singleLineStr;
 
   cfg = config.hjem;
 
@@ -61,40 +62,40 @@ in {
       '';
     };
 
-    linker =
-      mkPackageOption pkgs "smfh" {nullable = true;}
-      // {
-        description = ''
-          Package to use to link files.
+    linker = mkOption {
+      type = nullOr package;
+      default = hjem-package;
+      defaultText = literalExpression "hjem-package";
+      description = ''
+        Package to use to link files.
 
-          By default, we use `smfh`, our own file linker.
+        By default, Hjem uses its own standalone CLI linker.
 
-          Setting this to `null` will use `systemd-tmpfiles`,
-          which is only supported on Linux.
+        Setting this to `null` will use `systemd-tmpfiles`,
+        which is only supported on Linux.
 
-          `systemd-tmpfiles` is more mature, but it has the downside of
-          leaving behind symlinks that may not get invalidated until the next GC,
-          if an entry is removed from {option}`hjem.<user>.files`.
-
-          Specifying a package will use a custom file linker that uses an
-          internally-generated manifest. The custom file linker must use this
-          manifest to create or remove links as needed, by comparing the manifest
-          of the currently activated system with that of the new system.
-          This prevents dangling symlinks when an entry is removed from
-          {option}`hjem.<user>.files`.
-        '';
-      };
+        Specifying a non-null package uses an external linker that is invoked
+        with Hjem-managed manifests.
+      '';
+    };
 
     linkerOptions = mkOption {
+      type = either (listOf singleLineStr) attrs;
       default = [];
       description = ''
-        Additional arguments to pass to the linker.
+        Additional linker configuration.
 
-        This is for external linker modules to set, to allow extending the default set of hjem behaviours.
-        It accepts either a list of strings, which will be passed directly as arguments, or an attribute set, which will be
-        serialized to JSON and passed as `--linker-opts options.json`.
+        When using Hjem's built-in standalone linker, only `prefix` is consumed
+        from an attribute set.
+
+        ::: {.note}
+
+        When using an external linker package, list values are forwarded as
+        linker arguments and attribute-set values are forwarded as
+        `--linker-opts <json-file>`.
+
+        :::
       '';
-      type = either (listOf singleLineStr) attrs;
     };
   };
 
