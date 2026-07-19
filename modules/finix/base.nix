@@ -1,6 +1,7 @@
 {
   config,
   hjem-lib,
+  hjem-package,
   lib,
   options,
   pkgs,
@@ -28,6 +29,7 @@
     mkDefault
     mkMerge
     ;
+  inherit (lib.strings) concatMapStringsSep;
   inherit (lib.trivial) flip pipe;
   inherit (lib.types) submoduleWith;
 
@@ -47,15 +49,34 @@
     user.xdg.state.files
   ];
 
-  linker = getExe (
+  hjemCli = getExe hjem-package;
+  hjemPkg = hjem-package;
+  actualLinker =
     if cfg.linker == null
-    then pkgs.smfh
-    else cfg.linker
-  );
+    then hjemPkg
+    else cfg.linker;
+  useExternalLinker = actualLinker != hjemPkg;
+  linkerExe = getExe actualLinker;
+  prefix =
+    if (typeOf cfg.linkerOptions == "set") && cfg.linkerOptions ? prefix
+    then cfg.linkerOptions.prefix
+    else ".backup-";
+  linkerArgFlags =
+    if !useExternalLinker
+    then ""
+    else if typeOf cfg.linkerOptions == "set"
+    then let
+      optsFile = pkgs.writeText "hjem-linker-options.json" (toJSON cfg.linkerOptions);
+    in ''--linker-arg --linker-opts --linker-arg ${optsFile}''
+    else concatMapStringsSep " " (arg: ''--linker-arg "${arg}"'') cfg.linkerOptions;
+  externalLinkerFlags =
+    if useExternalLinker
+    then ''--external-linker "${linkerExe}" ${linkerArgFlags}''
+    else "";
 
   newManifests = let
-    writeManifest = username: let
-      name = "manifest-${username}.json";
+    writeManifest = user: let
+      name = "manifest-${user.user}.json";
     in
       pkgs.writeTextFile {
         inherit name;
@@ -66,7 +87,7 @@
             attrValues
             (filter (x: x.enable))
             (map fileToJson)
-          ]) (userFiles cfg.users.${username});
+          ]) (userFiles user);
         };
         checkPhase = ''
           set -e
@@ -79,7 +100,7 @@
   in
     pkgs.symlinkJoin {
       name = "hjem-manifests";
-      paths = map writeManifest (attrNames enabledUsers);
+      paths = map writeManifest (attrValues enabledUsers);
     };
 
   hjemSubmodule = submoduleWith {
@@ -133,79 +154,72 @@ in {
   ];
 
   config = mkMerge [
-    (
-      let
+    (optionalAttrs (options ? system.extraDependencies) {
+      system.extraDependencies = concatMap (u: u.extraDependencies) (attrValues enabledUsers);
+    })
+
+    {
+      finit.tasks = let
         oldManifests = "/var/lib/hjem";
-        linkerOpts =
-          if typeOf cfg.linkerOptions == "set"
-          then ''--linker-opts "${toJSON cfg.linkerOptions}"''
-          else concatStringsSep " " cfg.linkerOptions;
-      in {
-        finit.tasks =
-          {
-            hjem-prepare = {
-              description = "Prepare Hjem manifests directory";
-              command = pkgs.writeShellScript "hjem-prepare" ''
-                mkdir -p ${oldManifests}
-              '';
-            };
+      in
+        {
+          hjem-prepare = {
+            description = "Prepare Hjem manifests directory";
+            command = pkgs.writeShellScript "hjem-prepare" ''
+              mkdir -p ${oldManifests}
+            '';
+          };
 
-            hjem-cleanup = {
-              description = "Cleanup disabled users' manifests";
-              conditions = map (username: "task/hjem-copy-${username}/success") (attrNames enabledUsers);
+          hjem-cleanup = {
+            description = "Cleanup disabled users' manifests";
+            conditions = map (user: "task/hjem-copy-${user.user}/success") (attrValues enabledUsers);
+            command = pkgs.writeShellScript "hjem-cleanup" (
+              if disabledUsers != {}
+              then "rm -f ${
+                concatStringsSep " " (map (user: "${oldManifests}/manifest-${user.user}.json") (attrValues disabledUsers))
+              }"
+              else "true"
+            );
+          };
+        }
+        // optionalAttrs (enabledUsers != {}) (
+          listToAttrs (
+            concatMap (
+              user: let
+                username = user.user;
+                activateName = "hjem-activate-${username}";
+                copyName = "hjem-copy-${username}";
+              in [
+                (nameValuePair activateName {
+                  description = "Link files for ${username} from their manifest";
+                  user = username;
+                  conditions = ["task/hjem-prepare/success"];
+                  command = pkgs.writeShellScript activateName ''
+                    new_manifest="${newManifests}/manifest-${username}.json"
+                    old_manifest="${oldManifests}/manifest-${username}.json"
 
-              command = pkgs.writeShellScript "hjem-cleanup" (
-                if disabledUsers != {}
-                then "rm -f ${
-                  concatStringsSep " " (map (user: "${oldManifests}/manifest-${user}.json") (attrNames disabledUsers))
-                }"
-                else "true"
-              );
-            };
-          }
-          // optionalAttrs (enabledUsers != {}) (
-            listToAttrs (
-              concatMap (
-                username: let
-                  activateName = "hjem-activate-${username}";
-                  copyName = "hjem-copy-${username}";
-                in [
-                  (nameValuePair activateName {
-                    description = "Link files for ${username} from their manifest";
-                    user = username;
-                    conditions = ["task/hjem-prepare/success"];
-                    command = pkgs.writeShellScript activateName ''
-                      new_manifest="${newManifests}/manifest-${username}.json"
-                      old_manifest="${oldManifests}/manifest-${username}.json"
-
-                      if [ ! -f "$old_manifest" ]; then
-                        exec ${linker} ${linkerOpts} activate "$new_manifest"
-                      fi
-
-                      exec ${linker} ${linkerOpts} diff "$new_manifest" "$old_manifest"
-                    '';
-                  })
-                  (nameValuePair copyName {
-                    description = "Copy the manifest into Hjem's state directory for ${username}";
-                    conditions = ["task/${activateName}/success"];
-                    command = pkgs.writeShellScript copyName ''
-                      new_manifest="${newManifests}/manifest-${username}.json"
-
-                      if ! cp "$new_manifest" ${oldManifests}; then
-                        echo "Copying the manifest for ${username} failed. This is likely due to using the previous version of the manifest handling. The manifest directory has been recreated and repopulated with ${username}'s manifest. Please re-run the activation tasks for your other users."
-
-                        rm -rf ${oldManifests}
-                        mkdir -p ${oldManifests}
-
-                        cp "$new_manifest" ${oldManifests}
-                      fi
-                    '';
-                  })
-                ]
-              ) (attrNames enabledUsers)
-            )
-          );
-      }
-    )
+                    ${hjemCli} internal activate \
+                      --manifest "$new_manifest" \
+                      --state "$old_manifest" \
+                      --skip-state-update \
+                      --prefix "${prefix}" \
+                      ${externalLinkerFlags} \
+                      --json
+                  '';
+                })
+                (nameValuePair copyName {
+                  description = "Update Hjem state manifest for ${username}";
+                  conditions = ["task/${activateName}/success"];
+                  command = pkgs.writeShellScript copyName ''
+                    ${hjemCli} internal update-state \
+                      --manifest "${newManifests}/manifest-${username}.json" \
+                      --state "${oldManifests}/manifest-${username}.json"
+                  '';
+                })
+              ]
+            ) (attrValues enabledUsers)
+          )
+        );
+    }
   ];
 }
