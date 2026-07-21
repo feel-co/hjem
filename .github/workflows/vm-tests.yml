@@ -77,7 +77,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install Nix
-        uses: cachix/install-nix-action@a49548c11d9846ad46ecc0115273879b045f001c
+        uses: cachix/install-nix-action@630ae543ea3a38a9a4166f03376c02c50f408342
         with:
           extra_nix_config: |
             experimental-features = nix-command flakes
