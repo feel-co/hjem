@@ -1,13 +1,15 @@
 [package]
-name = "hjem"
-description = "A declarative $HOME management CLI for Nix"
-version.workspace = true
-edition.workspace = true
-license.workspace = true
-homepage.workspace = true
-repository.workspace = true
-keywords = ["hjem", "nix", "home", "user-home"]
-categories = ["command-line-utilities"]
+name                   = "hjem"
+description            = "A declarative $HOME management CLI for Nix"
+version.workspace      = true
+edition.workspace      = true
+license.workspace      = true
+homepage.workspace     = true
+repository.workspace   = true
+readme.workspace       = true
+rust-version.workspace = true
+keywords               = ["hjem", "nix", "home", "user-home"]
+categories             = ["command-line-utilities"]
 
 [dependencies]
 hjem-core.workspace = true
