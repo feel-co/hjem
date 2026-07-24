@@ -1,0 +1,16 @@
+[formatting]
+align_entries       = true
+allowed_blank_lines = 1
+column_width        = 100
+compact_arrays      = false
+reorder_keys        = true
+
+[[rule]]
+formatting.reorder_keys = false
+include                 = ["**/Cargo.toml"]
+keys                    = ["package", "workspace.package"]
+
+[[rule]]
+formatting.reorder_keys = false
+include                 = ["**/Cargo.toml"]
+keys                    = ["workspace", "workspace.members", "workspace.exclude"]
