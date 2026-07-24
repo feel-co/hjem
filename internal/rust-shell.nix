@@ -1,10 +1,13 @@
 pkgs:
 pkgs.mkShell {
-  name = "hjem-rust-";
+  name = "hjem-rust";
   packages = with pkgs; [
     rustc
     cargo
     clippy
     (rustfmt.override {asNightly = true;})
+    taplo
+
+    cargo-nextest
   ];
 }
