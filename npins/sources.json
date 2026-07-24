@@ -12,20 +12,7 @@
       "revision": "b890c8b9bdb1fd09a6c6375a713226e33203af40",
       "url": "https://github.com/finix-community/finix/archive/b890c8b9bdb1fd09a6c6375a713226e33203af40.tar.gz",
       "hash": "sha256-h0xpNVoFR07QXXpq4NO8iWmLJ7n9y4fsCCACWH9o2ow="
-    },
-    "smfh": {
-      "type": "Git",
-      "repository": {
-        "type": "GitHub",
-        "owner": "feel-co",
-        "repo": "smfh"
-      },
-      "branch": "main",
-      "submodules": false,
-      "revision": "3fef284b6d973aac3473861ac70a60c4ab56e743",
-      "url": "https://github.com/feel-co/smfh/archive/3fef284b6d973aac3473861ac70a60c4ab56e743.tar.gz",
-      "hash": "sha256-tU8VxIXYgqN1Wt/P1IWTylRtg2ZYRN4hqEkHwL+NJ0Y="
     }
   },
-  "version": 7
+  "version": 8
 }
