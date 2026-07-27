@@ -1,7 +1,7 @@
 {
   hjemModule,
   hjemTest,
-  smfh,
+  pkgs,
 }: let
   user = "alice";
   userHome = "/home/${user}";
@@ -9,8 +9,11 @@
 in
   hjemTest {
     name = "hjem-linker";
-    nodes = {
-      node1 = {
+    nodes = let
+      node = {
+        linker,
+        mountHome ? false,
+      }: {
         imports = [hjemModule];
 
         # ensure nixless deployments work
@@ -24,7 +27,7 @@ in
           inherit uid;
         };
 
-        systemd.mounts = [
+        systemd.mounts = pkgs.lib.optionals mountHome [
           {
             what = "tmpfs";
             where = "/home";
@@ -38,7 +41,7 @@ in
         ];
 
         hjem = {
-          linker = smfh;
+          inherit linker;
           users = {
             ${user} = {
               enable = true;
@@ -82,53 +85,51 @@ in
           };
         };
       };
+    in {
+      nullLinker = node {linker = null;};
+      smfhLinker = node {
+        linker = pkgs.smfh;
+        mountHome = true;
+      };
     };
 
     testScript = {nodes, ...}: let
-      baseSystem = nodes.node1.system.build.toplevel;
-      specialisations = "${baseSystem}/specialisation";
+      nullBaseSystem = nodes.nullLinker.system.build.toplevel;
+      smfhBaseSystem = nodes.smfhLinker.system.build.toplevel;
+      smfhSpecialisations = "${smfhBaseSystem}/specialisation";
     in ''
-      node1.succeed("loginctl enable-linger ${user}")
+      with subtest("linker = null"):
+          nullLinker.succeed("loginctl enable-linger ${user}")
+          nullLinker.succeed("${nullBaseSystem}/bin/switch-to-configuration test")
+          nullLinker.wait_until_succeeds("systemctl --user --machine=${user}@ is-active systemd-tmpfiles-setup.service")
+          nullLinker.succeed("grep 'linked after home.mount' ${userHome}/.config/requires-mounts-for")
 
-      with subtest("Hjem activation mounts the user home before linking"):
-        # XXX: I'm not sure if this is the most appropriate test here. Revisit.
-        node1.succeed("${baseSystem}/bin/switch-to-configuration test")
-        node1.succeed("mountpoint -q /home")
-        node1.succeed("grep ' /home ' /proc/self/mountinfo | grep -qw tmpfs")
-        node1.succeed("grep 'linked after home.mount' ${userHome}/.config/requires-mounts-for")
+      with subtest("linker = pkgs.smfh"):
+          smfhLinker.succeed("loginctl enable-linger ${user}")
+          smfhLinker.succeed("${smfhBaseSystem}/bin/switch-to-configuration test")
+          smfhLinker.succeed("mountpoint -q /home")
+          smfhLinker.succeed("grep ' /home ' /proc/self/mountinfo | grep -qw tmpfs")
+          smfhLinker.succeed("grep 'linked after home.mount' ${userHome}/.config/requires-mounts-for")
+          smfhLinker.succeed("systemctl show servicename --property=Result --value | grep -q '^success$'")
+          smfhLinker.succeed("[ -f /var/lib/hjem/manifest-${user}.json ]")
 
-      with subtest("Activation service runs correctly"):
-        node1.succeed("${baseSystem}/bin/switch-to-configuration test")
-        node1.succeed("systemctl show servicename --property=Result --value | grep -q '^success$'")
+          smfhLinker.succeed("${smfhSpecialisations}/fileGetsLinked/bin/switch-to-configuration test")
+          smfhLinker.succeed("test -L ${userHome}/.config/foo")
+          smfhLinker.succeed("grep 'Hello world!' ${userHome}/.config/foo")
 
-      with subtest("Manifest gets created"):
-        node1.succeed("${baseSystem}/bin/switch-to-configuration test")
-        node1.succeed("[ -f /var/lib/hjem/manifest-${user}.json ]")
+          smfhLinker.succeed("${smfhSpecialisations}/fileGetsOverwritten/bin/switch-to-configuration test")
+          smfhLinker.succeed("test -L ${userHome}/.config/foo")
+          smfhLinker.succeed("grep 'Hello new world!' ${userHome}/.config/foo")
 
-      with subtest("File gets linked"):
-        node1.succeed("${specialisations}/fileGetsLinked/bin/switch-to-configuration test")
-        node1.succeed("test -L ${userHome}/.config/foo")
-        node1.succeed("grep \"Hello world!\" ${userHome}/.config/foo")
-
-      with subtest("File gets overwritten when changed"):
-        node1.succeed("${specialisations}/fileGetsLinked/bin/switch-to-configuration test")
-        node1.succeed("${specialisations}/fileGetsOverwritten/bin/switch-to-configuration test")
-        node1.succeed("test -L ${userHome}/.config/foo")
-        node1.succeed("grep \"Hello new world!\" ${userHome}/.config/foo")
-
-      with subtest("Various file type tests"):
-        node1.succeed("touch ${userHome}/{bar,boop}")
-        node1.succeed("test -f ${userHome}/bar")
-        node1.succeed("test -f ${userHome}/boop")
-        node1.succeed("chmod 644 ${userHome}/boop")
-        node1.succeed("chown ${user} ${userHome}/{bar,boop}")
-        node1.succeed("test $(stat -c '%a' ${userHome}/boop) = \"644\"")
-        node1.succeed("${specialisations}/variousFileTypes/bin/switch-to-configuration test")
-        node1.succeed("test -f ${userHome}/foo")
-        node1.succeed("grep \"test content\" ${userHome}/foo")
-        node1.succeed("! test -f ${userHome}/bar")
-        node1.succeed("test -d ${userHome}/baz")
-        node1.succeed("test -f ${userHome}/boop")
-        node1.succeed("test $(stat -c '%a' ${userHome}/boop) = \"703\"")
+          smfhLinker.succeed("touch ${userHome}/{bar,boop}")
+          smfhLinker.succeed("chmod 644 ${userHome}/boop")
+          smfhLinker.succeed("chown ${user} ${userHome}/{bar,boop}")
+          smfhLinker.succeed("${smfhSpecialisations}/variousFileTypes/bin/switch-to-configuration test")
+          smfhLinker.succeed("test -f ${userHome}/foo")
+          smfhLinker.succeed("grep 'test content' ${userHome}/foo")
+          smfhLinker.succeed("! test -f ${userHome}/bar")
+          smfhLinker.succeed("test -d ${userHome}/baz")
+          smfhLinker.succeed("test -f ${userHome}/boop")
+          smfhLinker.succeed("test $(stat -c '%a' ${userHome}/boop) = '703'")
     '';
   }

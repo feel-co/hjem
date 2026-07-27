@@ -1,7 +1,6 @@
 {
   pkgs,
   self ? ../.,
-  smfh,
 }: let
   hjemTest =
     # The first argument to this function is the test module itself
@@ -25,11 +24,6 @@
       directory = ../tests/nixos;
     })
     // {
-      # Build the 'smfh' package as a part of Hjem's test suite.
-      # If 'nix flake check' is ran in the CI, this might inflate build times
-      # *a lot*.
-      inherit smfh;
-
       # Formatting checks to run as a part of 'nix flake check' or manually
       # via 'nix build .#checks.<system>.formatting'.
       formatting =

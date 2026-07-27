@@ -3,7 +3,7 @@
   hjemTest,
   lib,
   formats,
-  smfh,
+  pkgs,
   writeText,
 }: let
   userHome = "/home/alice";
@@ -72,7 +72,7 @@ in
         };
 
         hjem = {
-          linker = smfh;
+          linker = pkgs.smfh;
           users = {
             alice = {
               enable = true;

@@ -1,7 +1,6 @@
 {
   hjemModule,
   hjemTest,
-  smfh,
   pkgs,
   lib,
 }: let
@@ -84,10 +83,7 @@ in
         password = "";
       };
 
-      hjem = {
-        linker = smfh;
-        users.${user}.enable = true;
-      };
+      hjem.users.${user}.enable = true;
 
       specialisation = {
         v1.configuration = {config, ...}: {

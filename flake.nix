@@ -12,30 +12,22 @@
     forAllSystems = nixpkgs.lib.genAttrs ["x86_64-linux" "aarch64-linux" "aarch64-darwin"];
     finix = (import ./npins).finix;
     pkgsFor = system: nixpkgs.legacyPackages.${system};
-    smfhPin = (import ./npins).smfh;
-    smfhFor = pkgs: pkgs.callPackage (smfhPin + "/package.nix") {};
   in {
     nixosModules = import ./modules/nixos;
     darwinModules = import ./modules/nix-darwin;
     finixModules = import ./modules/finix;
-
-    overlays = {
-      smfh = (import smfhPin).overlays.default;
-    };
 
     packages = forAllSystems (system:
       import ./internal/packages.nix rec {
         inherit nixpkgs;
         hjemModule = self.nixosModules.default;
         pkgs = pkgsFor system;
-        smfh = smfhFor pkgs;
       });
 
     checks = forAllSystems (system:
       import ./internal/checks.nix rec {
         inherit self;
         pkgs = pkgsFor system;
-        smfh = smfhFor pkgs;
       }
       // import ./internal/finix-checks.nix {
         inherit self finix;
