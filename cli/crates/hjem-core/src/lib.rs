@@ -275,30 +275,37 @@ struct ReloadResult {
 }
 
 pub fn run() -> Result<(), String> {
-  let cli = parse_multicall_cli();
-  match cli.command {
-    Command::Manifest { command } => run_manifest(command),
-    Command::Activate {
-      manifest,
-      state,
-      prefix,
-      impure,
-      json,
-    } => {
-      run_activate_internal(ActivateArgs {
+  parse_multicall_cli().command.run()
+}
+
+impl Command {
+  fn run(self) -> Result<(), String> {
+    match self {
+      Self::Manifest { command } => command.run(),
+      Command::Activate {
         manifest,
         state,
-        update_state: true,
-        actions_file: None,
         prefix,
         impure,
-        external_linker: None,
-        linker_args: Vec::new(),
         json,
-      })
-    },
-    Command::Internal { command } => run_internal(command),
-    Command::Standalone { command } => run_standalone(command),
+      } => {
+        let verified = Manifest::load(&manifest, impure)?;
+        ActivateArgs {
+          manifest,
+          state,
+          update_state: true,
+          actions_file: None,
+          prefix,
+          impure,
+          external_linker: None,
+          linker_args: Vec::new(),
+          json,
+        }
+        .run(verified)
+      },
+      Self::Internal { command } => command.run(),
+      Self::Standalone { command } => command.run(),
+    }
   }
 }
 
@@ -351,95 +358,91 @@ fn normalize_expire_timestamp(args: &mut Vec<String>) {
   args.insert(timestamp_index, "--".to_string());
 }
 
-fn run_manifest(command: ManifestCommand) -> Result<(), String> {
-  match command {
-    ManifestCommand::Validate {
-      manifest,
-      impure,
-      json,
-    } => {
-      let m = read_verified(&manifest, impure)?;
-      if json {
-        print_json(&ValidateResult {
-          ok:         true,
-          file_count: m.files.len(),
-          version:    m.version,
-        })?;
-      } else {
-        println!("ok");
-      }
-      Ok(())
-    },
-    ManifestCommand::Diff {
-      new_manifest,
-      old_manifest,
-      impure,
-      json,
-    } => {
-      let current = read_verified(&new_manifest, impure)?;
-      let changed = !manifests_equivalent(&current, &old_manifest, impure)?;
-      if json {
-        print_json(&DiffResult { ok: true, changed })?;
-      } else if changed {
-        println!("changed");
-      } else {
-        println!("unchanged");
-      }
-      Ok(())
-    },
+impl ManifestCommand {
+  fn run(self) -> Result<(), String> {
+    match self {
+      Self::Validate {
+        manifest,
+        impure,
+        json,
+      } => {
+        let m = Manifest::load(&manifest, impure)?;
+        if json {
+          print_json(&ValidateResult {
+            ok:         true,
+            file_count: m.files.len(),
+            version:    m.version,
+          })?;
+        } else {
+          println!("ok");
+        }
+        Ok(())
+      },
+      Self::Diff {
+        new_manifest,
+        old_manifest,
+        impure,
+        json,
+      } => {
+        let current = Manifest::load(&new_manifest, impure)?;
+        let changed = !current.equivalent_to(&old_manifest, impure)?;
+        if json {
+          print_json(&DiffResult { ok: true, changed })?;
+        } else if changed {
+          println!("changed");
+        } else {
+          println!("unchanged");
+        }
+        Ok(())
+      },
+    }
   }
 }
 
-fn run_internal(command: InternalCommand) -> Result<(), String> {
-  match command {
-    InternalCommand::ValidateManifest {
-      manifest,
-      impure,
-      json,
-    } => {
-      let m = read_verified(&manifest, impure)?;
-      if json {
-        print_json(&ValidateResult {
-          ok:         true,
-          file_count: m.files.len(),
-          version:    m.version,
-        })?;
-      }
-      Ok(())
-    },
-    InternalCommand::Activate {
-      manifest,
-      state,
-      skip_state_update,
-      actions_file,
-      prefix,
-      impure,
-      external_linker,
-      linker_args,
-      json,
-    } => {
-      run_activate_internal(ActivateArgs {
+impl InternalCommand {
+  fn run(self) -> Result<(), String> {
+    match self {
+      Self::ValidateManifest {
+        manifest,
+        impure,
+        json,
+      } => {
+        let m = Manifest::load(&manifest, impure)?;
+        if json {
+          print_json(&ValidateResult {
+            ok:         true,
+            file_count: m.files.len(),
+            version:    m.version,
+          })?;
+        }
+        Ok(())
+      },
+      Self::Activate {
         manifest,
         state,
-        update_state: !skip_state_update,
+        skip_state_update,
         actions_file,
         prefix,
         impure,
         external_linker,
         linker_args,
         json,
-      })
-    },
-    InternalCommand::ReloadActions {
-      actions_file,
-      old_manifest,
-      new_manifest,
-      impure,
-      user,
-      require_running_systemd,
-      json,
-    } => {
-      run_reload_actions(ReloadActionsArgs {
+      } => {
+        let verified = Manifest::load(&manifest, impure)?;
+        ActivateArgs {
+          manifest,
+          state,
+          update_state: !skip_state_update,
+          actions_file,
+          prefix,
+          impure,
+          external_linker,
+          linker_args,
+          json,
+        }
+        .run(verified)
+      },
+      Self::ReloadActions {
         actions_file,
         old_manifest,
         new_manifest,
@@ -447,297 +450,314 @@ fn run_internal(command: InternalCommand) -> Result<(), String> {
         user,
         require_running_systemd,
         json,
-      })
-    },
-    InternalCommand::UpdateState {
-      manifest,
-      state,
-      json,
-    } => run_update_state(&manifest, &state, json),
-    InternalCommand::CleanupState {
-      state_dir,
-      enabled_users,
-      json,
-    } => run_cleanup_state(&state_dir, &enabled_users, json),
+      } => {
+        ReloadActionsArgs {
+          actions_file,
+          old_manifest,
+          new_manifest,
+          impure,
+          user,
+          require_running_systemd,
+          json,
+        }
+        .run()
+      },
+      Self::UpdateState {
+        manifest,
+        state,
+        json,
+      } => run_update_state(&manifest, &state, json),
+      Self::CleanupState {
+        state_dir,
+        enabled_users,
+        json,
+      } => run_cleanup_state(&state_dir, &enabled_users, json),
+    }
   }
 }
 
-fn run_standalone(command: StandaloneCommand) -> Result<(), String> {
-  match command {
-    StandaloneCommand::Init {
-      dir,
-      no_flake,
-      switch,
-    } => {
-      let conf_dir = standalone_config_dir(dir)?;
-      fs::create_dir_all(&conf_dir).map_err(|e| e.to_string())?;
+impl StandaloneCommand {
+  fn run(self) -> Result<(), String> {
+    match self {
+      Self::Init {
+        dir,
+        no_flake,
+        switch,
+      } => {
+        let conf_dir = standalone_config_dir(dir)?;
+        fs::create_dir_all(&conf_dir).map_err(|e| e.to_string())?;
 
-      let home_nix = conf_dir.join("hjem.nix");
-      let mut created_files = Vec::new();
-      if !home_nix.exists() {
-        let example = conf_dir.join("dotfiles/example");
-        let example_parent = example.parent().ok_or_else(|| {
-          format!("invalid example path: {}", example.display())
-        })?;
-        fs::create_dir_all(example_parent).map_err(|e| e.to_string())?;
-        if !example.exists() {
-          fs::write(&example, "Example Hjem standalone configuration.\n")
-            .map_err(|e| e.to_string())?;
-          created_files.push(example);
-        }
-        fs::write(
-          &home_nix,
-          format!(
-            "{{\n  version = 3;\n  files = [\n    {{\n      type = \
-             \"symlink\";\n      source = ./dotfiles/example;\n      target = \
-             \"{}/.config/example\";\n    }}\n  ];\n}}\n",
-            home_dir()?.display()
-          ),
-        )
-        .map_err(|e| e.to_string())?;
-        created_files.push(home_nix.clone());
-      }
-
-      if !no_flake {
-        let flake_nix = conf_dir.join("flake.nix");
-        if !flake_nix.exists() {
-          let user =
-            std::env::var("USER").unwrap_or_else(|_| "user".to_string());
+        let home_nix = conf_dir.join("hjem.nix");
+        let mut created_files = Vec::new();
+        if !home_nix.exists() {
+          let example = conf_dir.join("dotfiles/example");
+          let example_parent = example.parent().ok_or_else(|| {
+            format!("invalid example path: {}", example.display())
+          })?;
+          fs::create_dir_all(example_parent).map_err(|e| e.to_string())?;
+          if !example.exists() {
+            fs::write(&example, "Example Hjem standalone configuration.\n")
+              .map_err(|e| e.to_string())?;
+            created_files.push(example);
+          }
           fs::write(
-            &flake_nix,
+            &home_nix,
             format!(
-              "{{\n  description = \"Hjem standalone configuration\";\n\n  \
-               outputs = {{ self }}: {{\n    \
-               hjemConfigurations.\"{user}\".manifest = import ./hjem.nix;\n  \
-               }};\n}}\n"
+              "{{\n  version = 3;\n  files = [\n    {{\n      type = \
+               \"symlink\";\n      source = ./dotfiles/example;\n      target \
+               = \"{}/.config/example\";\n    }}\n  ];\n}}\n",
+              home_dir()?.display()
             ),
           )
           .map_err(|e| e.to_string())?;
-          created_files.push(flake_nix);
+          created_files.push(home_nix.clone());
         }
-      }
 
-      println!(
-        "Initialized Hjem standalone config in {}",
-        conf_dir.display()
-      );
-      if created_files.is_empty() {
-        println!("No new files were created (existing config kept as-is).");
-      } else {
-        for path in created_files {
-          println!("Created {}", path.display());
+        if !no_flake {
+          let flake_nix = conf_dir.join("flake.nix");
+          if !flake_nix.exists() {
+            let user =
+              std::env::var("USER").unwrap_or_else(|_| "user".to_string());
+            fs::write(
+              &flake_nix,
+              format!(
+                "{{\n  description = \"Hjem standalone configuration\";\n\n  \
+                 outputs = {{ self }}: {{\n    \
+                 hjemConfigurations.\"{user}\".manifest = import \
+                 ./hjem.nix;\n  }};\n}}\n"
+              ),
+            )
+            .map_err(|e| e.to_string())?;
+            created_files.push(flake_nix);
+          }
         }
-      }
-      if no_flake {
+
         println!(
-          "Next step: hjem standalone switch --config {}",
-          home_nix.display()
-        );
-      } else {
-        println!(
-          "Next step: hjem standalone switch --flake {}",
+          "Initialized Hjem standalone config in {}",
           conf_dir.display()
         );
-      }
-
-      if switch {
-        println!("Applying initial generation...");
-        let source = if no_flake {
-          StandaloneSource::Config(home_nix)
+        if created_files.is_empty() {
+          println!("No new files were created (existing config kept as-is).");
         } else {
-          StandaloneSource::Flake(conf_dir)
-        };
-        standalone_switch_from_source(
-          source,
-          None,
-          None,
-          Vec::new(),
-          ".backup-".to_string(),
-          false,
-        )?;
-        println!("Initial generation applied.");
-      }
+          for path in created_files {
+            println!("Created {}", path.display());
+          }
+        }
+        if no_flake {
+          println!(
+            "Next step: hjem standalone switch --config {}",
+            home_nix.display()
+          );
+        } else {
+          println!(
+            "Next step: hjem standalone switch --flake {}",
+            conf_dir.display()
+          );
+        }
 
-      Ok(())
-    },
-    StandaloneCommand::Switch {
-      manifest,
-      config,
-      flake,
-      flake_attr,
-      state_dir,
-      rollback,
-      external_linker,
-      linker_args,
-      prefix,
-      impure,
-    } => {
-      if rollback {
-        let set_count = usize::from(manifest.is_some())
-          + usize::from(config.is_some())
-          + usize::from(flake.is_some())
-          + usize::from(flake_attr.is_some());
-        if set_count != 0 {
+        if switch {
+          println!("Applying initial generation...");
+          let source = if no_flake {
+            StandaloneSource::Config(home_nix)
+          } else {
+            StandaloneSource::Flake(conf_dir)
+          };
+          standalone_switch_from_source(
+            source,
+            None,
+            None,
+            Vec::new(),
+            ".backup-".to_string(),
+            false,
+          )?;
+          println!("Initial generation applied.");
+        }
+
+        Ok(())
+      },
+      Self::Switch {
+        manifest,
+        config,
+        flake,
+        flake_attr,
+        state_dir,
+        rollback,
+        external_linker,
+        linker_args,
+        prefix,
+        impure,
+      } => {
+        if rollback {
+          let set_count = usize::from(manifest.is_some())
+            + usize::from(config.is_some())
+            + usize::from(flake.is_some())
+            + usize::from(flake_attr.is_some());
+          if set_count != 0 {
+            return Err(
+              "--rollback cannot be combined with \
+               --manifest/--config/--flake/--flake-attr"
+                .to_string(),
+            );
+          }
+          standalone_switch_rollback(
+            state_dir,
+            external_linker,
+            linker_args,
+            prefix,
+            impure,
+          )?;
+        } else {
+          let source =
+            StandaloneSource::from_args(manifest, config, flake, flake_attr)?;
+          standalone_switch_from_source(
+            source,
+            state_dir,
+            external_linker,
+            linker_args,
+            prefix,
+            impure,
+          )?;
+        }
+        Ok(())
+      },
+      Self::Build {
+        manifest,
+        config,
+        flake,
+        flake_attr,
+        state_dir,
+        impure,
+      } => {
+        let manifest =
+          StandaloneSource::from_args(manifest, config, flake, flake_attr)?
+            .resolve(impure)?;
+        let _ = Manifest::load(&manifest.path, impure)?;
+        let base = standalone_state_dir(state_dir)?;
+        let builds = base.join("builds");
+        fs::create_dir_all(&builds).map_err(|e| e.to_string())?;
+        let build_id = now_id("build");
+        atomic_copy(&manifest.path, &builds.join(format!("{build_id}.json")))?;
+        println!("Build recorded: {build_id}");
+        Ok(())
+      },
+      Self::Generations { state_dir } => {
+        let base = standalone_state_dir(state_dir)?;
+        let gens = list_generations(&base)?;
+        if gens.is_empty() {
+          println!(
+            "No generations found in {}",
+            base.join("generations").display()
+          );
+          return Ok(());
+        }
+        for g in gens {
+          println!("{}", g.display());
+        }
+        Ok(())
+      },
+      Self::RemoveGenerations { ids, state_dir } => {
+        if ids.is_empty() {
           return Err(
-            "--rollback cannot be combined with \
-             --manifest/--config/--flake/--flake-attr"
+            "remove-generations expects at least one generation id".to_string(),
+          );
+        }
+        let base = standalone_state_dir(state_dir)?;
+        let current = read_current_generation_id(&base)?;
+        let mut removed = 0usize;
+        for id in ids {
+          if current.as_deref() == Some(id.as_str()) {
+            return Err(format!(
+              "Refusing to remove current generation {id}; roll back first"
+            ));
+          }
+          let path = base.join("generations").join(&id);
+          if path.exists() {
+            fs::remove_dir_all(&path).map_err(|e| e.to_string())?;
+            removed += 1;
+          }
+        }
+        println!("Removed {removed} generation(s).");
+        Ok(())
+      },
+      Self::Rollback {
+        state_dir,
+        generation,
+        external_linker,
+        linker_args,
+        prefix,
+        impure,
+      } => {
+        let base = standalone_state_dir(state_dir)?;
+        let target_id = if let Some(generation) = generation {
+          generation
+        } else {
+          previous_generation_id(&base)?
+        };
+        let target = generation_manifest_path(&base, &target_id)?;
+        let state = base.join("current").join("manifest.json");
+        let verified = Manifest::load(&target, impure)?;
+        ActivateArgs {
+          manifest: target,
+          state,
+          update_state: true,
+          actions_file: Some(base.join("current").join("actions.json")),
+          prefix,
+          impure,
+          external_linker,
+          linker_args,
+          json: false,
+        }
+        .run(verified)?;
+        set_current_package_profile(&base, &target_id)?;
+        set_current_generation_id(&base, &target_id)?;
+        println!("Rolled back to generation {target_id}");
+        Ok(())
+      },
+      Self::ExpireGenerations {
+        timestamp,
+        keep_last,
+        state_dir,
+      } => {
+        let base = standalone_state_dir(state_dir)?;
+        let mut gens = list_generations(&base)?;
+        if timestamp.is_none() && keep_last.is_none() {
+          return Err(
+            "expire-generations expects a timestamp and/or --keep-last N"
               .to_string(),
           );
         }
-        standalone_switch_rollback(
-          state_dir,
-          external_linker,
-          linker_args,
-          prefix,
-          impure,
-        )?;
-      } else {
-        let source = standalone_source(manifest, config, flake, flake_attr)?;
-        standalone_switch_from_source(
-          source,
-          state_dir,
-          external_linker,
-          linker_args,
-          prefix,
-          impure,
-        )?;
-      }
-      Ok(())
-    },
-    StandaloneCommand::Build {
-      manifest,
-      config,
-      flake,
-      flake_attr,
-      state_dir,
-      impure,
-    } => {
-      let manifest =
-        resolve_manifest_input(manifest, config, flake, flake_attr, impure)?;
-      let _ = read_verified(&manifest.path, impure)?;
-      let base = standalone_state_dir(state_dir)?;
-      let builds = base.join("builds");
-      fs::create_dir_all(&builds).map_err(|e| e.to_string())?;
-      let build_id = now_id("build");
-      atomic_copy(&manifest.path, &builds.join(format!("{build_id}.json")))?;
-      println!("Build recorded: {build_id}");
-      Ok(())
-    },
-    StandaloneCommand::Generations { state_dir } => {
-      let base = standalone_state_dir(state_dir)?;
-      let gens = list_generations(&base)?;
-      if gens.is_empty() {
-        println!(
-          "No generations found in {}",
-          base.join("generations").display()
-        );
-        return Ok(());
-      }
-      for g in gens {
-        println!("{}", g.display());
-      }
-      Ok(())
-    },
-    StandaloneCommand::RemoveGenerations { ids, state_dir } => {
-      if ids.is_empty() {
-        return Err(
-          "remove-generations expects at least one generation id".to_string(),
-        );
-      }
-      let base = standalone_state_dir(state_dir)?;
-      let current = read_current_generation_id(&base)?;
-      let mut removed = 0usize;
-      for id in ids {
-        if current.as_deref() == Some(id.as_str()) {
-          return Err(format!(
-            "Refusing to remove current generation {id}; roll back first"
-          ));
-        }
-        let path = base.join("generations").join(&id);
-        if path.exists() {
-          fs::remove_dir_all(&path).map_err(|e| e.to_string())?;
-          removed += 1;
-        }
-      }
-      println!("Removed {removed} generation(s).");
-      Ok(())
-    },
-    StandaloneCommand::Rollback {
-      state_dir,
-      generation,
-      external_linker,
-      linker_args,
-      prefix,
-      impure,
-    } => {
-      let base = standalone_state_dir(state_dir)?;
-      let target_id = if let Some(generation) = generation {
-        generation
-      } else {
-        previous_generation_id(&base)?
-      };
-      let target = generation_manifest_path(&base, &target_id)?;
-      let state = base.join("current").join("manifest.json");
-      run_activate_internal(ActivateArgs {
-        manifest: target,
-        state,
-        update_state: true,
-        actions_file: Some(base.join("current").join("actions.json")),
-        prefix,
-        impure,
-        external_linker,
-        linker_args,
-        json: false,
-      })?;
-      set_current_package_profile(&base, &target_id)?;
-      set_current_generation_id(&base, &target_id)?;
-      println!("Rolled back to generation {target_id}");
-      Ok(())
-    },
-    StandaloneCommand::ExpireGenerations {
-      timestamp,
-      keep_last,
-      state_dir,
-    } => {
-      let base = standalone_state_dir(state_dir)?;
-      let mut gens = list_generations(&base)?;
-      if timestamp.is_none() && keep_last.is_none() {
-        return Err(
-          "expire-generations expects a timestamp and/or --keep-last N"
-            .to_string(),
-        );
-      }
-      let cutoff = timestamp
-        .as_deref()
-        .map(parse_expire_timestamp)
-        .transpose()?;
-      let current = read_current_generation_id(&base)?;
-      let protected_by_keep_last = keep_last
-        .map(|keep_last| newest_generation_ids(&gens, keep_last))
-        .unwrap_or_default();
-      let mut removed = 0usize;
+        let cutoff = timestamp
+          .as_deref()
+          .map(parse_expire_timestamp)
+          .transpose()?;
+        let current = read_current_generation_id(&base)?;
+        let protected_by_keep_last = keep_last
+          .map(|keep_last| newest_generation_ids(&gens, keep_last))
+          .unwrap_or_default();
+        let mut removed = 0usize;
 
-      for path in gens.drain(..) {
-        let Some(id) = generation_id_from_path(&path) else {
-          continue;
-        };
-        if current.as_deref() == Some(id.as_str()) {
-          continue;
+        for path in gens.drain(..) {
+          let Some(id) = generation_id_from_path(&path) else {
+            continue;
+          };
+          if current.as_deref() == Some(id.as_str()) {
+            continue;
+          }
+          if protected_by_keep_last.contains(&id) {
+            continue;
+          }
+          let Some(gen_ts) = generation_timestamp_from_id(&id) else {
+            continue;
+          };
+          if cutoff.is_none_or(|cutoff| gen_ts <= cutoff) {
+            fs::remove_dir_all(path).map_err(|e| e.to_string())?;
+            removed += 1;
+          }
         }
-        if protected_by_keep_last.contains(&id) {
-          continue;
-        }
-        let Some(gen_ts) = generation_timestamp_from_id(&id) else {
-          continue;
-        };
-        if cutoff.is_none_or(|cutoff| gen_ts <= cutoff) {
-          fs::remove_dir_all(path).map_err(|e| e.to_string())?;
-          removed += 1;
-        }
-      }
-      println!("Expired {removed} generation(s).");
-      Ok(())
-    },
+        println!("Expired {removed} generation(s).");
+        Ok(())
+      },
+    }
   }
 }
 
@@ -754,85 +774,68 @@ enum StandaloneSource {
   FlakeWithAttr(String, Option<String>),
 }
 
-fn standalone_source(
-  manifest: Option<PathBuf>,
-  config: Option<PathBuf>,
-  flake: Option<String>,
-  flake_attr: Option<String>,
-) -> Result<StandaloneSource, String> {
-  if flake_attr.is_some() && flake.is_none() {
-    return Err("--flake-attr requires --flake".to_string());
+impl StandaloneSource {
+  fn from_args(
+    manifest: Option<PathBuf>,
+    config: Option<PathBuf>,
+    flake: Option<String>,
+    flake_attr: Option<String>,
+  ) -> Result<Self, String> {
+    if flake_attr.is_some() && flake.is_none() {
+      return Err("--flake-attr requires --flake".to_string());
+    }
+
+    match (manifest, config, flake) {
+      (Some(path), None, None) => Ok(Self::Manifest(path)),
+      (None, Some(path), None) => Ok(Self::Config(path)),
+      (None, None, Some(flake)) => Ok(Self::FlakeWithAttr(flake, flake_attr)),
+      _ => {
+        Err(
+          "Provide exactly one of --manifest, --config, or --flake for \
+           standalone commands"
+            .to_string(),
+        )
+      },
+    }
   }
 
-  match (manifest, config, flake) {
-    (Some(path), None, None) => Ok(StandaloneSource::Manifest(path)),
-    (None, Some(path), None) => Ok(StandaloneSource::Config(path)),
-    (None, None, Some(flake)) => {
-      Ok(StandaloneSource::FlakeWithAttr(flake, flake_attr))
-    },
-    _ => {
-      Err(
-        "Provide exactly one of --manifest, --config, or --flake for \
-         standalone commands"
-          .to_string(),
-      )
-    },
-  }
-}
+  fn resolve(&self, impure: bool) -> Result<ResolvedManifest, String> {
+    let json = match self {
+      Self::Manifest(path) => {
+        return Ok(ResolvedManifest {
+          path:      path.clone(),
+          packages:  Vec::new(),
+          _temp_dir: None,
+        });
+      },
+      Self::Config(path) => eval_nix_config(path, impure)?,
+      Self::Flake(path) => {
+        let flake = path
+          .to_str()
+          .ok_or_else(|| "Invalid flake path".to_string())?;
+        eval_nix_flake(flake, None, impure)?
+      },
+      Self::FlakeWithAttr(flake, attr) => {
+        eval_nix_flake(flake, attr.as_deref(), impure)?
+      },
+    };
 
-fn resolve_manifest_input(
-  manifest: Option<PathBuf>,
-  config: Option<PathBuf>,
-  flake: Option<String>,
-  flake_attr: Option<String>,
-  impure: bool,
-) -> Result<ResolvedManifest, String> {
-  if flake_attr.is_some() && flake.is_none() {
-    return Err("--flake-attr requires --flake".to_string());
-  }
+    let packages = extract_package_paths(&json)?;
+    let manifest = extract_manifest_json(json)?;
+    let temp_dir = mk_temp_dir("hjem-manifest-eval")?;
+    let path = temp_dir.join("manifest.json");
+    fs::write(
+      &path,
+      serde_json::to_vec_pretty(&manifest).map_err(|e| e.to_string())?,
+    )
+    .map_err(|e| e.to_string())?;
 
-  let set_count = usize::from(manifest.is_some())
-    + usize::from(config.is_some())
-    + usize::from(flake.is_some());
-  if set_count != 1 {
-    return Err(
-      "Provide exactly one of --manifest, --config, or --flake for standalone \
-       commands"
-        .to_string(),
-    );
-  }
-
-  if let Some(path) = manifest {
-    return Ok(ResolvedManifest {
+    Ok(ResolvedManifest {
       path,
-      packages: Vec::new(),
-      _temp_dir: None,
-    });
+      packages,
+      _temp_dir: Some(temp_dir),
+    })
   }
-
-  let json = if let Some(config_path) = config.as_ref() {
-    eval_nix_config(config_path, impure)?
-  } else if let Some(flake_ref) = flake.as_ref() {
-    eval_nix_flake(flake_ref, flake_attr.as_deref(), impure)?
-  } else {
-    return Err("No manifest source was provided".to_string());
-  };
-
-  let packages = extract_package_paths(&json)?;
-  let manifest_json = extract_manifest_json(json)?;
-  let temp_dir = mk_temp_dir("hjem-manifest-eval")?;
-  let manifest_path = temp_dir.join("manifest.json");
-  fs::write(
-    &manifest_path,
-    serde_json::to_vec_pretty(&manifest_json).map_err(|e| e.to_string())?,
-  )
-  .map_err(|e| e.to_string())?;
-
-  Ok(ResolvedManifest {
-    path: manifest_path,
-    packages,
-    _temp_dir: Some(temp_dir),
-  })
 }
 
 fn standalone_switch_from_source(
@@ -844,54 +847,15 @@ fn standalone_switch_from_source(
   impure: bool,
 ) -> Result<(), String> {
   println!("Evaluating standalone input...");
-  let (manifest, source_ref) = match source {
-    StandaloneSource::Manifest(path) => {
-      (
-        resolve_manifest_input(Some(path.clone()), None, None, None, impure)?,
-        StandaloneSource::Manifest(path),
-      )
-    },
-    StandaloneSource::Config(path) => {
-      (
-        resolve_manifest_input(None, Some(path.clone()), None, None, impure)?,
-        StandaloneSource::Config(path),
-      )
-    },
-    StandaloneSource::Flake(path) => {
-      let flake_ref = path
-        .to_str()
-        .ok_or_else(|| "Invalid flake path".to_string())?
-        .to_string();
-      (
-        resolve_manifest_input(
-          None,
-          None,
-          Some(flake_ref.clone()),
-          None,
-          impure,
-        )?,
-        StandaloneSource::Flake(path),
-      )
-    },
-    StandaloneSource::FlakeWithAttr(flake_ref, flake_attr) => {
-      (
-        resolve_manifest_input(
-          None,
-          None,
-          Some(flake_ref.clone()),
-          flake_attr.clone(),
-          impure,
-        )?,
-        StandaloneSource::FlakeWithAttr(flake_ref, flake_attr),
-      )
-    },
-  };
+  let manifest = source.resolve(impure)?;
 
   let base = standalone_state_dir(state_dir)?;
   println!("Applying manifest...");
   let state = base.join("current").join("manifest.json");
   let actions_file = base.join("current").join("actions.json");
-  run_activate_internal(ActivateArgs {
+  let verified_manifest = Manifest::load(&manifest.path, impure)?;
+  let store_paths = verified_manifest.store_paths();
+  ActivateArgs {
     manifest: manifest.path.clone(),
     state,
     update_state: true,
@@ -901,11 +865,12 @@ fn standalone_switch_from_source(
     external_linker,
     linker_args,
     json: false,
-  })?;
+  }
+  .run(verified_manifest)?;
 
   let generation_id =
-    record_generation(&base, &manifest.path, &manifest.packages)?;
-  write_last_source(&base, &source_ref)?;
+    record_generation(&base, &manifest.path, &store_paths, &manifest.packages)?;
+  write_last_source(&base, &source)?;
   set_current_package_profile(&base, &generation_id)?;
   set_current_generation_id(&base, &generation_id)?;
   println!("Activated generation {generation_id}");
@@ -934,7 +899,8 @@ fn standalone_switch_rollback(
   }
 
   let state = base.join("current").join("manifest.json");
-  run_activate_internal(ActivateArgs {
+  let verified = Manifest::load(&target_manifest, impure)?;
+  ActivateArgs {
     manifest: target_manifest,
     state,
     update_state: true,
@@ -944,7 +910,8 @@ fn standalone_switch_rollback(
     external_linker,
     linker_args,
     json: false,
-  })?;
+  }
+  .run(verified)?;
   set_current_package_profile(&base, &target_id)?;
   set_current_generation_id(&base, &target_id)?;
   Ok(())
@@ -1075,62 +1042,63 @@ struct ActivateArgs {
   json:            bool,
 }
 
-fn run_activate_internal(args: ActivateArgs) -> Result<(), String> {
-  let new_manifest = read_verified(&args.manifest, args.impure)?;
-  let had_state = args.state.exists();
+impl ActivateArgs {
+  fn run(self, new_manifest: Manifest) -> Result<(), String> {
+    let had_state = self.state.exists();
 
-  let actions = if had_state {
-    let old_manifest = read_verified(&args.state, args.impure)?;
-    trigger_actions(&old_manifest, &new_manifest)
-  } else {
-    Vec::new()
-  };
-
-  if let Some(linker) = args.external_linker {
-    run_external_linker(
-      &linker,
-      &args.linker_args,
-      &args.manifest,
-      &args.state,
-      had_state,
-    )?;
-  } else {
-    new_manifest
-      .diff(&args.state, &args.prefix, true)
-      .map_err(|e| format!("built-in linker activation failed: {e}"))?;
-  }
-
-  if args.update_state {
-    atomic_copy(&args.manifest, &args.state)?;
-  }
-
-  let result = ActivateResult {
-    mode: if had_state {
-      "incremental".to_string()
+    let actions = if had_state {
+      let old_manifest = Manifest::load(&self.state, self.impure)?;
+      new_manifest.trigger_actions(&old_manifest)
     } else {
-      "first".to_string()
-    },
-    actions,
-  };
+      Vec::new()
+    };
 
-  if let Some(actions_file) = args.actions_file {
-    if let Some(parent) = actions_file.parent() {
-      fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+    if let Some(linker) = self.external_linker {
+      run_external_linker(
+        &linker,
+        &self.linker_args,
+        &self.manifest,
+        &self.state,
+        had_state,
+      )?;
+    } else {
+      new_manifest
+        .diff(&self.state, &self.prefix, true)
+        .map_err(|e| format!("built-in linker activation failed: {e}"))?;
     }
-    fs::write(
-      actions_file,
-      serde_json::to_string_pretty(&result).map_err(|e| e.to_string())?,
-    )
-    .map_err(|e| e.to_string())?;
-  }
 
-  if args.json {
-    print_json(&result)?;
-  } else {
-    println!("mode={}", result.mode);
-  }
+    if self.update_state {
+      atomic_copy(&self.manifest, &self.state)?;
+    }
 
-  Ok(())
+    let result = ActivateResult {
+      mode: if had_state {
+        "incremental".to_string()
+      } else {
+        "first".to_string()
+      },
+      actions,
+    };
+
+    if let Some(actions_file) = self.actions_file {
+      if let Some(parent) = actions_file.parent() {
+        fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+      }
+      fs::write(
+        actions_file,
+        serde_json::to_string_pretty(&result).map_err(|e| e.to_string())?,
+      )
+      .map_err(|e| e.to_string())?;
+    }
+
+    if self.json {
+      print_json(&result)?;
+    } else {
+      println!("mode={}", result.mode);
+    }
+
+    Ok(())
+  }
 }
 
 fn run_external_linker(
@@ -1179,136 +1147,138 @@ struct ReloadActionsArgs {
   json:                    bool,
 }
 
-fn run_reload_actions(args: ReloadActionsArgs) -> Result<(), String> {
-  if args.require_running_systemd {
-    let status = ProcCommand::new("systemctl")
-      .args(["--user", "is-system-running"])
-      .output()
-      .map_err(|e| format!("failed to query systemd user status: {e}"))?;
+impl ReloadActionsArgs {
+  fn run(self) -> Result<(), String> {
+    if self.require_running_systemd {
+      let status = ProcCommand::new("systemctl")
+        .args(["--user", "is-system-running"])
+        .output()
+        .map_err(|e| format!("failed to query systemd user status: {e}"))?;
 
-    let running = String::from_utf8_lossy(&status.stdout).trim().to_string();
-    if !(running == "running" || running == "degraded") {
-      let res = ReloadResult {
-        skipped: true,
-        reason:  Some(format!(
-          "User systemd for {} is not running (status: {running})",
-          args.user
-        )),
-        applied: 0,
-      };
-      if args.json {
-        print_json(&res)?;
-      } else if let Some(reason) = res.reason {
-        println!("{reason}");
-      }
-      return Ok(());
-    }
-  }
-
-  let daemon_reload = ProcCommand::new("systemctl")
-    .args(["--user", "daemon-reload"])
-    .status()
-    .map_err(|e| {
-      format!("failed to run systemctl --user daemon-reload: {e}")
-    })?;
-  if !daemon_reload.success() {
-    return Err("systemctl --user daemon-reload failed".to_string());
-  }
-
-  let actions = match (args.actions_file, args.old_manifest, args.new_manifest)
-  {
-    (Some(actions_file), None, None) => {
-      if !actions_file.exists() {
+      let running = String::from_utf8_lossy(&status.stdout).trim().to_string();
+      if !(running == "running" || running == "degraded") {
         let res = ReloadResult {
           skipped: true,
           reason:  Some(format!(
-            "No activation metadata for {}; skipping.",
-            args.user
+            "User systemd for {} is not running (status: {running})",
+            self.user
           )),
           applied: 0,
         };
-        if args.json {
+        if self.json {
           print_json(&res)?;
+        } else if let Some(reason) = res.reason {
+          println!("{reason}");
         }
         return Ok(());
       }
+    }
 
-      let parsed: ActivateResult = serde_json::from_slice(
-        &fs::read(&actions_file).map_err(|e| e.to_string())?,
-      )
+    let daemon_reload = ProcCommand::new("systemctl")
+      .args(["--user", "daemon-reload"])
+      .status()
       .map_err(|e| {
-        format!(
-          "failed to parse actions file '{}': {e}",
-          actions_file.display()
-        )
+        format!("failed to run systemctl --user daemon-reload: {e}")
       })?;
+    if !daemon_reload.success() {
+      return Err("systemctl --user daemon-reload failed".to_string());
+    }
 
-      parsed.actions
-    },
-    (None, Some(old_manifest), Some(new_manifest)) => {
-      if !old_manifest.exists() {
-        let res = ReloadResult {
-          skipped: true,
-          reason:  Some(format!(
-            "No previous manifest for {}; skipping trigger-based restarts.",
-            args.user
-          )),
-          applied: 0,
-        };
-        if args.json {
-          print_json(&res)?;
-        }
-        return Ok(());
+    let actions =
+      match (self.actions_file, self.old_manifest, self.new_manifest) {
+        (Some(actions_file), None, None) => {
+          if !actions_file.exists() {
+            let res = ReloadResult {
+              skipped: true,
+              reason:  Some(format!(
+                "No activation metadata for {}; skipping.",
+                self.user
+              )),
+              applied: 0,
+            };
+            if self.json {
+              print_json(&res)?;
+            }
+            return Ok(());
+          }
+
+          let parsed: ActivateResult = serde_json::from_slice(
+            &fs::read(&actions_file).map_err(|e| e.to_string())?,
+          )
+          .map_err(|e| {
+            format!(
+              "failed to parse actions file '{}': {e}",
+              actions_file.display()
+            )
+          })?;
+
+          parsed.actions
+        },
+        (None, Some(old_manifest), Some(new_manifest)) => {
+          if !old_manifest.exists() {
+            let res = ReloadResult {
+              skipped: true,
+              reason:  Some(format!(
+                "No previous manifest for {}; skipping trigger-based restarts.",
+                self.user
+              )),
+              applied: 0,
+            };
+            if self.json {
+              print_json(&res)?;
+            }
+            return Ok(());
+          }
+
+          let old_manifest = Manifest::load(&old_manifest, self.impure)?;
+          Manifest::load(&new_manifest, self.impure)?
+            .trigger_actions(&old_manifest)
+        },
+        _ => {
+          return Err(
+            "provide either --actions-file or both --old-manifest and \
+             --new-manifest"
+              .to_string(),
+          );
+        },
+      };
+
+    let mut applied = 0usize;
+    for action in actions {
+      let mut cmd = ProcCommand::new("systemctl");
+      cmd.arg("--user");
+      match action.action.as_str() {
+        "restart" => {
+          cmd.arg("try-restart").arg(&action.unit);
+        },
+        "reload" => {
+          cmd.arg("reload-or-try-restart").arg(&action.unit);
+        },
+        _ => {
+          continue;
+        },
       }
 
-      let old_manifest = read_verified(&old_manifest, args.impure)?;
-      let new_manifest = read_verified(&new_manifest, args.impure)?;
-      trigger_actions(&old_manifest, &new_manifest)
-    },
-    _ => {
-      return Err(
-        "provide either --actions-file or both --old-manifest and \
-         --new-manifest"
-          .to_string(),
-      );
-    },
-  };
-
-  let mut applied = 0usize;
-  for action in actions {
-    let mut cmd = ProcCommand::new("systemctl");
-    cmd.arg("--user");
-    match action.action.as_str() {
-      "restart" => {
-        cmd.arg("try-restart").arg(&action.unit);
-      },
-      "reload" => {
-        cmd.arg("reload-or-try-restart").arg(&action.unit);
-      },
-      _ => {
-        continue;
-      },
+      let status = cmd.status().map_err(|e| e.to_string())?;
+      if !status.success() {
+        eprintln!(
+          "Warning: action {} failed for {}",
+          action.action, action.unit
+        );
+      }
+      applied += 1;
     }
 
-    let status = cmd.status().map_err(|e| e.to_string())?;
-    if !status.success() {
-      eprintln!(
-        "Warning: action {} failed for {}",
-        action.action, action.unit
-      );
+    if self.json {
+      print_json(&ReloadResult {
+        skipped: false,
+        reason: None,
+        applied,
+      })?;
     }
-    applied += 1;
-  }
 
-  if args.json {
-    print_json(&ReloadResult {
-      skipped: false,
-      reason: None,
-      applied,
-    })?;
+    Ok(())
   }
-
-  Ok(())
 }
 
 fn run_update_state(
@@ -1365,14 +1335,30 @@ fn run_cleanup_state(
   Ok(())
 }
 
-fn read_verified(path: &Path, impure: bool) -> Result<Manifest, String> {
-  let manifest = Manifest::read(path, impure).map_err(|e| {
-    format!("failed to read manifest '{}': {e}", path.display())
-  })?;
-  let violations = manifest.verify();
-  if violations.is_empty() {
-    Ok(manifest)
-  } else {
+trait ManifestExt: Sized {
+  fn load(path: &Path, impure: bool) -> Result<Self, String>;
+  fn equivalent_to(&self, path: &Path, impure: bool) -> Result<bool, String>;
+  fn store_paths(&self) -> BTreeSet<PathBuf>;
+  fn trigger_actions(&self, previous: &Self) -> Vec<TriggerAction>;
+}
+
+fn file_sort_key(a: &File, b: &File) -> std::cmp::Ordering {
+  a.target
+    .cmp(&b.target)
+    .then_with(|| a.kind.to_string().cmp(&b.kind.to_string()))
+    .then_with(|| a.source.cmp(&b.source))
+}
+
+impl ManifestExt for Manifest {
+  fn load(path: &Path, impure: bool) -> Result<Self, String> {
+    let manifest = Self::read(path, impure).map_err(|e| {
+      format!("failed to read manifest '{}': {e}", path.display())
+    })?;
+    let violations = manifest.verify();
+    if violations.is_empty() {
+      return Ok(manifest);
+    }
+
     let errors = violations
       .iter()
       .map(std::string::ToString::to_string)
@@ -1383,71 +1369,64 @@ fn read_verified(path: &Path, impure: bool) -> Result<Manifest, String> {
       path.display()
     ))
   }
-}
 
-fn manifests_equivalent(
-  new_manifest: &Manifest,
-  old_path: &Path,
-  impure: bool,
-) -> Result<bool, String> {
-  if !old_path.exists() {
-    return Ok(false);
-  }
-  let old_manifest = read_verified(old_path, impure)?;
-
-  let mut old_files = old_manifest.files.clone();
-  let mut new_files = new_manifest.files.clone();
-
-  old_files.sort_by(file_sort_key);
-  new_files.sort_by(file_sort_key);
-
-  Ok(old_files == new_files)
-}
-
-fn file_sort_key(a: &File, b: &File) -> std::cmp::Ordering {
-  a.target
-    .cmp(&b.target)
-    .then_with(|| a.kind.to_string().cmp(&b.kind.to_string()))
-    .then_with(|| a.source.cmp(&b.source))
-}
-
-fn trigger_actions(
-  old_manifest: &Manifest,
-  new_manifest: &Manifest,
-) -> Vec<TriggerAction> {
-  let old_units = unit_sources(old_manifest);
-  let new_units = unit_sources(new_manifest);
-  let mut actions = Vec::new();
-
-  for (unit, new_source) in &new_units {
-    let Some(old_source) = old_units.get(unit) else {
-      continue;
-    };
-
-    let old_restart = trigger_value(old_source, "X-Restart-Triggers");
-    let new_restart = trigger_value(new_source, "X-Restart-Triggers");
-    let old_reload = trigger_value(old_source, "X-Reload-Triggers");
-    let new_reload = trigger_value(new_source, "X-Reload-Triggers");
-
-    if !new_restart.is_empty() && old_restart != new_restart {
-      actions.push(TriggerAction {
-        action: "restart".to_string(),
-        unit:   unit.clone(),
-        reason: "restart trigger changed".to_string(),
-      });
-      continue;
+  fn equivalent_to(&self, path: &Path, impure: bool) -> Result<bool, String> {
+    if !path.exists() {
+      return Ok(false);
     }
 
-    if !new_reload.is_empty() && old_reload != new_reload {
-      actions.push(TriggerAction {
-        action: "reload".to_string(),
-        unit:   unit.clone(),
-        reason: "reload trigger changed".to_string(),
-      });
-    }
+    let previous = Self::load(path, impure)?;
+    let mut previous_files = previous.files.iter().collect::<Vec<_>>();
+    let mut current_files = self.files.iter().collect::<Vec<_>>();
+    previous_files.sort_by(|a, b| file_sort_key(a, b));
+    current_files.sort_by(|a, b| file_sort_key(a, b));
+    Ok(previous_files == current_files)
   }
 
-  actions
+  fn store_paths(&self) -> BTreeSet<PathBuf> {
+    self
+      .files
+      .iter()
+      .filter_map(|file| file.source.as_deref())
+      .filter_map(nix_store_path)
+      .collect()
+  }
+
+  fn trigger_actions(&self, previous: &Self) -> Vec<TriggerAction> {
+    let old_units = unit_sources(previous);
+    let new_units = unit_sources(self);
+    let mut actions = Vec::new();
+
+    for (unit, new_source) in &new_units {
+      let Some(old_source) = old_units.get(unit) else {
+        continue;
+      };
+
+      let old_restart = trigger_value(old_source, "X-Restart-Triggers");
+      let new_restart = trigger_value(new_source, "X-Restart-Triggers");
+      let old_reload = trigger_value(old_source, "X-Reload-Triggers");
+      let new_reload = trigger_value(new_source, "X-Reload-Triggers");
+
+      if !new_restart.is_empty() && old_restart != new_restart {
+        actions.push(TriggerAction {
+          action: "restart".to_string(),
+          unit:   unit.clone(),
+          reason: "restart trigger changed".to_string(),
+        });
+        continue;
+      }
+
+      if !new_reload.is_empty() && old_reload != new_reload {
+        actions.push(TriggerAction {
+          action: "reload".to_string(),
+          unit:   unit.clone(),
+          reason: "reload trigger changed".to_string(),
+        });
+      }
+    }
+
+    actions
+  }
 }
 
 fn unit_sources(manifest: &Manifest) -> HashMap<String, PathBuf> {
@@ -1557,16 +1536,60 @@ fn standalone_state_dir(
 
 fn record_generation(
   base: &Path,
-  manifest: &Path,
+  manifest_path: &Path,
+  store_paths: &BTreeSet<PathBuf>,
   packages: &[PathBuf],
 ) -> Result<String, String> {
   let generation_id = now_id("generation");
   let generation_dir = base.join("generations").join(&generation_id);
   fs::create_dir_all(&generation_dir).map_err(|e| e.to_string())?;
-  atomic_copy(manifest, &generation_dir.join("manifest.json"))?;
+  atomic_copy(manifest_path, &generation_dir.join("manifest.json"))?;
+  install_manifest_gc_roots(&generation_dir, store_paths)?;
   write_generation_packages(&generation_dir, packages)?;
   install_package_profile(&generation_dir, packages)?;
   Ok(generation_id)
+}
+
+fn install_manifest_gc_roots(
+  generation_dir: &Path,
+  store_paths: &BTreeSet<PathBuf>,
+) -> Result<(), String> {
+  if store_paths.is_empty() {
+    return Ok(());
+  }
+
+  let roots = generation_dir.join("gc-roots");
+  fs::create_dir_all(&roots).map_err(|e| e.to_string())?;
+  for (index, store_path) in store_paths.iter().enumerate() {
+    let root = roots.join(index.to_string());
+    let output = ProcCommand::new("nix-store")
+      .arg("--add-root")
+      .arg(&root)
+      .arg("--indirect")
+      .arg("--realise")
+      .arg(store_path)
+      .output()
+      .map_err(|e| {
+        format!(
+          "failed to create GC root for '{}': {e}",
+          store_path.display()
+        )
+      })?;
+    if !output.status.success() {
+      return Err(format!(
+        "failed to create GC root for '{}': {}",
+        store_path.display(),
+        String::from_utf8_lossy(&output.stderr)
+      ));
+    }
+  }
+  Ok(())
+}
+
+fn nix_store_path(path: &Path) -> Option<PathBuf> {
+  let relative = path.strip_prefix("/nix/store").ok()?;
+  let name = relative.components().next()?;
+  Some(Path::new("/nix/store").join(name))
 }
 
 fn write_generation_packages(
@@ -1897,11 +1920,11 @@ mod tests {
   use super::{
     Command,
     StandaloneCommand,
+    StandaloneSource,
     generation_manifest_path,
     generation_order_key,
     parse_expire_timestamp,
     parse_multicall_args,
-    standalone_source,
   };
 
   #[test]
@@ -1919,7 +1942,7 @@ mod tests {
   #[test]
   fn flake_attr_requires_a_flake_source() {
     assert!(
-      standalone_source(
+      StandaloneSource::from_args(
         None,
         Some("hjem.nix".into()),
         None,
