@@ -1544,13 +1544,13 @@ fn record_generation(
   let generation_dir = base.join("generations").join(&generation_id);
   fs::create_dir_all(&generation_dir).map_err(|e| e.to_string())?;
   atomic_copy(manifest_path, &generation_dir.join("manifest.json"))?;
-  install_manifest_gc_roots(&generation_dir, store_paths)?;
+  install_generation_gc_roots(&generation_dir, store_paths)?;
   write_generation_packages(&generation_dir, packages)?;
   install_package_profile(&generation_dir, packages)?;
   Ok(generation_id)
 }
 
-fn install_manifest_gc_roots(
+fn install_generation_gc_roots(
   generation_dir: &Path,
   store_paths: &BTreeSet<PathBuf>,
 ) -> Result<(), String> {
