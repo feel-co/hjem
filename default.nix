@@ -2,13 +2,12 @@
 {
   pkgs ? import (import ./internal/flake-parse.nix "nixpkgs") {},
   finix ? (import ./npins).finix,
-  smfh ? pkgs.callPackage ((import ./npins).smfh + "/package.nix") {},
 }: rec {
   checks =
-    import ./internal/checks.nix {inherit smfh pkgs;}
+    import ./internal/checks.nix {inherit pkgs;}
     // import ./internal/finix-checks.nix {inherit finix pkgs;};
   packages = import ./internal/packages.nix {
-    inherit pkgs smfh;
+    inherit pkgs;
     hjemModule = nixosModules.default;
     nixpkgs = pkgs.path;
   };

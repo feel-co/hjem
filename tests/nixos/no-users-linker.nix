@@ -1,7 +1,7 @@
 {
   hjemModule,
   hjemTest,
-  smfh,
+  pkgs,
 }: let
   user = "alice";
   userHome = "/home/${user}";
@@ -23,7 +23,7 @@ in
         };
 
         hjem = {
-          linker = smfh;
+          linker = pkgs.smfh;
           users = {
             ${user} = {
               enable = false;

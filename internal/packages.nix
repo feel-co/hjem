@@ -2,15 +2,10 @@
   hjemModule,
   nixpkgs,
   pkgs,
-  smfh,
 }: let
   docs = pkgs.callPackage ../docs/package.nix {inherit hjemModule nixpkgs;};
 in {
   hjem = pkgs.callPackage ../cli/package.nix {};
-
-  # Expose the 'smfh' instance used by Hjem as a package.
-  # This allows consuming the exact copy of smfh used by Hjem.
-  inherit smfh;
 
   # Hjem documentation. 'docs-html' contains the HTML document created by ndg
   # and docs-json contains a standalone 'options.json' that is also fed to ndg

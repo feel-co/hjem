@@ -232,7 +232,6 @@ commands:
 | `nix flake check`  | `nix-build -A checks`        |
 | `nix develop`      | `nix-shell -A shell`         |
 | `nix build .#hjem` | `nix-build -A packages.hjem` |
-| `nix build .#smfh` | `nix-build -A packages.smfh` |
 | `nix fmt`          | `nix run -f . formatter`     |
 
 You can also `import` the root of the repo and get all of the same attributes as
