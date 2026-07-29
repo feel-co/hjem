@@ -5,6 +5,7 @@
 }: let
   user = "alice";
   userHome = "/home/${user}";
+  gcState = "${userHome}/.local/state/hjem/gc-test";
   manifestSource = pkgs.writeText "hjem-standalone-source" "Hello standalone!";
   configSource = pkgs.writeText "hjem-standalone-config-source" "Hello config!";
   alternateConfigSource = pkgs.writeText "hjem-standalone-alternate-config-source" "Hello alternate config!";
@@ -95,6 +96,7 @@ in
         environment = {
           systemPackages = [
             (pkgs.callPackage ../../cli/package.nix {})
+            pkgs.jq
           ];
 
           etc = {
@@ -168,5 +170,38 @@ in
         machine.succeed("su - ${user} -c 'hjem standalone init --dir ~/.config/hjem-init-test --switch --no-flake'")
         machine.succeed("test -L ${userHome}/.config/example")
         machine.succeed("grep -q 'Example Hjem standalone configuration.' ${userHome}/.config/example")
+
+      with subtest("Standalone generation roots retain and release linked files"):
+        source = machine.succeed(
+          "printf 'survives garbage collection' >/tmp/hjem-gc-source && nix-store --add /tmp/hjem-gc-source"
+        ).strip()
+        machine.succeed(
+          f"""jq -n --arg source '{source}' --arg target '${userHome}/.config/gc-root-test' \
+            '{{version: 3, files: [{{type: "symlink", source: $source, target: $target}}]}}' \
+            >/tmp/hjem-gc-manifest.json"""
+        )
+        machine.succeed("chown ${user} /tmp/hjem-gc-manifest.json")
+        machine.succeed("su - ${user} -c 'hjem standalone switch --manifest /tmp/hjem-gc-manifest.json --state-dir ${gcState}'")
+        machine.succeed("rm /tmp/hjem-gc-source /tmp/hjem-gc-manifest.json")
+        machine.succeed("nix-collect-garbage")
+        machine.succeed("test -L ${userHome}/.config/gc-root-test")
+        machine.succeed("test -e ${userHome}/.config/gc-root-test")
+        machine.succeed(f"test \"$(readlink ${userHome}/.config/gc-root-test)\" = {source}")
+
+        next_source = machine.succeed(
+          "printf 'next generation' >/tmp/hjem-gc-next-source && nix-store --add /tmp/hjem-gc-next-source"
+        ).strip()
+        machine.succeed(
+          f"""jq -n --arg source '{next_source}' --arg target '${userHome}/.config/gc-root-test' \\
+            '{{version: 3, files: [{{type: \"symlink\", source: $source, target: $target}}]}}' \\
+            >/tmp/hjem-gc-next-manifest.json"""
+        )
+        machine.succeed("chown ${user} /tmp/hjem-gc-next-manifest.json")
+        machine.succeed("su - ${user} -c 'hjem standalone switch --manifest /tmp/hjem-gc-next-manifest.json --state-dir ${gcState}'")
+        machine.succeed("rm /tmp/hjem-gc-next-source /tmp/hjem-gc-next-manifest.json")
+        machine.succeed("su - ${user} -c 'hjem standalone expire-generations --keep-last 1 --state-dir ${gcState}'")
+        machine.succeed("nix-collect-garbage")
+        machine.fail(f"test -e {source}")
+        machine.succeed(f"test -e {next_source}")
     '';
   }
