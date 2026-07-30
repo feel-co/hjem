@@ -35,13 +35,61 @@ use smfh_core::manifest::{
   FileKind,
   Manifest,
 };
+use tracing::{
+  debug,
+  info,
+  level_filters::LevelFilter,
+  trace,
+  warn,
+};
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum Verbosity {
+  Error,
+  Warn,
+  Info,
+  Debug,
+  Trace,
+}
+
+impl Verbosity {
+  fn parse(value: &str) -> Result<Self, String> {
+    match value {
+      "error" => Ok(Self::Error),
+      "warn" | "warning" => Ok(Self::Warn),
+      "info" => Ok(Self::Info),
+      "debug" => Ok(Self::Debug),
+      "trace" => Ok(Self::Trace),
+      _ => {
+        Err(format!(
+          "invalid verbosity '{value}'; expected error, warn, info, debug, or \
+           trace"
+        ))
+      },
+    }
+  }
+
+  fn level_filter(self) -> LevelFilter {
+    match self {
+      Self::Error => LevelFilter::ERROR,
+      Self::Warn => LevelFilter::WARN,
+      Self::Info => LevelFilter::INFO,
+      Self::Debug => LevelFilter::DEBUG,
+      Self::Trace => LevelFilter::TRACE,
+    }
+  }
+}
 
 #[derive(Parse, Debug)]
 #[pound(name = "hjem", version = "0.1.0")]
 /// Hjem standalone CLI.
 struct Cli {
+  /// Diagnostic verbosity: error, warn, info, debug, or trace. Repeated `-v`
+  /// flags select info (`-v`), debug (`-vv`), or trace (`-vvv` and above).
+  #[pound(long, default = "warn")]
+  verbosity: String,
   #[pound(subcommand)]
-  command: Command,
+  command:   Command,
 }
 
 #[derive(Parse, Debug)]
@@ -275,7 +323,18 @@ struct ReloadResult {
 }
 
 pub fn run() -> Result<(), String> {
-  parse_multicall_cli().command.run()
+  let cli = parse_multicall_cli();
+  Verbosity::parse(&cli.verbosity)?;
+  cli.command.run()
+}
+
+/// Returns the diagnostic level requested by the current command line.
+pub fn diagnostic_level() -> LevelFilter {
+  parse_multicall_args(std::env::args())
+    .ok()
+    .and_then(|cli| Verbosity::parse(&cli.verbosity).ok())
+    .map(Verbosity::level_filter)
+    .unwrap_or(LevelFilter::WARN)
 }
 
 impl Command {
@@ -333,8 +392,38 @@ fn parse_multicall_args(
     "hjem-standalone" => remapped.insert(0, "standalone".to_string()),
     _ => {},
   }
+  normalize_short_verbosity(&mut remapped);
   normalize_expire_timestamp(&mut remapped);
   Cli::try_parse_from(remapped.iter().map(String::as_str))
+}
+
+fn normalize_short_verbosity(args: &mut Vec<String>) {
+  let mut short_verbosity = 0;
+  let mut after_separator = false;
+  args.retain(|arg| {
+    if arg == "--" {
+      after_separator = true;
+      return true;
+    }
+    if !after_separator
+      && let Some(short) = arg.strip_prefix('-')
+      && !short.is_empty()
+      && short.bytes().all(|byte| byte == b'v')
+    {
+      short_verbosity += short.len();
+      return false;
+    }
+    true
+  });
+
+  if short_verbosity > 0 {
+    let verbosity = match short_verbosity {
+      1 => "info",
+      2 => "debug",
+      _ => "trace",
+    };
+    args.insert(0, format!("--verbosity={verbosity}"));
+  }
 }
 
 fn normalize_expire_timestamp(args: &mut Vec<String>) {
@@ -846,11 +935,11 @@ fn standalone_switch_from_source(
   prefix: String,
   impure: bool,
 ) -> Result<(), String> {
-  println!("Evaluating standalone input...");
+  info!("evaluating standalone input");
   let manifest = source.resolve(impure)?;
 
   let base = standalone_state_dir(state_dir)?;
-  println!("Applying manifest...");
+  info!("applying manifest");
   let state = base.join("current").join("manifest.json");
   let actions_file = base.join("current").join("actions.json");
   let verified_manifest = Manifest::load(&manifest.path, impure)?;
@@ -1045,6 +1134,15 @@ struct ActivateArgs {
 impl ActivateArgs {
   fn run(self, new_manifest: Manifest) -> Result<(), String> {
     let had_state = self.state.exists();
+    let manifest_changed =
+      had_state && !new_manifest.equivalent_to(&self.state, self.impure)?;
+    trace!(
+      manifest.path = %self.manifest.display(),
+      state.path = %self.state.display(),
+      state.exists = had_state,
+      manifest.changed = manifest_changed,
+      "prepared activation"
+    );
 
     let actions = if had_state {
       let old_manifest = Manifest::load(&self.state, self.impure)?;
@@ -1053,13 +1151,15 @@ impl ActivateArgs {
       Vec::new()
     };
 
+    log_manifest_paths(&new_manifest);
+
     if let Some(linker) = self.external_linker {
       run_external_linker(
         &linker,
         &self.linker_args,
         &self.manifest,
         &self.state,
-        had_state,
+        manifest_changed,
       )?;
     } else {
       new_manifest
@@ -1106,15 +1206,15 @@ fn run_external_linker(
   linker_args: &[String],
   new_manifest: &Path,
   old_manifest: &Path,
-  had_state: bool,
+  manifest_changed: bool,
 ) -> Result<(), String> {
-  println!("Using external linker: {}", linker.display());
+  debug!(linker.path = %linker.display(), "using external linker");
   let mut cmd = ProcCommand::new(linker);
   for arg in linker_args {
     cmd.arg(arg);
   }
 
-  if had_state {
+  if manifest_changed {
     cmd.arg("diff").arg(new_manifest).arg(old_manifest);
   } else {
     cmd.arg("activate").arg(new_manifest);
@@ -1134,6 +1234,16 @@ fn run_external_linker(
       linker.display(),
       status
     ))
+  }
+}
+
+fn log_manifest_paths(manifest: &Manifest) {
+  for file in &manifest.files {
+    debug!(
+      file.kind = %file.kind,
+      file.target = %file.target.display(),
+      "applying managed file"
+    );
   }
 }
 
@@ -1261,9 +1371,10 @@ impl ReloadActionsArgs {
 
       let status = cmd.status().map_err(|e| e.to_string())?;
       if !status.success() {
-        eprintln!(
-          "Warning: action {} failed for {}",
-          action.action, action.unit
+        warn!(
+          action.kind = %action.action,
+          systemd.unit = %action.unit,
+          "systemd action failed"
         );
       }
       applied += 1;
@@ -1921,6 +2032,7 @@ mod tests {
     Command,
     StandaloneCommand,
     StandaloneSource,
+    Verbosity,
     generation_manifest_path,
     generation_order_key,
     parse_expire_timestamp,
@@ -1969,6 +2081,64 @@ mod tests {
       panic!("expected expire-generations command");
     };
     assert_eq!(timestamp, "-30 days");
+  }
+
+  #[test]
+  fn verbosity_supports_explicit_and_repeated_short_flags() {
+    let cli = parse_multicall_args(
+      [
+        "hjem",
+        "manifest",
+        "validate",
+        "--manifest",
+        "manifest.json",
+      ]
+      .map(str::to_owned),
+    )
+    .expect("default verbosity should parse");
+    assert_eq!(cli.verbosity, "warn");
+
+    let cli = parse_multicall_args(
+      [
+        "hjem",
+        "--verbosity=trace",
+        "manifest",
+        "validate",
+        "--manifest",
+        "manifest.json",
+      ]
+      .map(str::to_owned),
+    )
+    .expect("explicit trace verbosity should parse");
+    assert_eq!(Verbosity::parse(&cli.verbosity), Ok(Verbosity::Trace));
+
+    let cli = parse_multicall_args(
+      [
+        "hjem",
+        "manifest",
+        "validate",
+        "--manifest",
+        "manifest.json",
+        "-vv",
+      ]
+      .map(str::to_owned),
+    )
+    .expect("-vv should parse");
+    assert_eq!(Verbosity::parse(&cli.verbosity), Ok(Verbosity::Debug));
+
+    let cli = parse_multicall_args(
+      [
+        "hjem",
+        "-vvvv",
+        "manifest",
+        "validate",
+        "--manifest",
+        "manifest.json",
+      ]
+      .map(str::to_owned),
+    )
+    .expect("-vvvv should parse");
+    assert_eq!(Verbosity::parse(&cli.verbosity), Ok(Verbosity::Trace));
   }
 
   #[test]
