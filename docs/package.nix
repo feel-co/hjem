@@ -1,7 +1,6 @@
 {
   hjemModule,
   nixpkgs,
-  ndg,
   pkgs,
   lib,
 }: let
@@ -115,27 +114,44 @@
     })
     .optionsJSON;
 
-  hjemDocsWeb =
+  ndgConfig = (pkgs.formats.toml {}).generate "ndg-hjem.toml" {
+    title = "Hjem";
+    module_options = "${configJSON}/share/doc/nixos/options.json";
+    manpage_urls_path = "${nixpkgs}/doc/manpage-urls.json";
+    highlight_code = true;
+    search.enable = true;
+    sidebar.options.depth = 3;
+  };
+
+  hjemDocs =
     pkgs.runCommand "hjem-docs" {
-      nativeBuildInputs = [ndg];
+      outputs = ["out" "man"];
+      nativeBuildInputs = [pkgs.ndg pkgs.gzip];
     } ''
       mkdir -p $out/share/doc
+      mkdir -p $man/share/man/man5
 
       # Copy the markdown sources to be processed by ndg
       cp -rvf ${./inputs} ./inputs
 
-      ndg --verbose html \
-        --jobs $NIX_BUILD_CORES --title "Hjem" \
-        --module-options ${configJSON}/share/doc/nixos/options.json \
-        --manpage-urls ${nixpkgs}/doc/manpage-urls.json \
-        --options-depth 3 \
-        --generate-search \
-        --highlight-code \
+      ndg --verbose \
+        --config-file ${ndgConfig} \
+        html \
+        --jobs $NIX_BUILD_CORES \
         --input-dir ./inputs \
         --output-dir "$out/share/doc"
+
+      ndg --verbose man \
+        --module-options ${configJSON}/share/doc/nixos/options.json \
+        --title "hjem" \
+        --section 5 \
+        --output-file hjem.5
+
+      gzip -c hjem.5 > $man/share/man/man5/hjem.5.gz
     '';
 in {
-  html = hjemDocsWeb;
+  html = hjemDocs;
+  man = hjemDocs.man;
   options.json =
     pkgs.runCommand "options.json" {
       meta.description = "List of Hjem options in JSON format.";
