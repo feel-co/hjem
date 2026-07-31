@@ -1397,7 +1397,11 @@ fn run_update_state(
   state: &Path,
   json: bool,
 ) -> Result<(), String> {
+  let state_manifest = Manifest::load(manifest, false)?;
+  let mut store_paths = state_manifest.store_paths();
   atomic_copy(manifest, state)?;
+  store_paths.extend(linked_store_paths(&state_manifest));
+  install_state_gc_roots(state, &store_paths)?;
 
   if json {
     print_json(&serde_json::json!({ "updated": true }))?;
@@ -1435,6 +1439,10 @@ fn run_cleanup_state(
       && !enabled.contains(user)
     {
       fs::remove_file(entry.path()).map_err(|e| e.to_string())?;
+      let roots = state_gc_roots_dir(state_dir, user);
+      if roots.exists() {
+        fs::remove_dir_all(roots).map_err(|e| e.to_string())?;
+      }
       removed.push(file_name.to_string());
     }
   }
@@ -1451,6 +1459,16 @@ trait ManifestExt: Sized {
   fn equivalent_to(&self, path: &Path, impure: bool) -> Result<bool, String>;
   fn store_paths(&self) -> BTreeSet<PathBuf>;
   fn trigger_actions(&self, previous: &Self) -> Vec<TriggerAction>;
+}
+
+fn linked_store_paths(manifest: &Manifest) -> BTreeSet<PathBuf> {
+  manifest
+    .files
+    .iter()
+    .filter(|file| file.kind == FileKind::Symlink)
+    .filter_map(|file| fs::read_link(&file.target).ok())
+    .filter_map(|target| nix_store_path(&target))
+    .collect()
 }
 
 fn file_sort_key(a: &File, b: &File) -> std::cmp::Ordering {
@@ -1694,6 +1712,69 @@ fn install_generation_gc_roots(
       ));
     }
   }
+  Ok(())
+}
+
+fn state_gc_roots_dir(state_dir: &Path, user: &str) -> PathBuf {
+  state_dir.join(format!("gc-roots-{user}"))
+}
+
+fn install_state_gc_roots(
+  state: &Path,
+  store_paths: &BTreeSet<PathBuf>,
+) -> Result<(), String> {
+  let state_dir = state
+    .parent()
+    .ok_or_else(|| format!("state path has no parent: {}", state.display()))?;
+  let user = state
+    .file_name()
+    .and_then(|name| name.to_str())
+    .and_then(|name| name.strip_prefix("manifest-"))
+    .and_then(|name| name.strip_suffix(".json"))
+    .ok_or_else(|| {
+      format!("state path is not a per-user manifest: {}", state.display())
+    })?;
+  let roots = state_gc_roots_dir(state_dir, user);
+
+  if store_paths.is_empty() {
+    if roots.exists() {
+      fs::remove_dir_all(roots).map_err(|e| e.to_string())?;
+    }
+    return Ok(());
+  }
+
+  match ProcCommand::new("nix-store").arg("--version").output() {
+    Ok(output) if output.status.success() => {},
+    Ok(output) => {
+      return Err(format!(
+        "failed to check nix-store while creating state GC roots: {}",
+        String::from_utf8_lossy(&output.stderr)
+      ));
+    },
+    Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+      warn!(
+        state.path = %state.display(),
+        "nix-store is unavailable; skipping state GC roots"
+      );
+      return Ok(());
+    },
+    Err(error) => {
+      return Err(format!(
+        "failed to execute nix-store while creating state GC roots: {error}"
+      ));
+    },
+  }
+
+  let generation = roots.join(now_id("generation"));
+  install_generation_gc_roots(&generation, store_paths)?;
+
+  for entry in fs::read_dir(&roots).map_err(|e| e.to_string())? {
+    let entry = entry.map_err(|e| e.to_string())?;
+    if entry.path() != generation {
+      fs::remove_dir_all(entry.path()).map_err(|e| e.to_string())?;
+    }
+  }
+
   Ok(())
 }
 
@@ -2026,18 +2107,82 @@ fn now_id(prefix: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-  use std::path::Path;
+  use std::{
+    fs,
+    os::unix::fs::symlink,
+    path::Path,
+  };
 
   use super::{
+    ActivateArgs,
     Command,
+    Manifest,
+    ManifestExt,
     StandaloneCommand,
     StandaloneSource,
     Verbosity,
     generation_manifest_path,
     generation_order_key,
+    now_id,
     parse_expire_timestamp,
     parse_multicall_args,
   };
+
+  #[test]
+  fn built_in_linker_repairs_dangling_symlinks_on_unchanged_manifest() {
+    let root = std::env::temp_dir().join(now_id("hjem-core-linker-test"));
+    fs::create_dir_all(&root).expect("test directory should be created");
+
+    let source = root.join("source");
+    let target = root.join("target");
+    let manifest = root.join("manifest.json");
+    let state = root.join("state.json");
+    fs::write(&source, "managed content").expect("source should be written");
+    fs::write(
+      &manifest,
+      serde_json::json!({
+        "version": 3,
+        "files": [{
+          "type": "symlink",
+          "source": source,
+          "target": target,
+        }],
+      })
+      .to_string(),
+    )
+    .expect("manifest should be written");
+
+    let activate = || {
+      ActivateArgs {
+        manifest:        manifest.clone(),
+        state:           state.clone(),
+        update_state:    true,
+        actions_file:    None,
+        prefix:          ".backup-".to_owned(),
+        impure:          false,
+        external_linker: None,
+        linker_args:     Vec::new(),
+        json:            false,
+      }
+    };
+
+    activate()
+      .run(Manifest::load(&manifest, false).expect("manifest should load"))
+      .expect("initial activation should succeed");
+    fs::remove_file(&target).expect("managed link should be removed");
+    symlink(root.join("missing"), &target)
+      .expect("dangling link should be created");
+
+    activate()
+      .run(Manifest::load(&manifest, false).expect("manifest should load"))
+      .expect("unchanged manifest should repair dangling link");
+    assert_eq!(
+      fs::read_to_string(&target).expect("repaired link should be readable"),
+      "managed content"
+    );
+
+    fs::remove_dir_all(root).expect("test directory should be removed");
+  }
 
   #[test]
   fn generation_paths_reject_invalid_ids() {
