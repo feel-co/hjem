@@ -12,4 +12,6 @@ keywords               = ["hjem", "nix", "home", "user-home"]
 categories             = ["command-line-utilities"]
 
 [dependencies]
-hjem-core.workspace = true
+hjem-core.workspace          = true
+tracing.workspace            = true
+tracing-subscriber.workspace = true

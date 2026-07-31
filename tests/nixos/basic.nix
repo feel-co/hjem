@@ -52,10 +52,15 @@ in
             "d %h/only_alice"
           ];
         };
+
+        specialisation.unrelated.configuration.environment.etc."hjem-gc-test".text = "unrelated generation change";
       };
     };
 
-    testScript = ''
+    testScript = {nodes, ...}: let
+      baseSystem = nodes.node1.system.build.toplevel;
+      unrelatedSystem = "${baseSystem}/specialisation/unrelated";
+    in ''
       machine.succeed("loginctl enable-linger alice")
       machine.wait_until_succeeds("systemctl --user --machine=alice@ is-active systemd-tmpfiles-setup.service")
 
@@ -63,6 +68,13 @@ in
       machine.succeed("[ -L ~alice/.config/foo ]")
       machine.succeed("[ -L ~alice/.config/bar.json ]")
       machine.succeed("[ -L ~alice/.config/baz.toml ]")
+
+      with subtest("Later generations retain unchanged linked sources across GC"):
+          machine.succeed("${unrelatedSystem}/bin/switch-to-configuration test")
+          machine.succeed("nix-store --query --requisites ${unrelatedSystem} | grep -Fx \"$(readlink ~alice/.config/foo)\"")
+          machine.succeed("nix-collect-garbage")
+          machine.succeed("test -e ~alice/.config/foo")
+          machine.succeed("grep -qx 'Hello world!' ~alice/.config/foo")
 
       # Test regular files, created by systemd-tmpfiles
       machine.succeed("[ -d ~alice/user_tmpfiles_created ]")
