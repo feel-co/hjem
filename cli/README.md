@@ -38,6 +38,11 @@ $ hjem manifest   <validate|diff>
 $ hjem activate   --manifest <path> --state <path>
 ```
 
+> [!TIP]
+> Diagnostics default to `warn`. Use `-v` for activation progress, `-vv` for
+> managed paths and linker details, and `-vvv` (or more) for trace diagnostics.
+> `--verbosity=error|warn|info|debug|trace` selects a level explicitly.
+
 `standalone switch` and `standalone build` accept exactly one manifest source:
 `--manifest` (pre-generated JSON), `--config` (a `hjem.nix` evaluated with
 `nix eval`), or `--flake` (defaulting to `hjemConfigurations."$USER"`). State
