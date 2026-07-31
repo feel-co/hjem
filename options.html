@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="no-js">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,6 +7,8 @@
      
     
     <script>
+      document.documentElement.classList.remove("no-js");
+      document.documentElement.classList.add("js");
       // Apply sidebar state immediately to prevent flash
       (function () {
         try {
@@ -43,7 +45,7 @@
   </ul>
 </nav>
  
-        <div class="search-container">
+        <div class="search-container js-only">
           <input type="text" id="search-input" placeholder="Search..." />
           <div id="search-results" class="search-results"></div>
         </div>
@@ -51,7 +53,7 @@
       </header>
 
       <div class="layout">
-        <div class="sidebar-toggle" aria-label="Toggle sidebar">
+        <div class="sidebar-toggle js-only" aria-label="Toggle sidebar">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -68,6 +70,7 @@
               <ul>
                 <li><a href="index.html">Index</a></li>
 <li><a href="extending.html">Extending Hjem</a></li>
+<li><a href="standalone.html">Standalone CLI</a></li>
 <li><a href="search.html">Search</a></li>
 
               </ul>
@@ -2307,7 +2310,7 @@
           <h1>Hjem Options</h1>
 
           
-          <div class="search-form">
+          <div class="search-form js-only">
             <input
               type="text"
               id="options-filter"
@@ -2353,20 +2356,13 @@ extend each user configuration with additional options.</p>
   </h3>
   <div class="option-type">Type: <code>null or package</code></div>
   <div class="option-description"><html><head></head><body><p>Package to use to link files.</p>
-<p>By default, we use <code>smfh</code>, our own file linker.</p>
+<p>By default, Hjem uses its own standalone CLI linker.</p>
 <p>Setting this to <code>null</code> will use <code>systemd-tmpfiles</code>,
 which is only supported on Linux.</p>
-<p><code>systemd-tmpfiles</code> is more mature, but it has the downside of
-leaving behind symlinks that may not get invalidated until the next GC,
-if an entry is removed from <code class="nixos-option">hjem.&lt;user&gt;.files</code>.</p>
-<p>Specifying a package will use a custom file linker that uses an
-internally-generated manifest. The custom file linker must use this
-manifest to create or remove links as needed, by comparing the manifest
-of the currently activated system with that of the new system.
-This prevents dangling symlinks when an entry is removed from
-<code class="nixos-option">hjem.&lt;user&gt;.files</code>.</p>
+<p>Specifying a non-null package uses an external linker that is invoked
+with Hjem-managed manifests.</p>
 </body></html></div>
-  <div class="option-default">Default: <code>pkgs.smfh</code></div>
+  <div class="option-default">Default: <code>hjem-package</code></div>
   <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/top-level.nix" target="_blank">&lt;hjem/modules/common/top-level.nix&gt;</a></code></div>
 </div>
 <div class="option" id="option-hjem.linkerOptions">
@@ -2376,10 +2372,15 @@ This prevents dangling symlinks when an entry is removed from
     <span class="copy-feedback">Link copied!</span>
   </h3>
   <div class="option-type">Type: <code>(list of (optionally newline-terminated) single-line string) or (attribute set)</code></div>
-  <div class="option-description"><html><head></head><body><p>Additional arguments to pass to the linker.</p>
-<p>This is for external linker modules to set, to allow extending the default set of hjem behaviours.
-It accepts either a list of strings, which will be passed directly as arguments, or an attribute set, which will be
-serialized to JSON and passed as <code>--linker-opts options.json</code>.</p>
+  <div class="option-description"><html><head></head><body><p>Additional linker configuration.</p>
+<p>When using Hjem's built-in standalone linker, only <code>prefix</code> is consumed
+from an attribute set.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When using an external linker package, list values are forwarded as
+linker arguments and attribute-set values are forwarded as
+<code>--linker-opts &lt;json-file&gt;</code>.</p>
+</div>
 </body></html></div>
   <div class="option-default">Default: <code>[ ]</code></div>
   <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/top-level.nix" target="_blank">&lt;hjem/modules/common/top-level.nix&gt;</a></code></div>
@@ -4215,7 +4216,7 @@ option in the <code>[Socket]</code> section will be created.</p>
     <span class="copy-link" title="Copy link to this option"></span>
     <span class="copy-feedback">Link copied!</span>
   </h3>
-  <div class="option-type">Type: <code>list of string</code></div>
+  <div class="option-type">Type: <code>list of (string or 16 bit unsigned integer; between 0 and 65535 (both inclusive) convertible to it)</code></div>
   <div class="option-description"><html><head></head><body><p>For each item in this list, a <code>ListenStream</code>
 option in the <code>[Socket]</code> section will be created.</p>
 </body></html></div>

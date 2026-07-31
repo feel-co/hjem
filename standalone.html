@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Standalone CLI</title>
+     
+    
+    <script>
+      document.documentElement.classList.remove("no-js");
+      document.documentElement.classList.add("js");
+      // Apply sidebar state immediately to prevent flash
+      (function () {
+        try {
+          if (localStorage.getItem("sidebar-collapsed") === "true") {
+            document.documentElement.classList.add("sidebar-collapsed");
+          }
+        } catch (e) {
+          // localStorage unavailable
+        }
+      })();
+    </script>
+    <link rel="stylesheet" href="assets/style.css" />
+    <script defer src="assets/main.js"></script>
+    
+    <script>
+      window.searchNamespace = window.searchNamespace || {};
+      window.searchNamespace.rootPath = "";
+    </script>
+    <script defer src="assets/search.js"></script>
+    
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="header-left">
+          <h1 class="site-title">
+            <a href="index.html">Hjem</a>
+          </h1>
+
+          <nav class="header-nav">
+  <ul>
+    <li >
+      <a href="options.html">Options</a>
+    </li>
+    
+    <li><a href="search.html">Search</a></li>
+    
+  </ul>
+</nav>
+
+        </div>
+        
+        <div class="search-container js-only">
+          <input type="text" id="search-input" placeholder="Search..." />
+          <div id="search-results" class="search-results"></div>
+        </div>
+        
+      </header>
+
+      <div class="layout">
+        <div class="sidebar-toggle js-only" aria-label="Toggle sidebar">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            width="24"
+            height="24"
+          >
+            <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path>
+          </svg>
+        </div>
+        <nav class="sidebar">
+          <details class="sidebar-section" data-section="docs" open>
+            <summary>Documents</summary>
+            <div class="sidebar-section-content">
+              <ul>
+                <li><a href="index.html">Index</a></li>
+<li><a href="extending.html">Extending Hjem</a></li>
+<li><a href="standalone.html">Standalone CLI</a></li>
+<li><a href="search.html">Search</a></li>
+
+              </ul>
+            </div>
+          </details>
+
+          <details class="sidebar-section" data-section="toc" open>
+            <summary>Contents</summary>
+            <div class="sidebar-section-content">
+              <ul class="toc-list">
+                <li><a href="#standalone-cli">Standalone CLI</a>
+<ul><li><a href="#getting-started">Getting started</a>
+<li><a href="#manifest-sources">Manifest sources</a>
+<li><a href="#generations">Generations</a>
+</li></ul></li>
+              </ul>
+            </div>
+          </details>
+        </nav>
+
+        <main class="content"><html><head></head><body><h1 id="standalone-cli">Standalone CLI</h1>
+<p>Hjem can manage the current user's home outside of a NixOS, nix-darwin, or Finix
+module. Install the <code>hjem</code> package from the Hjem flake, then use either
+<code>hjem standalone</code> or the packaged <code>hjem-standalone</code> alias.</p>
+<pre class="highlight"><code class="language-sh"><span style="color:rgb(97,175,239);">nix</span>&nbsp;<span style="color:rgb(232,102,113);">profile</span>&nbsp;<span style="color:rgb(232,102,113);">install</span>&nbsp;<span style="color:rgb(232,102,113);">github:feel-co/hjem#hjem</span><br><span style="color:rgb(97,175,239);">hjem</span>&nbsp;<span style="color:rgb(232,102,113);">standalone</span>&nbsp;<span style="color:rgb(232,102,113);">--help</span><br></code></pre>
+<h2 id="getting-started">Getting started</h2>
+<p><code>hjem standalone init</code> creates a small configuration in <code>$XDG_CONFIG_HOME/hjem</code>,
+or <code>~/.config/hjem</code> when <code>XDG_CONFIG_HOME</code> is unset. It creates <code>hjem.nix</code>, a
+matching example source under <code>dotfiles/</code>, and, unless <code>--no-flake</code> is given, a
+minimal <code>flake.nix</code>.</p>
+<pre class="highlight"><code class="language-sh"><span style="color:rgb(97,175,239);">hjem</span>&nbsp;<span style="color:rgb(232,102,113);">standalone</span>&nbsp;<span style="color:rgb(232,102,113);">init</span><br><span style="color:rgb(97,175,239);">hjem</span>&nbsp;<span style="color:rgb(232,102,113);">standalone</span>&nbsp;<span style="color:rgb(232,102,113);">switch</span>&nbsp;<span style="color:rgb(232,102,113);">--flake</span>&nbsp;<span style="color:rgb(232,102,113);">~/.config/hjem</span><br></code></pre>
+<p>Pass <code>--switch</code> to <code>init</code> to apply the generated configuration immediately, or
+<code>--dir PATH</code> to create it elsewhere.</p>
+<h2 id="manifest-sources">Manifest sources</h2>
+<p><code>switch</code> and <code>build</code> accept exactly one source:</p>
+<ul>
+<li><code>--manifest PATH</code> reads an already-generated manifest JSON file.</li>
+<li><code>--config PATH</code> evaluates a Nix expression such as <code>hjem.nix</code>.</li>
+<li><code>--flake REF</code> evaluates a flake output. By default this is
+<code>hjemConfigurations."$USER"</code>; use <code>--flake-attr</code> to select another output.</li>
+</ul>
+<p>The Nix value may be either the manifest itself or an attribute set containing
+<code>manifest</code>. A manifest has a version and a list of files, for example:</p>
+<pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;<span style="color:rgb(86,182,194);">version</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(209,154,102);">3</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;<span style="color:rgb(86,182,194);">files</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">[</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">type</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">symlink</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">source</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(232,102,113);">./dotfiles/example</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">target</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">/home/alice/.config/example</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(132,139,152);">}</span><br>&nbsp;&nbsp;<span style="color:rgb(132,139,152);">]</span><span style="color:rgb(132,139,152);">;</span><br><span style="color:rgb(132,139,152);">}</span><br></code></pre>
+<p>When using <code>--config</code> or <code>--flake</code>, the same value may also contain <code>packages</code>.
+Standalone packages are installed into a Hjem-managed profile for the active
+generation:</p>
+<pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;<span style="color:rgb(86,182,194);">manifest</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">version</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(209,154,102);">3</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">files</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;<span style="color:rgb(132,139,152);">}</span><span style="color:rgb(132,139,152);">;</span><br><br>&nbsp;&nbsp;<span style="color:rgb(86,182,194);">packages</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">[</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(171,178,191);">pkgs</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">hello</span><br>&nbsp;&nbsp;<span style="color:rgb(132,139,152);">]</span><span style="color:rgb(132,139,152);">;</span><br><span style="color:rgb(132,139,152);">}</span><br></code></pre>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Add the current profile to your login environment to expose package binaries:</p>
+<pre class="highlight"><code class="language-sh"><span style="color:rgb(198,120,221);">export</span>&nbsp;<span style="color:rgb(232,102,113);">PATH</span><span style="color:rgb(171,178,191);">=</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(232,102,113);">$</span><span style="color:rgb(209,154,102);">XDG_STATE_HOME</span><span style="color:rgb(152,195,121);">/hjem/standalone/current-profile/bin:</span><span style="color:rgb(232,102,113);">$</span><span style="color:rgb(232,102,113);">PATH</span><span style="color:rgb(152,195,121);">"</span><br></code></pre>
+<p>If <code>XDG_STATE_HOME</code> is unset, use
+<code>$HOME/.local/state/hjem/standalone/current-profile/bin</code>.</p>
+</div>
+<p>Package support is not available for <code>--manifest</code>; manifest JSON remains a
+file-linking format and cannot represent Nix derivations.</p>
+<p>Use <code>--impure</code> only when that Nix evaluation requires impure builtins.</p>
+<h2 id="generations">Generations</h2>
+<p>Every successful <code>switch</code> saves the manifest as a generation before making it
+current. State is stored in <code>$XDG_STATE_HOME/hjem/standalone</code>, or
+<code>~/.local/state/hjem/standalone</code> by default. <code>--state-dir PATH</code> overrides it for
+standalone lifecycle commands.</p>
+<pre class="highlight"><code class="language-sh"><span style="color:rgb(92,99,112);font-style: italic;">#&nbsp;Evaluate&nbsp;and&nbsp;validate&nbsp;without&nbsp;applying;&nbsp;the&nbsp;result&nbsp;is&nbsp;recorded&nbsp;under&nbsp;builds/.</span><br><span style="color:rgb(232,102,113);">$</span>&nbsp;<span style="color:rgb(171,178,191);">hjem</span>&nbsp;<span style="color:rgb(232,102,113);">standalone</span>&nbsp;<span style="color:rgb(232,102,113);">build</span>&nbsp;<span style="color:rgb(232,102,113);">--config</span>&nbsp;<span style="color:rgb(232,102,113);">./hjem.nix</span><br><br><span style="color:rgb(92,99,112);font-style: italic;">#&nbsp;Inspect,&nbsp;roll&nbsp;back,&nbsp;and&nbsp;prune&nbsp;generations.</span><br><span style="color:rgb(232,102,113);">$</span>&nbsp;<span style="color:rgb(171,178,191);">hjem</span>&nbsp;<span style="color:rgb(232,102,113);">standalone</span>&nbsp;<span style="color:rgb(232,102,113);">generations</span><br><span style="color:rgb(232,102,113);">$</span>&nbsp;<span style="color:rgb(171,178,191);">hjem</span>&nbsp;<span style="color:rgb(232,102,113);">standalone</span>&nbsp;<span style="color:rgb(232,102,113);">rollback</span><br><span style="color:rgb(232,102,113);">$</span>&nbsp;<span style="color:rgb(171,178,191);">hjem</span>&nbsp;<span style="color:rgb(232,102,113);">standalone</span>&nbsp;<span style="color:rgb(232,102,113);">rollback</span>&nbsp;<span style="color:rgb(232,102,113);">--generation</span>&nbsp;<span style="color:rgb(232,102,113);">generation-1780000000-123456789</span><br><span style="color:rgb(232,102,113);">$</span>&nbsp;<span style="color:rgb(171,178,191);">hjem</span>&nbsp;<span style="color:rgb(232,102,113);">standalone</span>&nbsp;<span style="color:rgb(232,102,113);">expire-generations</span>&nbsp;<span style="color:rgb(232,102,113);">--keep-last</span>&nbsp;<span style="color:rgb(209,154,102);">10</span><br><span style="color:rgb(232,102,113);">$</span>&nbsp;<span style="color:rgb(171,178,191);">hjem</span>&nbsp;<span style="color:rgb(232,102,113);">standalone</span>&nbsp;<span style="color:rgb(232,102,113);">remove-generations</span>&nbsp;<span style="color:rgb(232,102,113);">generation-1780000000-123456789</span><br></code></pre>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>rollback</code> and <code>remove-generations</code> refuse invalid generation identifiers, and
+the current generation cannot be removed.</p>
+</div>
+</body></html></main>
+      </div>
+
+      <aside class="page-toc">
+        <nav class="page-toc-nav">
+          <h3>On this page</h3>
+          <ul class="page-toc-list">
+            <li><a href="#standalone-cli">Standalone CLI</a>
+<ul><li><a href="#getting-started">Getting started</a>
+<li><a href="#manifest-sources">Manifest sources</a>
+<li><a href="#generations">Generations</a>
+</li></ul></li>
+          </ul>
+        </nav>
+      </aside>
+
+      <footer>
+  <p>Generated with ndg</p>
+</footer>
+
+    </div>
+
+    
+  </body>
+</html>
