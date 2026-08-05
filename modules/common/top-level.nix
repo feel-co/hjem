@@ -4,7 +4,6 @@
 }: {
   lib,
   pkgs,
-  hjem-package,
   config,
   ...
 }: let
@@ -21,6 +20,13 @@ in {
   inherit _class;
 
   options.hjem = {
+    cli.package = mkOption {
+      type = package;
+      default = pkgs.callPackage ../../cli/package.nix {};
+      defaultText = literalExpression "pkgs.callPackage ../../cli/package.nix { }";
+      description = "The Hjem CLI package to use.";
+    };
+
     clobberByDefault = mkOption {
       type = bool;
       default = false;
@@ -64,8 +70,8 @@ in {
 
     linker = mkOption {
       type = nullOr package;
-      default = hjem-package;
-      defaultText = literalExpression "hjem-package";
+      default = cfg.cli.package;
+      defaultText = literalExpression "config.hjem.cli.package";
       description = ''
         Package to use to link files.
 

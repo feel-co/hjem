@@ -1,7 +1,6 @@
 {
   config,
   hjem-lib,
-  hjem-package,
   lib,
   options,
   pkgs,
@@ -49,8 +48,8 @@
     user.xdg.state.files
   ];
 
-  hjemCli = getExe hjem-package;
-  hjemPkg = hjem-package;
+  hjemCli = getExe cfg.cli.package;
+  hjemPkg = cfg.cli.package;
   actualLinker =
     if cfg.linker == null
     then hjemPkg

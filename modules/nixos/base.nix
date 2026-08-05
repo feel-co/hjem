@@ -4,7 +4,6 @@
   lib,
   options,
   pkgs,
-  hjem-package,
   utils,
   ...
 }: let
@@ -33,8 +32,8 @@
     user.xdg.state.files
   ];
 
-  hjemCli = getExe hjem-package;
-  hjemPkg = hjem-package;
+  hjemCli = getExe cfg.cli.package;
+  hjemPkg = cfg.cli.package;
   useExternalLinker = cfg.linker != hjemPkg;
   linkerExe = getExe cfg.linker;
   prefix =
