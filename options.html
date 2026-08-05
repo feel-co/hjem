@@ -84,6 +84,14 @@
   
   
   <li>
+    <a href='#option-hjem.cli.package' title="hjem.cli.package">
+      hjem.cli.package
+      
+      
+    </a>
+  </li>
+  
+  <li>
     <a href='#option-hjem.clobberByDefault' title="hjem.clobberByDefault">
       hjem.clobberByDefault
       
@@ -2319,7 +2327,19 @@
           </div>
           
 
-          <div class="options-container"><div class="option" id="option-hjem.clobberByDefault">
+          <div class="options-container"><div class="option" id="option-hjem.cli.package">
+  <h3 class="option-name">
+    <a href="#option-hjem.cli.package" class="option-anchor">hjem.cli.package</a>
+    <span class="copy-link" title="Copy link to this option"></span>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-type">Type: <code>package</code></div>
+  <div class="option-description"><html><head></head><body><p>The Hjem CLI package to use.</p>
+</body></html></div>
+  <div class="option-default">Default: <code>pkgs.callPackage ../../cli/package.nix { }</code></div>
+  <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/top-level.nix" target="_blank">&lt;hjem/modules/common/top-level.nix&gt;</a></code></div>
+</div>
+<div class="option" id="option-hjem.clobberByDefault">
   <h3 class="option-name">
     <a href="#option-hjem.clobberByDefault" class="option-anchor">hjem.clobberByDefault</a>
     <span class="copy-link" title="Copy link to this option"></span>
@@ -2362,7 +2382,7 @@ which is only supported on Linux.</p>
 <p>Specifying a non-null package uses an external linker that is invoked
 with Hjem-managed manifests.</p>
 </body></html></div>
-  <div class="option-default">Default: <code>hjem-package</code></div>
+  <div class="option-default">Default: <code>config.hjem.cli.package</code></div>
   <div class="option-declared">Declared in: <code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/top-level.nix" target="_blank">&lt;hjem/modules/common/top-level.nix&gt;</a></code></div>
 </div>
 <div class="option" id="option-hjem.linkerOptions">
