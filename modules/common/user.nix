@@ -41,7 +41,10 @@ in {
 
   options = {
     enable =
-      mkEnableOption "home management for this user"
+      mkEnableOption ''
+        Home management for this user.
+        This has no effect with standalone usage
+      ''
       // {
         default = true;
         example = false;

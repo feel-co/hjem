@@ -48,5 +48,40 @@
         inherit (nixpkgs) lib;
         pkgs = nixpkgs.legacyPackages.${system};
       });
+    lib.
+      hjemConfig = {
+      specialArgs ? {},
+      modules,
+      pkgs,
+    }: let
+      inherit (pkgs) lib;
+      evaled = lib.evalModules {
+        class = "hjem";
+        specialArgs =
+          specialArgs
+          // {
+            modulesPath = toString ./modules;
+            hjem-lib = import ./lib.nix {inherit lib pkgs;};
+            inherit pkgs;
+            # TODO, make these error on read
+            #osOptions
+            #osConfig
+            #utils
+          };
+        modules =
+          [
+            ./modules/common/user.nix
+            ./modules/standalone/default.nix
+          ]
+          ++ modules;
+      };
+
+      failedAssertions = map (x: x.message) (builtins.filter (x: !x.assertion) evaled.config.assertions);
+      baseSystemAssertWarn =
+        if failedAssertions != []
+        then throw "\nFailed assertions:\n${lib.concatMapStrings (x: "- ${x}") failedAssertions}"
+        else lib.showWarnings evaled.config.warnings;
+    in
+      baseSystemAssertWarn evaled.config;
   };
 }
