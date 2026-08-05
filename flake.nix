@@ -5,7 +5,7 @@
     self,
     nixpkgs,
     ...
-  } @ inputs: let
+  }: let
     # We should only specify the modules Hjem explicitly supports, or we risk
     # allowing not-so-defined behaviour. For example, adding nix-systems should
     # be avoided, because it allows specifying systems Hjem is not tested on.
@@ -18,14 +18,14 @@
     finixModules = import ./modules/finix;
 
     packages = forAllSystems (system:
-      import ./internal/packages.nix rec {
+      import ./internal/packages.nix {
         inherit nixpkgs;
         hjemModule = self.nixosModules.default;
         pkgs = pkgsFor system;
       });
 
     checks = forAllSystems (system:
-      import ./internal/checks.nix rec {
+      import ./internal/checks.nix {
         inherit self;
         pkgs = pkgsFor system;
       }
