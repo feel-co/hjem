@@ -5,7 +5,8 @@
 - [Contribution Guidelines](#contribution-guidelines)
   - [Preface](#preface)
   - [Contributing](#contributing)
-    - [General Guidelines](#general-guidelines)
+    - [Writing Tests](#writing-tests)
+    - [Writing Documentation](#writing-documentation)
     - [Formatting Code](#formatting-code)
       - [Treewide](#treewide)
       - [Nix](#nix)
@@ -13,6 +14,8 @@
     - [Commit Format](#commit-format)
       - [Example Scopes](#example-scopes)
   - [Usage without flakes](#usage-without-flakes)
+  - [AI Policy](#ai-policy)
+    - [What This Means](#what-this-means)
   - [Code of Conduct](#code-of-conduct)
 
 <!--toc:end-->
@@ -42,8 +45,6 @@ Discussions tab is also available for less formal discussions.
 Anything that benefits all Hjem users are eligible for inclusion. If you have a
 really good idea that you think everyone would appreciate, then let's discuss!
 
-### General Guidelines
-
 There are several guidelines we expect you to adhere to while making a pull
 request to Hjem. Namely, we expect you to:
 
@@ -51,13 +52,40 @@ request to Hjem. Namely, we expect you to:
 2. Self-test your changes, and write integration tests where applicable
 3. Document your changes
 
+### Writing Tests
+
+[NixOS manual]: https://nixos.org/manual/nixos/stable/#sec-nixos-tests
+[test framework]: https://github.com/feel-co/hjem/tree/main/tests
+
+Hjem leverages Nixpkgs' VM testing framework for its testing infrastructure. You
+may find a technical introduction on the [NixOS manual]. Typically, we expect
+you to understand and think about the potential side effects and possible edge
+cases while adding new features and flow. Those should be carefully tested in
+our existing [test framework] with a VM test by either adding a subtest or a new
+test to run.
+
+### Writing Documentation
+
+[rendered documentation]: https://hjem.feel-co.org
+[ndg]: https://ndg.feel-co.org
+[ndg-commonmark]: https://crates.io/crates/ndg-commonmark
+[syntax documentation]: https://github.com/feel-co/ndg/blob/main/ndg-commonmark/docs/SYNTAX.md
+
+The [rendered documentation] is powered by [ndg], our in-house documentation
+tooling designed to replace `nixos-render-docs` with a more powerful and stylish
+Rust program. Per [ndg-commonmark]'s [syntax documentation], most of
+Nixpkgs-flavored CommonMark features and Github Flavored Markdown (GFM) are
+fully supported.
+
+Keep documentation clear, concise and user-facing.
+
 ### Formatting Code
 
 #### Treewide
 
 Please try to keep lines at a reasonable length, ideally 120 characters or less.
-For string literals, module descriptions and documentation, 80 is a good middle
-point.
+For string literals, module descriptions and Markdown documentation sources, 80
+is a good middle point.
 
 #### Nix
 
@@ -137,6 +165,54 @@ commands:
 
 You can also `import` the root of the repo and get all of the same attributes as
 the flake (without `system`).
+
+## AI Policy
+
+> [!IMPORTANT]
+> Pull requests created or submitted by autonomous or supervised AI agents are
+> explicitly prohibited, and will be immediately closed without a review. NH, as
+> a codebase, does not welcome AI-generated contributions.
+
+This policy exists for the following reasons:
+
+1. **Quality Assurance**: AI-generated code often lacks the contextual
+   understanding required for systems-level software that interfaces with
+   critical system components. As Hjem deals with sensitive user files, LLMs
+   lack the awareness or accountability that we expect from contributions.
+
+2. **Legal and Licensing**: Hjem requires clear authorship and accountability in
+   code. AI-generated contributions create ambiguity around copyright and
+   licensing obligations. Not to mention the ethical concerns.
+
+3. **Maintenance Burden**: AI-generated contributions often require
+   disproportionate maintainer effort to review, correct, and integrate
+   properly. It also becomes a long-term maintenance burden if the contribution
+   is a drive-by one.
+
+### What This Means
+
+- **Prohibited**: Submitting PRs where an AI agent (autonomous or supervised)
+  generated the code, commit messages, or PR description, regardless of whether
+  a human clicked the "submit" button.
+
+- **Prohibited**: Using AI agents to automatically fix issues, respond to review
+  comments, or generate follow-up commits.
+
+- **Allowed**: Using AI tools as aids while writing code, provided a human
+  author thoroughly reviews, tests, and takes full responsibility for the
+  submission. AI-assisted PRs require **FULL DISCLOSURE** and appropriate proof
+  that the user thoroughly understands the code generated.
+
+By submitting a pull request, you attest that:
+
+1. You are a human contributor
+2. You have personally authored or thoroughly reviewed and tested all changes
+3. You take full legal and ethical responsibility for the contribution
+4. No autonomous or supervised AI agent was used to create or submit the PR
+5. You understand the consequences of violating above guidelines.
+
+Violations of this policy may result in a permanent ban from contributing to the
+project.
 
 ## Code of Conduct
 
