@@ -1,0 +1,1860 @@
+<div class="option" id="option-hjem.users._username_.systemd.slices._name_.enable">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.slices._name_.enable" class="option-anchor">hjem.users.&lt;username&gt;.systemd.slices.&lt;name&gt;.enable</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>If set to false, this unit will be a symlink to
+/dev/null. This is primarily useful to prevent specific
+template instances
+(e.g. <code>serial-getty@ttyS0</code>) from being
+started. Note that <code>enable=true</code> does not
+make a unit start by default at boot; if you want that, see
+<code>wantedBy</code>.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>boolean</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">true</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.slices._name_.after">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.slices._name_.after" class="option-anchor">hjem.users.&lt;username&gt;.systemd.slices.&lt;name&gt;.after</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>If the specified units are started at the same time as
+this unit, delay this unit until they have started.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.slices._name_.aliases">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.slices._name_.aliases" class="option-anchor">hjem.users.&lt;username&gt;.systemd.slices.&lt;name&gt;.aliases</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Aliases of that unit.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.slices._name_.before">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.slices._name_.before" class="option-anchor">hjem.users.&lt;username&gt;.systemd.slices.&lt;name&gt;.before</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>If the specified units are started at the same time as
+this unit, delay them until this unit has started.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.slices._name_.bindsTo">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.slices._name_.bindsTo" class="option-anchor">hjem.users.&lt;username&gt;.systemd.slices.&lt;name&gt;.bindsTo</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Like ‘requires’, but in addition, if the specified units
+unexpectedly disappear, this unit will be stopped as well.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.slices._name_.conflicts">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.slices._name_.conflicts" class="option-anchor">hjem.users.&lt;username&gt;.systemd.slices.&lt;name&gt;.conflicts</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>If the specified units are started, then this unit is stopped
+and vice versa.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.slices._name_.description">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.slices._name_.description" class="option-anchor">hjem.users.&lt;username&gt;.systemd.slices.&lt;name&gt;.description</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Description of this unit used in systemd messages and progress indicators.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>(optionally newline-terminated) single-line string</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">"</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.slices._name_.documentation">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.slices._name_.documentation" class="option-anchor">hjem.users.&lt;username&gt;.systemd.slices.&lt;name&gt;.documentation</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>A list of URIs referencing documentation for this unit or its configuration.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.slices._name_.name">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.slices._name_.name" class="option-anchor">hjem.users.&lt;username&gt;.systemd.slices.&lt;name&gt;.name</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>The name of this systemd unit, including its extension.
+This can be used to refer to this unit from other systemd units.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>string</code></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.slices._name_.onFailure">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.slices._name_.onFailure" class="option-anchor">hjem.users.&lt;username&gt;.systemd.slices.&lt;name&gt;.onFailure</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>A list of one or more units that are activated when
+this unit enters the "failed" state.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.slices._name_.onSuccess">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.slices._name_.onSuccess" class="option-anchor">hjem.users.&lt;username&gt;.systemd.slices.&lt;name&gt;.onSuccess</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>A list of one or more units that are activated when
+this unit enters the "inactive" state.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.slices._name_.overrideStrategy">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.slices._name_.overrideStrategy" class="option-anchor">hjem.users.&lt;username&gt;.systemd.slices.&lt;name&gt;.overrideStrategy</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Defines how unit configuration is provided for systemd:</p>
+<p><code>asDropinIfExists</code> creates a unit file when no unit file is provided by the package
+otherwise it creates a drop-in file named <code>overrides.conf</code>.</p>
+<p><code>asDropin</code> creates a drop-in file named <code>overrides.conf</code>.
+Mainly needed to define instances for systemd template units (e.g. <code>systemd-nspawn@mycontainer.service</code>).</p>
+<p>See also <a href="https://www.freedesktop.org/software/systemd/man/systemd.unit.html" class="manpage-reference">systemd.unit(5)</a>.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>one of "asDropinIfExists", "asDropin"</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">asDropinIfExists</span><span style="color:rgb(152,195,121);">"</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.slices._name_.partOf">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.slices._name_.partOf" class="option-anchor">hjem.users.&lt;username&gt;.systemd.slices.&lt;name&gt;.partOf</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>If the specified units are stopped or restarted, then this
+unit is stopped or restarted as well.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.slices._name_.reloadTriggers">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.slices._name_.reloadTriggers" class="option-anchor">hjem.users.&lt;username&gt;.systemd.slices.&lt;name&gt;.reloadTriggers</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>An arbitrary list of items such as derivations.  If any item
+in the list changes between reconfigurations, the service will
+be reloaded.  If anything but a reload trigger changes in the
+unit file, the unit will be restarted instead.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of (systemd option)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.slices._name_.requiredBy">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.slices._name_.requiredBy" class="option-anchor">hjem.users.&lt;username&gt;.systemd.slices.&lt;name&gt;.requiredBy</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Units that require (i.e. depend on and need to go down with) this unit.
+As discussed in the <code>wantedBy</code> option description this also creates
+<code>.requires</code> symlinks automatically.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.slices._name_.requires">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.slices._name_.requires" class="option-anchor">hjem.users.&lt;username&gt;.systemd.slices.&lt;name&gt;.requires</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Start the specified units when this unit is started, and stop
+this unit when the specified units are stopped or fail.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.slices._name_.requisite">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.slices._name_.requisite" class="option-anchor">hjem.users.&lt;username&gt;.systemd.slices.&lt;name&gt;.requisite</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Similar to requires. However if the units listed are not started,
+they will not be started and the transaction will fail.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.slices._name_.restartTriggers">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.slices._name_.restartTriggers" class="option-anchor">hjem.users.&lt;username&gt;.systemd.slices.&lt;name&gt;.restartTriggers</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>An arbitrary list of items such as derivations.  If any item
+in the list changes between reconfigurations, the service will
+be restarted.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of unspecified value</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.slices._name_.sliceConfig">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.slices._name_.sliceConfig" class="option-anchor">hjem.users.&lt;username&gt;.systemd.slices.&lt;name&gt;.sliceConfig</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Each attribute in this set specifies an option in the
+<code>[Slice]</code> section of the unit.  See
+<a href="https://www.freedesktop.org/software/systemd/man/systemd.slice.html" class="manpage-reference">systemd.slice(5)</a> for details.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>attribute set of (systemd option)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span>&nbsp;<span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;<span style="color:rgb(86,182,194);">MemoryMax</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">2G</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br><span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.slices._name_.startLimitBurst">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.slices._name_.startLimitBurst" class="option-anchor">hjem.users.&lt;username&gt;.systemd.slices.&lt;name&gt;.startLimitBurst</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Configure unit start rate limiting. Units which are started
+more than startLimitBurst times within an interval time
+interval are not permitted to start any more.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>signed integer</code></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.slices._name_.startLimitIntervalSec">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.slices._name_.startLimitIntervalSec" class="option-anchor">hjem.users.&lt;username&gt;.systemd.slices.&lt;name&gt;.startLimitIntervalSec</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Configure unit start rate limiting. Units which are started
+more than startLimitBurst times within an interval time
+interval are not permitted to start any more.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>signed integer</code></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.slices._name_.unitConfig">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.slices._name_.unitConfig" class="option-anchor">hjem.users.&lt;username&gt;.systemd.slices.&lt;name&gt;.unitConfig</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Each attribute in this set specifies an option in the
+<code>[Unit]</code> section of the unit.  See
+<a href="https://www.freedesktop.org/software/systemd/man/systemd.unit.html" class="manpage-reference">systemd.unit(5)</a> for details.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>attribute set of (systemd option)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span>&nbsp;<span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;<span style="color:rgb(86,182,194);">RequiresMountsFor</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">/data</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br><span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.slices._name_.upheldBy">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.slices._name_.upheldBy" class="option-anchor">hjem.users.&lt;username&gt;.systemd.slices.&lt;name&gt;.upheldBy</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Keep this unit running as long as the listed units are running. This is a continuously
+enforced version of wantedBy.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.slices._name_.upholds">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.slices._name_.upholds" class="option-anchor">hjem.users.&lt;username&gt;.systemd.slices.&lt;name&gt;.upholds</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Keeps the specified running while this unit is running. A continuous version of <code>wants</code>.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.slices._name_.wantedBy">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.slices._name_.wantedBy" class="option-anchor">hjem.users.&lt;username&gt;.systemd.slices.&lt;name&gt;.wantedBy</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Units that want (i.e. depend on) this unit. The default method for
+starting a unit by default at boot time is to set this option to
+<code>["multi-user.target"]</code> for system services. Likewise for user units
+(<code>systemd.user.&lt;name&gt;.*</code>) set it to <code>["default.target"]</code> to make a unit
+start by default when the user <code>&lt;name&gt;</code> logs on.</p>
+<p>This option creates a <code>.wants</code> symlink in the given target that exists
+statelessly without the need for running <code>systemctl enable</code>.
+The <code>[Install]</code> section described in <a href="https://www.freedesktop.org/software/systemd/man/systemd.unit.html" class="manpage-reference">systemd.unit(5)</a> however is
+not supported because it is a stateful process that does not fit well
+into the NixOS design.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.slices._name_.wants">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.slices._name_.wants" class="option-anchor">hjem.users.&lt;username&gt;.systemd.slices.&lt;name&gt;.wants</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Start the specified units when this unit is started.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.sockets">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.sockets" class="option-anchor">hjem.users.&lt;username&gt;.systemd.sockets</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Definition of systemd per-user socket units.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>attribute set of (submodule)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span>&nbsp;<span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.sockets._name_.enable">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.sockets._name_.enable" class="option-anchor">hjem.users.&lt;username&gt;.systemd.sockets.&lt;name&gt;.enable</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>If set to false, this unit will be a symlink to
+/dev/null. This is primarily useful to prevent specific
+template instances
+(e.g. <code>serial-getty@ttyS0</code>) from being
+started. Note that <code>enable=true</code> does not
+make a unit start by default at boot; if you want that, see
+<code>wantedBy</code>.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>boolean</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">true</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.sockets._name_.after">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.sockets._name_.after" class="option-anchor">hjem.users.&lt;username&gt;.systemd.sockets.&lt;name&gt;.after</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>If the specified units are started at the same time as
+this unit, delay this unit until they have started.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.sockets._name_.aliases">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.sockets._name_.aliases" class="option-anchor">hjem.users.&lt;username&gt;.systemd.sockets.&lt;name&gt;.aliases</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Aliases of that unit.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.sockets._name_.before">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.sockets._name_.before" class="option-anchor">hjem.users.&lt;username&gt;.systemd.sockets.&lt;name&gt;.before</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>If the specified units are started at the same time as
+this unit, delay them until this unit has started.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.sockets._name_.bindsTo">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.sockets._name_.bindsTo" class="option-anchor">hjem.users.&lt;username&gt;.systemd.sockets.&lt;name&gt;.bindsTo</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Like ‘requires’, but in addition, if the specified units
+unexpectedly disappear, this unit will be stopped as well.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.sockets._name_.conflicts">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.sockets._name_.conflicts" class="option-anchor">hjem.users.&lt;username&gt;.systemd.sockets.&lt;name&gt;.conflicts</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>If the specified units are started, then this unit is stopped
+and vice versa.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.sockets._name_.description">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.sockets._name_.description" class="option-anchor">hjem.users.&lt;username&gt;.systemd.sockets.&lt;name&gt;.description</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Description of this unit used in systemd messages and progress indicators.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>(optionally newline-terminated) single-line string</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">"</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.sockets._name_.documentation">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.sockets._name_.documentation" class="option-anchor">hjem.users.&lt;username&gt;.systemd.sockets.&lt;name&gt;.documentation</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>A list of URIs referencing documentation for this unit or its configuration.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.sockets._name_.listenDatagrams">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.sockets._name_.listenDatagrams" class="option-anchor">hjem.users.&lt;username&gt;.systemd.sockets.&lt;name&gt;.listenDatagrams</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>For each item in this list, a <code>ListenDatagram</code>
+option in the <code>[Socket]</code> section will be created.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span><br>&nbsp;&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">0.0.0.0:993</span><span style="color:rgb(152,195,121);">"</span><br>&nbsp;&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">/run/my-socket</span><span style="color:rgb(152,195,121);">"</span><br><span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.sockets._name_.listenStreams">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.sockets._name_.listenStreams" class="option-anchor">hjem.users.&lt;username&gt;.systemd.sockets.&lt;name&gt;.listenStreams</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>For each item in this list, a <code>ListenStream</code>
+option in the <code>[Socket]</code> section will be created.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of (string or 16 bit unsigned integer; between 0 and 65535 (both inclusive) convertible to it)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span><br>&nbsp;&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">0.0.0.0:993</span><span style="color:rgb(152,195,121);">"</span><br>&nbsp;&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">/run/my-socket</span><span style="color:rgb(152,195,121);">"</span><br><span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.sockets._name_.name">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.sockets._name_.name" class="option-anchor">hjem.users.&lt;username&gt;.systemd.sockets.&lt;name&gt;.name</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>The name of this systemd unit, including its extension.
+This can be used to refer to this unit from other systemd units.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>string</code></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.sockets._name_.onFailure">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.sockets._name_.onFailure" class="option-anchor">hjem.users.&lt;username&gt;.systemd.sockets.&lt;name&gt;.onFailure</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>A list of one or more units that are activated when
+this unit enters the "failed" state.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.sockets._name_.onSuccess">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.sockets._name_.onSuccess" class="option-anchor">hjem.users.&lt;username&gt;.systemd.sockets.&lt;name&gt;.onSuccess</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>A list of one or more units that are activated when
+this unit enters the "inactive" state.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.sockets._name_.overrideStrategy">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.sockets._name_.overrideStrategy" class="option-anchor">hjem.users.&lt;username&gt;.systemd.sockets.&lt;name&gt;.overrideStrategy</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Defines how unit configuration is provided for systemd:</p>
+<p><code>asDropinIfExists</code> creates a unit file when no unit file is provided by the package
+otherwise it creates a drop-in file named <code>overrides.conf</code>.</p>
+<p><code>asDropin</code> creates a drop-in file named <code>overrides.conf</code>.
+Mainly needed to define instances for systemd template units (e.g. <code>systemd-nspawn@mycontainer.service</code>).</p>
+<p>See also <a href="https://www.freedesktop.org/software/systemd/man/systemd.unit.html" class="manpage-reference">systemd.unit(5)</a>.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>one of "asDropinIfExists", "asDropin"</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">asDropinIfExists</span><span style="color:rgb(152,195,121);">"</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.sockets._name_.partOf">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.sockets._name_.partOf" class="option-anchor">hjem.users.&lt;username&gt;.systemd.sockets.&lt;name&gt;.partOf</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>If the specified units are stopped or restarted, then this
+unit is stopped or restarted as well.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.sockets._name_.reloadTriggers">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.sockets._name_.reloadTriggers" class="option-anchor">hjem.users.&lt;username&gt;.systemd.sockets.&lt;name&gt;.reloadTriggers</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>An arbitrary list of items such as derivations.  If any item
+in the list changes between reconfigurations, the service will
+be reloaded.  If anything but a reload trigger changes in the
+unit file, the unit will be restarted instead.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of (systemd option)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.sockets._name_.requiredBy">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.sockets._name_.requiredBy" class="option-anchor">hjem.users.&lt;username&gt;.systemd.sockets.&lt;name&gt;.requiredBy</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Units that require (i.e. depend on and need to go down with) this unit.
+As discussed in the <code>wantedBy</code> option description this also creates
+<code>.requires</code> symlinks automatically.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.sockets._name_.requires">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.sockets._name_.requires" class="option-anchor">hjem.users.&lt;username&gt;.systemd.sockets.&lt;name&gt;.requires</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Start the specified units when this unit is started, and stop
+this unit when the specified units are stopped or fail.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.sockets._name_.requisite">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.sockets._name_.requisite" class="option-anchor">hjem.users.&lt;username&gt;.systemd.sockets.&lt;name&gt;.requisite</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Similar to requires. However if the units listed are not started,
+they will not be started and the transaction will fail.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.sockets._name_.restartTriggers">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.sockets._name_.restartTriggers" class="option-anchor">hjem.users.&lt;username&gt;.systemd.sockets.&lt;name&gt;.restartTriggers</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>An arbitrary list of items such as derivations.  If any item
+in the list changes between reconfigurations, the service will
+be restarted.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of unspecified value</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.sockets._name_.socketConfig">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.sockets._name_.socketConfig" class="option-anchor">hjem.users.&lt;username&gt;.systemd.sockets.&lt;name&gt;.socketConfig</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Each attribute in this set specifies an option in the
+<code>[Socket]</code> section of the unit.  See
+<a href="https://www.freedesktop.org/software/systemd/man/systemd.socket.html" class="manpage-reference">systemd.socket(5)</a> for details.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>attribute set of (systemd option)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span>&nbsp;<span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;<span style="color:rgb(86,182,194);">ListenStream</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">/run/my-socket</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br><span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.sockets._name_.startLimitBurst">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.sockets._name_.startLimitBurst" class="option-anchor">hjem.users.&lt;username&gt;.systemd.sockets.&lt;name&gt;.startLimitBurst</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Configure unit start rate limiting. Units which are started
+more than startLimitBurst times within an interval time
+interval are not permitted to start any more.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>signed integer</code></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.sockets._name_.startLimitIntervalSec">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.sockets._name_.startLimitIntervalSec" class="option-anchor">hjem.users.&lt;username&gt;.systemd.sockets.&lt;name&gt;.startLimitIntervalSec</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Configure unit start rate limiting. Units which are started
+more than startLimitBurst times within an interval time
+interval are not permitted to start any more.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>signed integer</code></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.sockets._name_.unitConfig">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.sockets._name_.unitConfig" class="option-anchor">hjem.users.&lt;username&gt;.systemd.sockets.&lt;name&gt;.unitConfig</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Each attribute in this set specifies an option in the
+<code>[Unit]</code> section of the unit.  See
+<a href="https://www.freedesktop.org/software/systemd/man/systemd.unit.html" class="manpage-reference">systemd.unit(5)</a> for details.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>attribute set of (systemd option)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span>&nbsp;<span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;<span style="color:rgb(86,182,194);">RequiresMountsFor</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">/data</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br><span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.sockets._name_.upheldBy">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.sockets._name_.upheldBy" class="option-anchor">hjem.users.&lt;username&gt;.systemd.sockets.&lt;name&gt;.upheldBy</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Keep this unit running as long as the listed units are running. This is a continuously
+enforced version of wantedBy.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.sockets._name_.upholds">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.sockets._name_.upholds" class="option-anchor">hjem.users.&lt;username&gt;.systemd.sockets.&lt;name&gt;.upholds</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Keeps the specified running while this unit is running. A continuous version of <code>wants</code>.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.sockets._name_.wantedBy">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.sockets._name_.wantedBy" class="option-anchor">hjem.users.&lt;username&gt;.systemd.sockets.&lt;name&gt;.wantedBy</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Units that want (i.e. depend on) this unit. The default method for
+starting a unit by default at boot time is to set this option to
+<code>["multi-user.target"]</code> for system services. Likewise for user units
+(<code>systemd.user.&lt;name&gt;.*</code>) set it to <code>["default.target"]</code> to make a unit
+start by default when the user <code>&lt;name&gt;</code> logs on.</p>
+<p>This option creates a <code>.wants</code> symlink in the given target that exists
+statelessly without the need for running <code>systemctl enable</code>.
+The <code>[Install]</code> section described in <a href="https://www.freedesktop.org/software/systemd/man/systemd.unit.html" class="manpage-reference">systemd.unit(5)</a> however is
+not supported because it is a stateful process that does not fit well
+into the NixOS design.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.sockets._name_.wants">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.sockets._name_.wants" class="option-anchor">hjem.users.&lt;username&gt;.systemd.sockets.&lt;name&gt;.wants</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Start the specified units when this unit is started.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.targets">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.targets" class="option-anchor">hjem.users.&lt;username&gt;.systemd.targets</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Definition of systemd per-user target units.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>attribute set of (submodule)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span>&nbsp;<span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.targets._name_.enable">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.targets._name_.enable" class="option-anchor">hjem.users.&lt;username&gt;.systemd.targets.&lt;name&gt;.enable</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>If set to false, this unit will be a symlink to
+/dev/null. This is primarily useful to prevent specific
+template instances
+(e.g. <code>serial-getty@ttyS0</code>) from being
+started. Note that <code>enable=true</code> does not
+make a unit start by default at boot; if you want that, see
+<code>wantedBy</code>.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>boolean</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">true</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.targets._name_.after">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.targets._name_.after" class="option-anchor">hjem.users.&lt;username&gt;.systemd.targets.&lt;name&gt;.after</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>If the specified units are started at the same time as
+this unit, delay this unit until they have started.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.targets._name_.aliases">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.targets._name_.aliases" class="option-anchor">hjem.users.&lt;username&gt;.systemd.targets.&lt;name&gt;.aliases</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Aliases of that unit.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.targets._name_.before">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.targets._name_.before" class="option-anchor">hjem.users.&lt;username&gt;.systemd.targets.&lt;name&gt;.before</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>If the specified units are started at the same time as
+this unit, delay them until this unit has started.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.targets._name_.bindsTo">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.targets._name_.bindsTo" class="option-anchor">hjem.users.&lt;username&gt;.systemd.targets.&lt;name&gt;.bindsTo</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Like ‘requires’, but in addition, if the specified units
+unexpectedly disappear, this unit will be stopped as well.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.targets._name_.conflicts">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.targets._name_.conflicts" class="option-anchor">hjem.users.&lt;username&gt;.systemd.targets.&lt;name&gt;.conflicts</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>If the specified units are started, then this unit is stopped
+and vice versa.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.targets._name_.description">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.targets._name_.description" class="option-anchor">hjem.users.&lt;username&gt;.systemd.targets.&lt;name&gt;.description</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Description of this unit used in systemd messages and progress indicators.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>(optionally newline-terminated) single-line string</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">"</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.targets._name_.documentation">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.targets._name_.documentation" class="option-anchor">hjem.users.&lt;username&gt;.systemd.targets.&lt;name&gt;.documentation</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>A list of URIs referencing documentation for this unit or its configuration.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.targets._name_.name">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.targets._name_.name" class="option-anchor">hjem.users.&lt;username&gt;.systemd.targets.&lt;name&gt;.name</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>The name of this systemd unit, including its extension.
+This can be used to refer to this unit from other systemd units.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>string</code></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.targets._name_.onFailure">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.targets._name_.onFailure" class="option-anchor">hjem.users.&lt;username&gt;.systemd.targets.&lt;name&gt;.onFailure</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>A list of one or more units that are activated when
+this unit enters the "failed" state.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.targets._name_.onSuccess">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.targets._name_.onSuccess" class="option-anchor">hjem.users.&lt;username&gt;.systemd.targets.&lt;name&gt;.onSuccess</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>A list of one or more units that are activated when
+this unit enters the "inactive" state.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.targets._name_.overrideStrategy">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.targets._name_.overrideStrategy" class="option-anchor">hjem.users.&lt;username&gt;.systemd.targets.&lt;name&gt;.overrideStrategy</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Defines how unit configuration is provided for systemd:</p>
+<p><code>asDropinIfExists</code> creates a unit file when no unit file is provided by the package
+otherwise it creates a drop-in file named <code>overrides.conf</code>.</p>
+<p><code>asDropin</code> creates a drop-in file named <code>overrides.conf</code>.
+Mainly needed to define instances for systemd template units (e.g. <code>systemd-nspawn@mycontainer.service</code>).</p>
+<p>See also <a href="https://www.freedesktop.org/software/systemd/man/systemd.unit.html" class="manpage-reference">systemd.unit(5)</a>.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>one of "asDropinIfExists", "asDropin"</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">asDropinIfExists</span><span style="color:rgb(152,195,121);">"</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.targets._name_.partOf">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.targets._name_.partOf" class="option-anchor">hjem.users.&lt;username&gt;.systemd.targets.&lt;name&gt;.partOf</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>If the specified units are stopped or restarted, then this
+unit is stopped or restarted as well.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.targets._name_.reloadTriggers">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.targets._name_.reloadTriggers" class="option-anchor">hjem.users.&lt;username&gt;.systemd.targets.&lt;name&gt;.reloadTriggers</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>An arbitrary list of items such as derivations.  If any item
+in the list changes between reconfigurations, the service will
+be reloaded.  If anything but a reload trigger changes in the
+unit file, the unit will be restarted instead.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of (systemd option)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.targets._name_.requiredBy">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.targets._name_.requiredBy" class="option-anchor">hjem.users.&lt;username&gt;.systemd.targets.&lt;name&gt;.requiredBy</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Units that require (i.e. depend on and need to go down with) this unit.
+As discussed in the <code>wantedBy</code> option description this also creates
+<code>.requires</code> symlinks automatically.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.targets._name_.requires">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.targets._name_.requires" class="option-anchor">hjem.users.&lt;username&gt;.systemd.targets.&lt;name&gt;.requires</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Start the specified units when this unit is started, and stop
+this unit when the specified units are stopped or fail.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.targets._name_.requisite">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.targets._name_.requisite" class="option-anchor">hjem.users.&lt;username&gt;.systemd.targets.&lt;name&gt;.requisite</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Similar to requires. However if the units listed are not started,
+they will not be started and the transaction will fail.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.targets._name_.restartTriggers">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.targets._name_.restartTriggers" class="option-anchor">hjem.users.&lt;username&gt;.systemd.targets.&lt;name&gt;.restartTriggers</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>An arbitrary list of items such as derivations.  If any item
+in the list changes between reconfigurations, the service will
+be restarted.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of unspecified value</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.targets._name_.startLimitBurst">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.targets._name_.startLimitBurst" class="option-anchor">hjem.users.&lt;username&gt;.systemd.targets.&lt;name&gt;.startLimitBurst</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Configure unit start rate limiting. Units which are started
+more than startLimitBurst times within an interval time
+interval are not permitted to start any more.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>signed integer</code></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.targets._name_.startLimitIntervalSec">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.targets._name_.startLimitIntervalSec" class="option-anchor">hjem.users.&lt;username&gt;.systemd.targets.&lt;name&gt;.startLimitIntervalSec</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Configure unit start rate limiting. Units which are started
+more than startLimitBurst times within an interval time
+interval are not permitted to start any more.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>signed integer</code></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.targets._name_.unitConfig">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.targets._name_.unitConfig" class="option-anchor">hjem.users.&lt;username&gt;.systemd.targets.&lt;name&gt;.unitConfig</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Each attribute in this set specifies an option in the
+<code>[Unit]</code> section of the unit.  See
+<a href="https://www.freedesktop.org/software/systemd/man/systemd.unit.html" class="manpage-reference">systemd.unit(5)</a> for details.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>attribute set of (systemd option)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span>&nbsp;<span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;<span style="color:rgb(86,182,194);">RequiresMountsFor</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">/data</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br><span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.targets._name_.upheldBy">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.targets._name_.upheldBy" class="option-anchor">hjem.users.&lt;username&gt;.systemd.targets.&lt;name&gt;.upheldBy</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Keep this unit running as long as the listed units are running. This is a continuously
+enforced version of wantedBy.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.targets._name_.upholds">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.targets._name_.upholds" class="option-anchor">hjem.users.&lt;username&gt;.systemd.targets.&lt;name&gt;.upholds</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Keeps the specified running while this unit is running. A continuous version of <code>wants</code>.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.targets._name_.wantedBy">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.targets._name_.wantedBy" class="option-anchor">hjem.users.&lt;username&gt;.systemd.targets.&lt;name&gt;.wantedBy</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Units that want (i.e. depend on) this unit. The default method for
+starting a unit by default at boot time is to set this option to
+<code>["multi-user.target"]</code> for system services. Likewise for user units
+(<code>systemd.user.&lt;name&gt;.*</code>) set it to <code>["default.target"]</code> to make a unit
+start by default when the user <code>&lt;name&gt;</code> logs on.</p>
+<p>This option creates a <code>.wants</code> symlink in the given target that exists
+statelessly without the need for running <code>systemctl enable</code>.
+The <code>[Install]</code> section described in <a href="https://www.freedesktop.org/software/systemd/man/systemd.unit.html" class="manpage-reference">systemd.unit(5)</a> however is
+not supported because it is a stateful process that does not fit well
+into the NixOS design.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.targets._name_.wants">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.targets._name_.wants" class="option-anchor">hjem.users.&lt;username&gt;.systemd.targets.&lt;name&gt;.wants</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Start the specified units when this unit is started.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.timers">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.timers" class="option-anchor">hjem.users.&lt;username&gt;.systemd.timers</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Definition of systemd per-user timer units.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>attribute set of (submodule)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span>&nbsp;<span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.timers._name_.enable">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.timers._name_.enable" class="option-anchor">hjem.users.&lt;username&gt;.systemd.timers.&lt;name&gt;.enable</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>If set to false, this unit will be a symlink to
+/dev/null. This is primarily useful to prevent specific
+template instances
+(e.g. <code>serial-getty@ttyS0</code>) from being
+started. Note that <code>enable=true</code> does not
+make a unit start by default at boot; if you want that, see
+<code>wantedBy</code>.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>boolean</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">true</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.timers._name_.after">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.timers._name_.after" class="option-anchor">hjem.users.&lt;username&gt;.systemd.timers.&lt;name&gt;.after</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>If the specified units are started at the same time as
+this unit, delay this unit until they have started.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.timers._name_.aliases">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.timers._name_.aliases" class="option-anchor">hjem.users.&lt;username&gt;.systemd.timers.&lt;name&gt;.aliases</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Aliases of that unit.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.timers._name_.before">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.timers._name_.before" class="option-anchor">hjem.users.&lt;username&gt;.systemd.timers.&lt;name&gt;.before</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>If the specified units are started at the same time as
+this unit, delay them until this unit has started.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.timers._name_.bindsTo">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.timers._name_.bindsTo" class="option-anchor">hjem.users.&lt;username&gt;.systemd.timers.&lt;name&gt;.bindsTo</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Like ‘requires’, but in addition, if the specified units
+unexpectedly disappear, this unit will be stopped as well.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.timers._name_.conflicts">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.timers._name_.conflicts" class="option-anchor">hjem.users.&lt;username&gt;.systemd.timers.&lt;name&gt;.conflicts</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>If the specified units are started, then this unit is stopped
+and vice versa.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.timers._name_.description">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.timers._name_.description" class="option-anchor">hjem.users.&lt;username&gt;.systemd.timers.&lt;name&gt;.description</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Description of this unit used in systemd messages and progress indicators.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>(optionally newline-terminated) single-line string</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">"</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.timers._name_.documentation">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.timers._name_.documentation" class="option-anchor">hjem.users.&lt;username&gt;.systemd.timers.&lt;name&gt;.documentation</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>A list of URIs referencing documentation for this unit or its configuration.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.timers._name_.name">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.timers._name_.name" class="option-anchor">hjem.users.&lt;username&gt;.systemd.timers.&lt;name&gt;.name</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>The name of this systemd unit, including its extension.
+This can be used to refer to this unit from other systemd units.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>string</code></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.timers._name_.onFailure">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.timers._name_.onFailure" class="option-anchor">hjem.users.&lt;username&gt;.systemd.timers.&lt;name&gt;.onFailure</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>A list of one or more units that are activated when
+this unit enters the "failed" state.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.timers._name_.onSuccess">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.timers._name_.onSuccess" class="option-anchor">hjem.users.&lt;username&gt;.systemd.timers.&lt;name&gt;.onSuccess</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>A list of one or more units that are activated when
+this unit enters the "inactive" state.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.timers._name_.overrideStrategy">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.timers._name_.overrideStrategy" class="option-anchor">hjem.users.&lt;username&gt;.systemd.timers.&lt;name&gt;.overrideStrategy</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Defines how unit configuration is provided for systemd:</p>
+<p><code>asDropinIfExists</code> creates a unit file when no unit file is provided by the package
+otherwise it creates a drop-in file named <code>overrides.conf</code>.</p>
+<p><code>asDropin</code> creates a drop-in file named <code>overrides.conf</code>.
+Mainly needed to define instances for systemd template units (e.g. <code>systemd-nspawn@mycontainer.service</code>).</p>
+<p>See also <a href="https://www.freedesktop.org/software/systemd/man/systemd.unit.html" class="manpage-reference">systemd.unit(5)</a>.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>one of "asDropinIfExists", "asDropin"</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">asDropinIfExists</span><span style="color:rgb(152,195,121);">"</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.timers._name_.partOf">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.timers._name_.partOf" class="option-anchor">hjem.users.&lt;username&gt;.systemd.timers.&lt;name&gt;.partOf</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>If the specified units are stopped or restarted, then this
+unit is stopped or restarted as well.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.timers._name_.reloadTriggers">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.timers._name_.reloadTriggers" class="option-anchor">hjem.users.&lt;username&gt;.systemd.timers.&lt;name&gt;.reloadTriggers</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>An arbitrary list of items such as derivations.  If any item
+in the list changes between reconfigurations, the service will
+be reloaded.  If anything but a reload trigger changes in the
+unit file, the unit will be restarted instead.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of (systemd option)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.timers._name_.requiredBy">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.timers._name_.requiredBy" class="option-anchor">hjem.users.&lt;username&gt;.systemd.timers.&lt;name&gt;.requiredBy</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Units that require (i.e. depend on and need to go down with) this unit.
+As discussed in the <code>wantedBy</code> option description this also creates
+<code>.requires</code> symlinks automatically.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.timers._name_.requires">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.timers._name_.requires" class="option-anchor">hjem.users.&lt;username&gt;.systemd.timers.&lt;name&gt;.requires</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Start the specified units when this unit is started, and stop
+this unit when the specified units are stopped or fail.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.timers._name_.requisite">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.timers._name_.requisite" class="option-anchor">hjem.users.&lt;username&gt;.systemd.timers.&lt;name&gt;.requisite</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Similar to requires. However if the units listed are not started,
+they will not be started and the transaction will fail.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.timers._name_.restartTriggers">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.timers._name_.restartTriggers" class="option-anchor">hjem.users.&lt;username&gt;.systemd.timers.&lt;name&gt;.restartTriggers</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>An arbitrary list of items such as derivations.  If any item
+in the list changes between reconfigurations, the service will
+be restarted.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of unspecified value</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>

@@ -1,0 +1,1415 @@
+<div class="option" id="option-hjem.users._username_.systemd.timers._name_.startLimitBurst">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.timers._name_.startLimitBurst" class="option-anchor">hjem.users.&lt;username&gt;.systemd.timers.&lt;name&gt;.startLimitBurst</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Configure unit start rate limiting. Units which are started
+more than startLimitBurst times within an interval time
+interval are not permitted to start any more.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>signed integer</code></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.timers._name_.startLimitIntervalSec">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.timers._name_.startLimitIntervalSec" class="option-anchor">hjem.users.&lt;username&gt;.systemd.timers.&lt;name&gt;.startLimitIntervalSec</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Configure unit start rate limiting. Units which are started
+more than startLimitBurst times within an interval time
+interval are not permitted to start any more.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>signed integer</code></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.timers._name_.timerConfig">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.timers._name_.timerConfig" class="option-anchor">hjem.users.&lt;username&gt;.systemd.timers.&lt;name&gt;.timerConfig</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Each attribute in this set specifies an option in the
+<code>[Timer]</code> section of the unit.  See
+<a href="https://www.freedesktop.org/software/systemd/man/systemd.timer.html" class="manpage-reference">systemd.timer(5)</a> and
+<a href="https://www.freedesktop.org/software/systemd/man/systemd.time.html" class="manpage-reference">systemd.time(7)</a> for details.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>attribute set of (systemd option)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span>&nbsp;<span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;<span style="color:rgb(86,182,194);">OnCalendar</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">Sun&nbsp;14:00:00</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;<span style="color:rgb(86,182,194);">Unit</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">foo.service</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br><span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.timers._name_.unitConfig">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.timers._name_.unitConfig" class="option-anchor">hjem.users.&lt;username&gt;.systemd.timers.&lt;name&gt;.unitConfig</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Each attribute in this set specifies an option in the
+<code>[Unit]</code> section of the unit.  See
+<a href="https://www.freedesktop.org/software/systemd/man/systemd.unit.html" class="manpage-reference">systemd.unit(5)</a> for details.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>attribute set of (systemd option)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span>&nbsp;<span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;<span style="color:rgb(86,182,194);">RequiresMountsFor</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">/data</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br><span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.timers._name_.upheldBy">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.timers._name_.upheldBy" class="option-anchor">hjem.users.&lt;username&gt;.systemd.timers.&lt;name&gt;.upheldBy</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Keep this unit running as long as the listed units are running. This is a continuously
+enforced version of wantedBy.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.timers._name_.upholds">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.timers._name_.upholds" class="option-anchor">hjem.users.&lt;username&gt;.systemd.timers.&lt;name&gt;.upholds</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Keeps the specified running while this unit is running. A continuous version of <code>wants</code>.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.timers._name_.wantedBy">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.timers._name_.wantedBy" class="option-anchor">hjem.users.&lt;username&gt;.systemd.timers.&lt;name&gt;.wantedBy</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Units that want (i.e. depend on) this unit. The default method for
+starting a unit by default at boot time is to set this option to
+<code>["multi-user.target"]</code> for system services. Likewise for user units
+(<code>systemd.user.&lt;name&gt;.*</code>) set it to <code>["default.target"]</code> to make a unit
+start by default when the user <code>&lt;name&gt;</code> logs on.</p>
+<p>This option creates a <code>.wants</code> symlink in the given target that exists
+statelessly without the need for running <code>systemctl enable</code>.
+The <code>[Install]</code> section described in <a href="https://www.freedesktop.org/software/systemd/man/systemd.unit.html" class="manpage-reference">systemd.unit(5)</a> however is
+not supported because it is a stateful process that does not fit well
+into the NixOS design.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.timers._name_.wants">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.timers._name_.wants" class="option-anchor">hjem.users.&lt;username&gt;.systemd.timers.&lt;name&gt;.wants</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Start the specified units when this unit is started.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.units._name_.enable">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.units._name_.enable" class="option-anchor">hjem.users.&lt;username&gt;.systemd.units.&lt;name&gt;.enable</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>If set to false, this unit will be a symlink to
+/dev/null. This is primarily useful to prevent specific
+template instances
+(e.g. <code>serial-getty@ttyS0</code>) from being
+started. Note that <code>enable=true</code> does not
+make a unit start by default at boot; if you want that, see
+<code>wantedBy</code>.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>boolean</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">true</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.units._name_.aliases">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.units._name_.aliases" class="option-anchor">hjem.users.&lt;username&gt;.systemd.units.&lt;name&gt;.aliases</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Aliases of that unit.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.units._name_.name">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.units._name_.name" class="option-anchor">hjem.users.&lt;username&gt;.systemd.units.&lt;name&gt;.name</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>The name of this systemd unit, including its extension.
+This can be used to refer to this unit from other systemd units.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>string</code></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.units._name_.overrideStrategy">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.units._name_.overrideStrategy" class="option-anchor">hjem.users.&lt;username&gt;.systemd.units.&lt;name&gt;.overrideStrategy</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Defines how unit configuration is provided for systemd:</p>
+<p><code>asDropinIfExists</code> creates a unit file when no unit file is provided by the package
+otherwise it creates a drop-in file named <code>overrides.conf</code>.</p>
+<p><code>asDropin</code> creates a drop-in file named <code>overrides.conf</code>.
+Mainly needed to define instances for systemd template units (e.g. <code>systemd-nspawn@mycontainer.service</code>).</p>
+<p>See also <a href="https://www.freedesktop.org/software/systemd/man/systemd.unit.html" class="manpage-reference">systemd.unit(5)</a>.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>one of "asDropinIfExists", "asDropin"</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">asDropinIfExists</span><span style="color:rgb(152,195,121);">"</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.units._name_.requiredBy">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.units._name_.requiredBy" class="option-anchor">hjem.users.&lt;username&gt;.systemd.units.&lt;name&gt;.requiredBy</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Units that require (i.e. depend on and need to go down with) this unit.
+As discussed in the <code>wantedBy</code> option description this also creates
+<code>.requires</code> symlinks automatically.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.units._name_.text">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.units._name_.text" class="option-anchor">hjem.users.&lt;username&gt;.systemd.units.&lt;name&gt;.text</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Text of this systemd unit.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>null or string</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">null</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.units._name_.upheldBy">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.units._name_.upheldBy" class="option-anchor">hjem.users.&lt;username&gt;.systemd.units.&lt;name&gt;.upheldBy</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Keep this unit running as long as the listed units are running. This is a continuously
+enforced version of wantedBy.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.systemd.units._name_.wantedBy">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.systemd.units._name_.wantedBy" class="option-anchor">hjem.users.&lt;username&gt;.systemd.units.&lt;name&gt;.wantedBy</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Units that want (i.e. depend on) this unit. The default method for
+starting a unit by default at boot time is to set this option to
+<code>["multi-user.target"]</code> for system services. Likewise for user units
+(<code>systemd.user.&lt;name&gt;.*</code>) set it to <code>["default.target"]</code> to make a unit
+start by default when the user <code>&lt;name&gt;</code> logs on.</p>
+<p>This option creates a <code>.wants</code> symlink in the given target that exists
+statelessly without the need for running <code>systemctl enable</code>.
+The <code>[Install]</code> section described in <a href="https://www.freedesktop.org/software/systemd/man/systemd.unit.html" class="manpage-reference">systemd.unit(5)</a> however is
+not supported because it is a stateful process that does not fit well
+into the NixOS design.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of string matching the pattern [a-zA-Z0-9@%:_.\\-]+[.](service|socket|device|mount|automount|swap|target|path|timer|scope|slice)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/systemd.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/systemd.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.user">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.user" class="option-anchor">hjem.users.&lt;username&gt;.user</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>The owner of a given home directory.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>string matching the pattern [a-zA-Z0-9_.][a-zA-Z0-9_.-]*</code></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.cache.directory">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.cache.directory" class="option-anchor">hjem.users.&lt;username&gt;.xdg.cache.directory</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>The XDG cache directory for the user, to which files configured in
+<a class="option-reference" href="options.html#option-hjem.users._username_.xdg.cache.files"><code class="nixos-option">hjem.users.&lt;username&gt;.xdg.cache.files</code></a> will be relative to by default.</p>
+<p>Adds <code class="env-var">XDG_CACHE_HOME</code> to <code class="nixos-option">environment.sessionVariables</code> for
+this user if changed.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>absolute path</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">$HOME/.cache</span><span style="color:rgb(152,195,121);">"</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.cache.files">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.cache.files" class="option-anchor">hjem.users.&lt;username&gt;.xdg.cache.files</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Hjem-managed cache files.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>attribute set of (submodule)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span>&nbsp;<span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">foo.txt</span><span style="color:rgb(152,195,121);">"</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">source</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">Hello&nbsp;World</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;<span style="color:rgb(132,139,152);">}</span><span style="color:rgb(132,139,152);">;</span><br><span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.cache.files._path_.enable">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.cache.files._path_.enable" class="option-anchor">hjem.users.&lt;username&gt;.xdg.cache.files.&lt;path&gt;.enable</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Whether to enable creation of this file.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>boolean</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">true</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">false</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.cache.files._path_.clobber">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.cache.files._path_.clobber" class="option-anchor">hjem.users.&lt;username&gt;.xdg.cache.files.&lt;path&gt;.clobber</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Whether to "clobber" existing target paths.</p>
+<ul>
+<li>If using the <strong>systemd-tmpfiles</strong> hook (Linux only), tmpfile rules
+will be constructed with <code>L+</code> (<em>re</em>create) instead of <code>L</code>
+(create) type while this is set to <code>true</code>.</li>
+</ul>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>boolean</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(171,178,191);">config</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">hjem</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">users</span><span style="color:rgb(132,139,152);">.</span>‹<span style="color:rgb(86,182,194);">username</span>›<span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">clobberFiles</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.cache.files._path_.executable">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.cache.files._path_.executable" class="option-anchor">hjem.users.&lt;username&gt;.xdg.cache.files.&lt;path&gt;.executable</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Whether to set the execute bit on the target file.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>boolean</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">false</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">true</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.cache.files._path_.generator">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.cache.files._path_.generator" class="option-anchor">hjem.users.&lt;username&gt;.xdg.cache.files.&lt;path&gt;.generator</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Function that when applied to <code>value</code> will create the <code>source</code> or <code>text</code> of the file.</p>
+<p>Detection is automatic, as we check if the <code>generator</code> generates a derivation or a string after applying to <code>value</code>.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>null or (function that evaluates to a(n) (null or absolute path or null or strings concatenated with "\n"))</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">null</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(171,178,191);">lib</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">generators</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">toGitINI</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.cache.files._path_.gid">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.cache.files._path_.gid" class="option-anchor">hjem.users.&lt;username&gt;.xdg.cache.files.&lt;path&gt;.gid</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Group ID to set as owner on the target path.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>null or 32 bit unsigned integer; between 0 and 4294967295 (both inclusive)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">null</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.cache.files._path_.permissions">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.cache.files._path_.permissions" class="option-anchor">hjem.users.&lt;username&gt;.xdg.cache.files.&lt;path&gt;.permissions</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Permissions (in octal) to set on the target path.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>null or string</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">null</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.cache.files._path_.source">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.cache.files._path_.source" class="option-anchor">hjem.users.&lt;username&gt;.xdg.cache.files.&lt;path&gt;.source</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Path of the source file or directory.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>null or absolute path</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">null</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.cache.files._path_.target">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.cache.files._path_.target" class="option-anchor">hjem.users.&lt;username&gt;.xdg.cache.files.&lt;path&gt;.target</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Path to target file relative to <code>/home/‹username›/.cache</code>.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>string</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix">‹<span style="color:rgb(86,182,194);">path</span>›</code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.cache.files._path_.text">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.cache.files._path_.text" class="option-anchor">hjem.users.&lt;username&gt;.xdg.cache.files.&lt;path&gt;.text</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Text of the file.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>null or strings concatenated with "\n"</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">null</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.cache.files._path_.type">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.cache.files._path_.type" class="option-anchor">hjem.users.&lt;username&gt;.xdg.cache.files.&lt;path&gt;.type</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Type of path to create.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>one of "symlink", "copy", "delete", "directory", "modify"</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">symlink</span><span style="color:rgb(152,195,121);">"</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.cache.files._path_.uid">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.cache.files._path_.uid" class="option-anchor">hjem.users.&lt;username&gt;.xdg.cache.files.&lt;path&gt;.uid</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>User ID to set as owner on the target path.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>null or 32 bit unsigned integer; between 0 and 4294967295 (both inclusive)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">null</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.cache.files._path_.value">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.cache.files._path_.value" class="option-anchor">hjem.users.&lt;username&gt;.xdg.cache.files.&lt;path&gt;.value</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Value passed to the <code>generator</code>.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>null or (attribute set of anything)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">null</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;<span style="color:rgb(86,182,194);">user</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">email</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">me@example.com</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;<span style="color:rgb(132,139,152);">}</span><span style="color:rgb(132,139,152);">;</span><br><span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.config.directory">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.config.directory" class="option-anchor">hjem.users.&lt;username&gt;.xdg.config.directory</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>The XDG config directory for the user, to which files configured in
+<a class="option-reference" href="options.html#option-hjem.users._username_.xdg.config.files"><code class="nixos-option">hjem.users.&lt;username&gt;.xdg.config.files</code></a> will be relative to by default.</p>
+<p>Adds <code class="env-var">XDG_CONFIG_HOME</code> to <code class="nixos-option">environment.sessionVariables</code> for
+this user if changed.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>absolute path</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">$HOME/.config</span><span style="color:rgb(152,195,121);">"</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.config.files">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.config.files" class="option-anchor">hjem.users.&lt;username&gt;.xdg.config.files</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Hjem-managed config files.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>attribute set of (submodule)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span>&nbsp;<span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">foo.txt</span><span style="color:rgb(152,195,121);">"</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">source</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">Hello&nbsp;World</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;<span style="color:rgb(132,139,152);">}</span><span style="color:rgb(132,139,152);">;</span><br><span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.config.files._path_.enable">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.config.files._path_.enable" class="option-anchor">hjem.users.&lt;username&gt;.xdg.config.files.&lt;path&gt;.enable</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Whether to enable creation of this file.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>boolean</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">true</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">false</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.config.files._path_.clobber">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.config.files._path_.clobber" class="option-anchor">hjem.users.&lt;username&gt;.xdg.config.files.&lt;path&gt;.clobber</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Whether to "clobber" existing target paths.</p>
+<ul>
+<li>If using the <strong>systemd-tmpfiles</strong> hook (Linux only), tmpfile rules
+will be constructed with <code>L+</code> (<em>re</em>create) instead of <code>L</code>
+(create) type while this is set to <code>true</code>.</li>
+</ul>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>boolean</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(171,178,191);">config</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">hjem</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">users</span><span style="color:rgb(132,139,152);">.</span>‹<span style="color:rgb(86,182,194);">username</span>›<span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">clobberFiles</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.config.files._path_.executable">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.config.files._path_.executable" class="option-anchor">hjem.users.&lt;username&gt;.xdg.config.files.&lt;path&gt;.executable</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Whether to set the execute bit on the target file.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>boolean</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">false</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">true</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.config.files._path_.generator">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.config.files._path_.generator" class="option-anchor">hjem.users.&lt;username&gt;.xdg.config.files.&lt;path&gt;.generator</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Function that when applied to <code>value</code> will create the <code>source</code> or <code>text</code> of the file.</p>
+<p>Detection is automatic, as we check if the <code>generator</code> generates a derivation or a string after applying to <code>value</code>.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>null or (function that evaluates to a(n) (null or absolute path or null or strings concatenated with "\n"))</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">null</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(171,178,191);">lib</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">generators</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">toGitINI</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.config.files._path_.gid">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.config.files._path_.gid" class="option-anchor">hjem.users.&lt;username&gt;.xdg.config.files.&lt;path&gt;.gid</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Group ID to set as owner on the target path.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>null or 32 bit unsigned integer; between 0 and 4294967295 (both inclusive)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">null</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.config.files._path_.permissions">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.config.files._path_.permissions" class="option-anchor">hjem.users.&lt;username&gt;.xdg.config.files.&lt;path&gt;.permissions</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Permissions (in octal) to set on the target path.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>null or string</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">null</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.config.files._path_.source">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.config.files._path_.source" class="option-anchor">hjem.users.&lt;username&gt;.xdg.config.files.&lt;path&gt;.source</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Path of the source file or directory.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>null or absolute path</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">null</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.config.files._path_.target">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.config.files._path_.target" class="option-anchor">hjem.users.&lt;username&gt;.xdg.config.files.&lt;path&gt;.target</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Path to target file relative to <code>/home/‹username›/.config</code>.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>string</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix">‹<span style="color:rgb(86,182,194);">path</span>›</code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.config.files._path_.text">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.config.files._path_.text" class="option-anchor">hjem.users.&lt;username&gt;.xdg.config.files.&lt;path&gt;.text</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Text of the file.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>null or strings concatenated with "\n"</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">null</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.config.files._path_.type">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.config.files._path_.type" class="option-anchor">hjem.users.&lt;username&gt;.xdg.config.files.&lt;path&gt;.type</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Type of path to create.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>one of "symlink", "copy", "delete", "directory", "modify"</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">symlink</span><span style="color:rgb(152,195,121);">"</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.config.files._path_.uid">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.config.files._path_.uid" class="option-anchor">hjem.users.&lt;username&gt;.xdg.config.files.&lt;path&gt;.uid</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>User ID to set as owner on the target path.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>null or 32 bit unsigned integer; between 0 and 4294967295 (both inclusive)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">null</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.config.files._path_.value">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.config.files._path_.value" class="option-anchor">hjem.users.&lt;username&gt;.xdg.config.files.&lt;path&gt;.value</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Value passed to the <code>generator</code>.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>null or (attribute set of anything)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">null</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;<span style="color:rgb(86,182,194);">user</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">email</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">me@example.com</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;<span style="color:rgb(132,139,152);">}</span><span style="color:rgb(132,139,152);">;</span><br><span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.data.directory">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.data.directory" class="option-anchor">hjem.users.&lt;username&gt;.xdg.data.directory</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>The XDG data directory for the user, to which files configured in
+<a class="option-reference" href="options.html#option-hjem.users._username_.xdg.data.files"><code class="nixos-option">hjem.users.&lt;username&gt;.xdg.data.files</code></a> will be relative to by default.</p>
+<p>Adds <code class="env-var">XDG_DATA_HOME</code> to <code class="nixos-option">environment.sessionVariables</code> for
+this user if changed.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>absolute path</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">$HOME/.local/share</span><span style="color:rgb(152,195,121);">"</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.data.files">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.data.files" class="option-anchor">hjem.users.&lt;username&gt;.xdg.data.files</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Hjem-managed data files.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>attribute set of (submodule)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span>&nbsp;<span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">foo.txt</span><span style="color:rgb(152,195,121);">"</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">source</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">Hello&nbsp;World</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;<span style="color:rgb(132,139,152);">}</span><span style="color:rgb(132,139,152);">;</span><br><span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.data.files._path_.enable">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.data.files._path_.enable" class="option-anchor">hjem.users.&lt;username&gt;.xdg.data.files.&lt;path&gt;.enable</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Whether to enable creation of this file.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>boolean</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">true</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">false</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.data.files._path_.clobber">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.data.files._path_.clobber" class="option-anchor">hjem.users.&lt;username&gt;.xdg.data.files.&lt;path&gt;.clobber</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Whether to "clobber" existing target paths.</p>
+<ul>
+<li>If using the <strong>systemd-tmpfiles</strong> hook (Linux only), tmpfile rules
+will be constructed with <code>L+</code> (<em>re</em>create) instead of <code>L</code>
+(create) type while this is set to <code>true</code>.</li>
+</ul>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>boolean</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(171,178,191);">config</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">hjem</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">users</span><span style="color:rgb(132,139,152);">.</span>‹<span style="color:rgb(86,182,194);">username</span>›<span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">clobberFiles</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.data.files._path_.executable">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.data.files._path_.executable" class="option-anchor">hjem.users.&lt;username&gt;.xdg.data.files.&lt;path&gt;.executable</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Whether to set the execute bit on the target file.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>boolean</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">false</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">true</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.data.files._path_.generator">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.data.files._path_.generator" class="option-anchor">hjem.users.&lt;username&gt;.xdg.data.files.&lt;path&gt;.generator</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Function that when applied to <code>value</code> will create the <code>source</code> or <code>text</code> of the file.</p>
+<p>Detection is automatic, as we check if the <code>generator</code> generates a derivation or a string after applying to <code>value</code>.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>null or (function that evaluates to a(n) (null or absolute path or null or strings concatenated with "\n"))</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">null</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(171,178,191);">lib</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">generators</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">toGitINI</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.data.files._path_.gid">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.data.files._path_.gid" class="option-anchor">hjem.users.&lt;username&gt;.xdg.data.files.&lt;path&gt;.gid</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Group ID to set as owner on the target path.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>null or 32 bit unsigned integer; between 0 and 4294967295 (both inclusive)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">null</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.data.files._path_.permissions">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.data.files._path_.permissions" class="option-anchor">hjem.users.&lt;username&gt;.xdg.data.files.&lt;path&gt;.permissions</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Permissions (in octal) to set on the target path.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>null or string</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">null</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.data.files._path_.source">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.data.files._path_.source" class="option-anchor">hjem.users.&lt;username&gt;.xdg.data.files.&lt;path&gt;.source</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Path of the source file or directory.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>null or absolute path</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">null</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.data.files._path_.target">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.data.files._path_.target" class="option-anchor">hjem.users.&lt;username&gt;.xdg.data.files.&lt;path&gt;.target</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Path to target file relative to <code>/home/‹username›/.local/share</code>.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>string</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix">‹<span style="color:rgb(86,182,194);">path</span>›</code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.data.files._path_.text">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.data.files._path_.text" class="option-anchor">hjem.users.&lt;username&gt;.xdg.data.files.&lt;path&gt;.text</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Text of the file.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>null or strings concatenated with "\n"</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">null</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.data.files._path_.type">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.data.files._path_.type" class="option-anchor">hjem.users.&lt;username&gt;.xdg.data.files.&lt;path&gt;.type</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Type of path to create.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>one of "symlink", "copy", "delete", "directory", "modify"</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">symlink</span><span style="color:rgb(152,195,121);">"</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.data.files._path_.uid">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.data.files._path_.uid" class="option-anchor">hjem.users.&lt;username&gt;.xdg.data.files.&lt;path&gt;.uid</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>User ID to set as owner on the target path.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>null or 32 bit unsigned integer; between 0 and 4294967295 (both inclusive)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">null</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.data.files._path_.value">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.data.files._path_.value" class="option-anchor">hjem.users.&lt;username&gt;.xdg.data.files.&lt;path&gt;.value</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Value passed to the <code>generator</code>.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>null or (attribute set of anything)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">null</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;<span style="color:rgb(86,182,194);">user</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">email</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">me@example.com</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;<span style="color:rgb(132,139,152);">}</span><span style="color:rgb(132,139,152);">;</span><br><span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.mime-apps.added-associations">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.mime-apps.added-associations" class="option-anchor">hjem.users.&lt;username&gt;.xdg.mime-apps.added-associations</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Defines additional <a href="https://specifications.freedesktop.org/mime-apps/latest/associations.html">associations</a> of applications with mimetypes, as
+if the <code>.desktop</code> file was listing this mimetype in the first place.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>attribute set of ((list of string) or ((list of string) or string) convertible to it)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span>&nbsp;<span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;<span style="color:rgb(86,182,194);">mimetype1</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">[</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">foo1.desktop</span><span style="color:rgb(152,195,121);">"</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">foo2.desktop</span><span style="color:rgb(152,195,121);">"</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">foo3.desktop</span><span style="color:rgb(152,195,121);">"</span><br>&nbsp;&nbsp;<span style="color:rgb(132,139,152);">]</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;<span style="color:rgb(86,182,194);">mimetype2</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">foo4.desktop</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br><span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.mime-apps.default-applications">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.mime-apps.default-applications" class="option-anchor">hjem.users.&lt;username&gt;.xdg.mime-apps.default-applications</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Indicates the <a href="https://specifications.freedesktop.org/mime-apps/latest/default.html">default application</a> to be used for a given mimetype.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>attribute set of ((list of string) or ((list of string) or string) convertible to it)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span>&nbsp;<span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;<span style="color:rgb(86,182,194);">mimetype1</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">[</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">default1.desktop</span><span style="color:rgb(152,195,121);">"</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">default2.desktop</span><span style="color:rgb(152,195,121);">"</span><br>&nbsp;&nbsp;<span style="color:rgb(132,139,152);">]</span><span style="color:rgb(132,139,152);">;</span><br><span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.mime-apps.removed-associations">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.mime-apps.removed-associations" class="option-anchor">hjem.users.&lt;username&gt;.xdg.mime-apps.removed-associations</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Removes <a href="https://specifications.freedesktop.org/mime-apps/latest/associations.html">associations</a> of applications with mimetypes, as if the
+<code>.desktop</code> file was NOT listing this mimetype in the first place.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>attribute set of ((list of string) or ((list of string) or string) convertible to it)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span>&nbsp;<span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;<span style="color:rgb(86,182,194);">mimetype1</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">foo5.desktop</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br><span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.state.directory">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.state.directory" class="option-anchor">hjem.users.&lt;username&gt;.xdg.state.directory</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>The XDG state directory for the user, to which files configured in
+<a class="option-reference" href="options.html#option-hjem.users._username_.xdg.state.files"><code class="nixos-option">hjem.users.&lt;username&gt;.xdg.state.files</code></a> will be relative to by default.</p>
+<p>Adds <code class="env-var">XDG_STATE_HOME</code> to <code class="nixos-option">environment.sessionVariables</code> for
+this user if changed.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>absolute path</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">$HOME/.local/state</span><span style="color:rgb(152,195,121);">"</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.state.files">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.state.files" class="option-anchor">hjem.users.&lt;username&gt;.xdg.state.files</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Hjem-managed state files.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>attribute set of (submodule)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span>&nbsp;<span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">foo.txt</span><span style="color:rgb(152,195,121);">"</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">source</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">Hello&nbsp;World</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;<span style="color:rgb(132,139,152);">}</span><span style="color:rgb(132,139,152);">;</span><br><span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.state.files._path_.enable">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.state.files._path_.enable" class="option-anchor">hjem.users.&lt;username&gt;.xdg.state.files.&lt;path&gt;.enable</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Whether to enable creation of this file.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>boolean</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">true</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">false</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.state.files._path_.clobber">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.state.files._path_.clobber" class="option-anchor">hjem.users.&lt;username&gt;.xdg.state.files.&lt;path&gt;.clobber</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Whether to "clobber" existing target paths.</p>
+<ul>
+<li>If using the <strong>systemd-tmpfiles</strong> hook (Linux only), tmpfile rules
+will be constructed with <code>L+</code> (<em>re</em>create) instead of <code>L</code>
+(create) type while this is set to <code>true</code>.</li>
+</ul>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>boolean</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(171,178,191);">config</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">hjem</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">users</span><span style="color:rgb(132,139,152);">.</span>‹<span style="color:rgb(86,182,194);">username</span>›<span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">clobberFiles</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.state.files._path_.executable">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.state.files._path_.executable" class="option-anchor">hjem.users.&lt;username&gt;.xdg.state.files.&lt;path&gt;.executable</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Whether to set the execute bit on the target file.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>boolean</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">false</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">true</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.state.files._path_.generator">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.state.files._path_.generator" class="option-anchor">hjem.users.&lt;username&gt;.xdg.state.files.&lt;path&gt;.generator</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Function that when applied to <code>value</code> will create the <code>source</code> or <code>text</code> of the file.</p>
+<p>Detection is automatic, as we check if the <code>generator</code> generates a derivation or a string after applying to <code>value</code>.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>null or (function that evaluates to a(n) (null or absolute path or null or strings concatenated with "\n"))</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">null</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(171,178,191);">lib</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">generators</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">toGitINI</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.state.files._path_.gid">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.state.files._path_.gid" class="option-anchor">hjem.users.&lt;username&gt;.xdg.state.files.&lt;path&gt;.gid</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Group ID to set as owner on the target path.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>null or 32 bit unsigned integer; between 0 and 4294967295 (both inclusive)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">null</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.state.files._path_.permissions">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.state.files._path_.permissions" class="option-anchor">hjem.users.&lt;username&gt;.xdg.state.files.&lt;path&gt;.permissions</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Permissions (in octal) to set on the target path.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>null or string</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">null</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.state.files._path_.source">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.state.files._path_.source" class="option-anchor">hjem.users.&lt;username&gt;.xdg.state.files.&lt;path&gt;.source</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Path of the source file or directory.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>null or absolute path</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">null</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.state.files._path_.target">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.state.files._path_.target" class="option-anchor">hjem.users.&lt;username&gt;.xdg.state.files.&lt;path&gt;.target</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Path to target file relative to <code>/home/‹username›/.local/state</code>.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>string</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix">‹<span style="color:rgb(86,182,194);">path</span>›</code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.state.files._path_.text">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.state.files._path_.text" class="option-anchor">hjem.users.&lt;username&gt;.xdg.state.files.&lt;path&gt;.text</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Text of the file.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>null or strings concatenated with "\n"</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">null</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.state.files._path_.type">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.state.files._path_.type" class="option-anchor">hjem.users.&lt;username&gt;.xdg.state.files.&lt;path&gt;.type</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Type of path to create.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>one of "symlink", "copy", "delete", "directory", "modify"</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">symlink</span><span style="color:rgb(152,195,121);">"</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.state.files._path_.uid">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.state.files._path_.uid" class="option-anchor">hjem.users.&lt;username&gt;.xdg.state.files.&lt;path&gt;.uid</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>User ID to set as owner on the target path.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>null or 32 bit unsigned integer; between 0 and 4294967295 (both inclusive)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">null</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
+<div class="option" id="option-hjem.users._username_.xdg.state.files._path_.value">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.xdg.state.files._path_.value" class="option-anchor">hjem.users.&lt;username&gt;.xdg.state.files.&lt;path&gt;.value</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Value passed to the <code>generator</code>.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>null or (attribute set of anything)</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(209,154,102);">null</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;<span style="color:rgb(86,182,194);">user</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">email</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">me@example.com</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;<span style="color:rgb(132,139,152);">}</span><span style="color:rgb(132,139,152);">;</span><br><span style="color:rgb(132,139,152);">}</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
+  </dl>
+</div>
