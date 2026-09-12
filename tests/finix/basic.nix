@@ -13,6 +13,7 @@ in
       node1 = {
         imports = [hjemModule];
 
+        services.getty.enable = true;
         services.mdevd.enable = true;
 
         users.groups.alice = {};
