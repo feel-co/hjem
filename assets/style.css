@@ -340,17 +340,6 @@ header {
   flex: 1;
 }
 
-.js .layout {
-  box-sizing: border-box;
-  padding-left: 300px;
-  transition: padding-left var(--transition);
-}
-
-.sidebar-collapsed .layout,
-.sidebar-collapsed-init .layout {
-  padding-left: 0;
-}
-
 .no-js .js-only {
   display: none !important;
 }
