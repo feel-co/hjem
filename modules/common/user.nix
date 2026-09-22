@@ -12,7 +12,7 @@
   ...
 }: let
   inherit (hjem-lib) envVarType listOrSingletonOf toEnv;
-  inherit (lib.attrsets) attrValues mapAttrs mapAttrsToList;
+  inherit (lib.attrsets) attrValues mapAttrsToList;
   inherit (lib.lists) any;
   inherit (lib.modules) mkIf;
   inherit (lib.options) literalExpression mkEnableOption mkOption;
@@ -41,7 +41,10 @@ in {
 
   options = {
     enable =
-      mkEnableOption "home management for this user"
+      mkEnableOption ''
+        Home management for this user.
+        This has no effect with standalone usage
+      ''
       // {
         default = true;
         example = false;
