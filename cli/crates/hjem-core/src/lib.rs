@@ -230,6 +230,8 @@ enum StandaloneCommand {
     #[pound(long)]
     rollback:        bool,
     #[pound(long)]
+    root:            Option<PathBuf>,
+    #[pound(long)]
     external_linker: Option<PathBuf>,
     #[pound(long = "linker-arg")]
     linker_args:     Vec<String>,
@@ -250,6 +252,8 @@ enum StandaloneCommand {
     #[pound(long)]
     state_dir:  Option<PathBuf>,
     #[pound(long)]
+    root:       Option<PathBuf>,
+    #[pound(long)]
     impure:     bool,
   },
   Generations {
@@ -266,6 +270,8 @@ enum StandaloneCommand {
     state_dir:       Option<PathBuf>,
     #[pound(long)]
     generation:      Option<String>,
+    #[pound(long)]
+    root:            Option<PathBuf>,
     #[pound(long)]
     external_linker: Option<PathBuf>,
     #[pound(long = "linker-arg")]
@@ -350,8 +356,10 @@ impl Command {
       } => {
         let verified = Manifest::load(&manifest, impure)?;
         ActivateArgs {
-          manifest,
-          state,
+          manifest: manifest.clone(),
+          logical_manifest: manifest,
+          state: state.clone(),
+          resolved_state: state,
           update_state: true,
           actions_file: None,
           prefix,
@@ -517,10 +525,23 @@ impl InternalCommand {
         linker_args,
         json,
       } => {
+        let root = std::env::var_os("HJEM_SOURCE_ROOT").map(PathBuf::from);
+        let manifest = if root.is_some() {
+          resolve_manifest_file(&manifest, root.as_deref())?
+        } else {
+          manifest.clone()
+        };
+        let resolved_state = if root.is_some() && state.exists() {
+          resolve_manifest_file(&state, root.as_deref())?
+        } else {
+          state.clone()
+        };
         let verified = Manifest::load(&manifest, impure)?;
         ActivateArgs {
-          manifest,
+          manifest: manifest.clone(),
+          logical_manifest: manifest,
           state,
+          resolved_state,
           update_state: !skip_state_update,
           actions_file,
           prefix,
@@ -655,6 +676,7 @@ impl StandaloneCommand {
             source,
             None,
             None,
+            None,
             Vec::new(),
             ".backup-".to_string(),
             false,
@@ -671,6 +693,7 @@ impl StandaloneCommand {
         flake_attr,
         state_dir,
         rollback,
+        root,
         external_linker,
         linker_args,
         prefix,
@@ -690,6 +713,7 @@ impl StandaloneCommand {
           }
           standalone_switch_rollback(
             state_dir,
+            root,
             external_linker,
             linker_args,
             prefix,
@@ -701,6 +725,7 @@ impl StandaloneCommand {
           standalone_switch_from_source(
             source,
             state_dir,
+            root,
             external_linker,
             linker_args,
             prefix,
@@ -715,11 +740,12 @@ impl StandaloneCommand {
         flake,
         flake_attr,
         state_dir,
+        root,
         impure,
       } => {
         let manifest =
           StandaloneSource::from_args(manifest, config, flake, flake_attr)?
-            .resolve(impure)?;
+            .resolve(impure, root.as_deref())?;
         let _ = Manifest::load(&manifest.path, impure)?;
         let base = standalone_state_dir(state_dir)?;
         let builds = base.join("builds");
@@ -771,6 +797,7 @@ impl StandaloneCommand {
       Self::Rollback {
         state_dir,
         generation,
+        root,
         external_linker,
         linker_args,
         prefix,
@@ -784,10 +811,18 @@ impl StandaloneCommand {
         };
         let target = generation_manifest_path(&base, &target_id)?;
         let state = base.join("current").join("manifest.json");
+        let target = resolve_manifest_file(&target, root.as_deref())?;
+        let resolved_state = if state.exists() {
+          resolve_manifest_file(&state, root.as_deref())?
+        } else {
+          state.clone()
+        };
         let verified = Manifest::load(&target, impure)?;
         ActivateArgs {
           manifest: target,
+          logical_manifest: generation_manifest_path(&base, &target_id)?,
           state,
+          resolved_state,
           update_state: true,
           actions_file: Some(base.join("current").join("actions.json")),
           prefix,
@@ -851,9 +886,10 @@ impl StandaloneCommand {
 }
 
 struct ResolvedManifest {
-  path:      PathBuf,
-  packages:  Vec<PathBuf>,
-  _temp_dir: Option<PathBuf>,
+  logical_path: PathBuf,
+  path:         PathBuf,
+  packages:     Vec<PathBuf>,
+  _temp_dir:    Option<PathBuf>,
 }
 
 enum StandaloneSource {
@@ -888,13 +924,27 @@ impl StandaloneSource {
     }
   }
 
-  fn resolve(&self, impure: bool) -> Result<ResolvedManifest, String> {
+  fn resolve(
+    &self,
+    impure: bool,
+    root: Option<&Path>,
+  ) -> Result<ResolvedManifest, String> {
     let json = match self {
       Self::Manifest(path) => {
+        if let Some(root) = root {
+          let resolved = resolve_manifest_file(path, Some(root))?;
+          return Ok(ResolvedManifest {
+            logical_path: path.clone(),
+            path:         resolved,
+            packages:     Vec::new(),
+            _temp_dir:    None,
+          });
+        }
         return Ok(ResolvedManifest {
-          path:      path.clone(),
-          packages:  Vec::new(),
-          _temp_dir: None,
+          logical_path: path.clone(),
+          path:         path.clone(),
+          packages:     Vec::new(),
+          _temp_dir:    None,
         });
       },
       Self::Config(path) => eval_nix_config(path, impure)?,
@@ -910,9 +960,17 @@ impl StandaloneSource {
     };
 
     let packages = extract_package_paths(&json)?;
-    let manifest = extract_manifest_json(json)?;
+    let logical_manifest = extract_manifest_json(json)?;
+    let manifest = resolve_manifest_paths(logical_manifest.clone(), root)?;
     let temp_dir = mk_temp_dir("hjem-manifest-eval")?;
+    let logical_path = temp_dir.join("logical-manifest.json");
     let path = temp_dir.join("manifest.json");
+    fs::write(
+      &logical_path,
+      serde_json::to_vec_pretty(&logical_manifest)
+        .map_err(|e| e.to_string())?,
+    )
+    .map_err(|e| e.to_string())?;
     fs::write(
       &path,
       serde_json::to_vec_pretty(&manifest).map_err(|e| e.to_string())?,
@@ -920,6 +978,7 @@ impl StandaloneSource {
     .map_err(|e| e.to_string())?;
 
     Ok(ResolvedManifest {
+      logical_path,
       path,
       packages,
       _temp_dir: Some(temp_dir),
@@ -927,26 +986,114 @@ impl StandaloneSource {
   }
 }
 
+fn resolve_manifest_paths(
+  mut manifest: Value,
+  root: Option<&Path>,
+) -> Result<Value, String> {
+  let home = std::env::var_os("HOME").map(PathBuf::from);
+  let files = manifest
+    .get_mut("files")
+    .and_then(Value::as_array_mut)
+    .ok_or_else(|| "manifest.files must be an array".to_string())?;
+
+  for file in files {
+    let Some(file) = file.as_object_mut() else {
+      continue;
+    };
+
+    if let Some(source) = file
+      .get("source")
+      .and_then(Value::as_str)
+      .map(str::to_owned)
+    {
+      let path = Path::new(&source);
+      if !path.is_absolute() {
+        let root = root.ok_or_else(|| {
+          format!(
+            "manifest contains relative source '{source}', but no --root was \
+             provided"
+          )
+        })?;
+        if !root.is_absolute() {
+          return Err(format!(
+            "--root must be an absolute path, got '{}'",
+            root.display()
+          ));
+        }
+        file.insert(
+          "source".to_string(),
+          Value::String(root.join(path).to_string_lossy().into_owned()),
+        );
+      }
+    }
+
+    if let Some(target) = file
+      .get("target")
+      .and_then(Value::as_str)
+      .map(str::to_owned)
+    {
+      let path = Path::new(&target);
+      if !path.is_absolute() {
+        let home = home
+          .as_deref()
+          .ok_or_else(|| "HOME is not set".to_string())?;
+        file.insert(
+          "target".to_string(),
+          Value::String(home.join(path).to_string_lossy().into_owned()),
+        );
+      }
+    }
+  }
+
+  Ok(manifest)
+}
+
+fn resolve_manifest_file(
+  path: &Path,
+  root: Option<&Path>,
+) -> Result<PathBuf, String> {
+  let bytes = fs::read(path).map_err(|e| e.to_string())?;
+  let manifest: Value =
+    serde_json::from_slice(&bytes).map_err(|e| e.to_string())?;
+  let resolved = resolve_manifest_paths(manifest, root)?;
+  let temp_dir = mk_temp_dir("hjem-manifest-resolved")?;
+  let output = temp_dir.join("manifest.json");
+  fs::write(
+    &output,
+    serde_json::to_vec_pretty(&resolved).map_err(|e| e.to_string())?,
+  )
+  .map_err(|e| e.to_string())?;
+  Ok(output)
+}
+
 fn standalone_switch_from_source(
   source: StandaloneSource,
   state_dir: Option<PathBuf>,
+  root: Option<PathBuf>,
   external_linker: Option<PathBuf>,
   linker_args: Vec<String>,
   prefix: String,
   impure: bool,
 ) -> Result<(), String> {
   info!("evaluating standalone input");
-  let manifest = source.resolve(impure)?;
+  let manifest = source.resolve(impure, root.as_deref())?;
 
   let base = standalone_state_dir(state_dir)?;
   info!("applying manifest");
   let state = base.join("current").join("manifest.json");
+  let resolved_state = if state.exists() {
+    resolve_manifest_file(&state, root.as_deref())?
+  } else {
+    state.clone()
+  };
   let actions_file = base.join("current").join("actions.json");
   let verified_manifest = Manifest::load(&manifest.path, impure)?;
   let store_paths = verified_manifest.store_paths();
   ActivateArgs {
     manifest: manifest.path.clone(),
+    logical_manifest: manifest.logical_path.clone(),
     state,
+    resolved_state,
     update_state: true,
     actions_file: Some(actions_file),
     prefix,
@@ -957,8 +1104,12 @@ fn standalone_switch_from_source(
   }
   .run(verified_manifest)?;
 
-  let generation_id =
-    record_generation(&base, &manifest.path, &store_paths, &manifest.packages)?;
+  let generation_id = record_generation(
+    &base,
+    &manifest.logical_path,
+    &store_paths,
+    &manifest.packages,
+  )?;
   write_last_source(&base, &source)?;
   set_current_package_profile(&base, &generation_id)?;
   set_current_generation_id(&base, &generation_id)?;
@@ -968,6 +1119,7 @@ fn standalone_switch_from_source(
 
 fn standalone_switch_rollback(
   state_dir: Option<PathBuf>,
+  root: Option<PathBuf>,
   external_linker: Option<PathBuf>,
   linker_args: Vec<String>,
   prefix: String,
@@ -988,10 +1140,18 @@ fn standalone_switch_rollback(
   }
 
   let state = base.join("current").join("manifest.json");
-  let verified = Manifest::load(&target_manifest, impure)?;
+  let manifest = resolve_manifest_file(&target_manifest, root.as_deref())?;
+  let resolved_state = if state.exists() {
+    resolve_manifest_file(&state, root.as_deref())?
+  } else {
+    state.clone()
+  };
+  let verified = Manifest::load(&manifest, impure)?;
   ActivateArgs {
-    manifest: target_manifest,
+    manifest,
+    logical_manifest: target_manifest,
     state,
+    resolved_state,
     update_state: true,
     actions_file: Some(base.join("current").join("actions.json")),
     prefix,
@@ -1120,32 +1280,34 @@ fn mk_temp_dir(prefix: &str) -> Result<PathBuf, String> {
 }
 
 struct ActivateArgs {
-  manifest:        PathBuf,
-  state:           PathBuf,
-  update_state:    bool,
-  actions_file:    Option<PathBuf>,
-  prefix:          String,
-  impure:          bool,
-  external_linker: Option<PathBuf>,
-  linker_args:     Vec<String>,
-  json:            bool,
+  manifest:         PathBuf,
+  logical_manifest: PathBuf,
+  state:            PathBuf,
+  resolved_state:   PathBuf,
+  update_state:     bool,
+  actions_file:     Option<PathBuf>,
+  prefix:           String,
+  impure:           bool,
+  external_linker:  Option<PathBuf>,
+  linker_args:      Vec<String>,
+  json:             bool,
 }
 
 impl ActivateArgs {
   fn run(self, new_manifest: Manifest) -> Result<(), String> {
-    let had_state = self.state.exists();
-    let manifest_changed =
-      had_state && !new_manifest.equivalent_to(&self.state, self.impure)?;
+    let had_state = self.resolved_state.exists();
+    let manifest_changed = had_state
+      && !new_manifest.equivalent_to(&self.resolved_state, self.impure)?;
     trace!(
       manifest.path = %self.manifest.display(),
-      state.path = %self.state.display(),
+      state.path = %self.resolved_state.display(),
       state.exists = had_state,
       manifest.changed = manifest_changed,
       "prepared activation"
     );
 
     let actions = if had_state {
-      let old_manifest = Manifest::load(&self.state, self.impure)?;
+      let old_manifest = Manifest::load(&self.resolved_state, self.impure)?;
       new_manifest.trigger_actions(&old_manifest)
     } else {
       Vec::new()
@@ -1158,17 +1320,17 @@ impl ActivateArgs {
         &linker,
         &self.linker_args,
         &self.manifest,
-        &self.state,
+        &self.resolved_state,
         manifest_changed,
       )?;
     } else {
       new_manifest
-        .diff(&self.state, &self.prefix, true)
+        .diff(&self.resolved_state, &self.prefix, true)
         .map_err(|e| format!("built-in linker activation failed: {e}"))?;
     }
 
     if self.update_state {
-      atomic_copy(&self.manifest, &self.state)?;
+      atomic_copy(&self.logical_manifest, &self.state)?;
     }
 
     let result = ActivateResult {
@@ -2126,7 +2288,41 @@ mod tests {
     now_id,
     parse_expire_timestamp,
     parse_multicall_args,
+    resolve_manifest_paths,
   };
+
+  #[test]
+  fn resolves_relative_sources_from_an_absolute_root() {
+    let manifest = serde_json::json!({
+      "version": 3,
+      "files": [{
+        "type": "symlink",
+        "source": "dotfiles/foo",
+        "target": "/home/alice/.foo",
+      }],
+    });
+    let resolved = resolve_manifest_paths(manifest, Some(Path::new("/repo")))
+      .expect("manifest should resolve");
+
+    assert_eq!(resolved["files"][0]["source"], "/repo/dotfiles/foo");
+    assert_eq!(resolved["files"][0]["target"], "/home/alice/.foo");
+  }
+
+  #[test]
+  fn rejects_relative_sources_without_a_root() {
+    let manifest = serde_json::json!({
+      "version": 3,
+      "files": [{
+        "type": "symlink",
+        "source": "dotfiles/foo",
+        "target": "/home/alice/.foo",
+      }],
+    });
+
+    let error = resolve_manifest_paths(manifest, None)
+      .expect_err("relative source should require a root");
+    assert!(error.contains("no --root was provided"));
+  }
 
   #[test]
   fn built_in_linker_repairs_dangling_symlinks_on_unchanged_manifest() {
@@ -2154,15 +2350,17 @@ mod tests {
 
     let activate = || {
       ActivateArgs {
-        manifest:        manifest.clone(),
-        state:           state.clone(),
-        update_state:    true,
-        actions_file:    None,
-        prefix:          ".backup-".to_owned(),
-        impure:          false,
-        external_linker: None,
-        linker_args:     Vec::new(),
-        json:            false,
+        manifest:         manifest.clone(),
+        logical_manifest: manifest.clone(),
+        state:            state.clone(),
+        resolved_state:   state.clone(),
+        update_state:     true,
+        actions_file:     None,
+        prefix:           ".backup-".to_owned(),
+        impure:           false,
+        external_linker:  None,
+        linker_args:      Vec::new(),
+        json:             false,
       }
     };
 
