@@ -242,19 +242,19 @@ enum StandaloneCommand {
   },
   Build {
     #[pound(long)]
-    manifest:   Option<PathBuf>,
+    manifest:        Option<PathBuf>,
     #[pound(long)]
-    config:     Option<PathBuf>,
+    config:          Option<PathBuf>,
     #[pound(long)]
-    flake:      Option<String>,
+    flake:           Option<String>,
     #[pound(long)]
-    flake_attr: Option<String>,
+    flake_attr:      Option<String>,
     #[pound(long)]
-    state_dir:  Option<PathBuf>,
+    state_dir:       Option<PathBuf>,
     #[pound(long = "source-base-dir")]
     source_base_dir: Option<PathBuf>,
     #[pound(long)]
-    impure:     bool,
+    impure:          bool,
   },
   Generations {
     #[pound(long)]
@@ -712,8 +712,8 @@ impl StandaloneCommand {
         } else {
           if manifest.is_some() && source_base_dir.is_some() {
             return Err(
-              "--source-base-dir cannot be used with --manifest; add source_base_dir to \
-               the manifest"
+              "--source-base-dir cannot be used with --manifest; add \
+               source_base_dir to the manifest"
                 .to_string(),
             );
           }
@@ -750,8 +750,8 @@ impl StandaloneCommand {
         }
         if manifest.is_some() && source_base_dir.is_some() {
           return Err(
-            "--source-base-dir cannot be used with --manifest; add source_base_dir to \
-             the manifest"
+            "--source-base-dir cannot be used with --manifest; add \
+             source_base_dir to the manifest"
               .to_string(),
           );
         }
@@ -926,7 +926,11 @@ impl StandaloneSource {
     }
   }
 
-  fn resolve(&self, impure: bool, source_base_dir: Option<&Path>) -> Result<ResolvedManifest, String> {
+  fn resolve(
+    &self,
+    impure: bool,
+    source_base_dir: Option<&Path>,
+  ) -> Result<ResolvedManifest, String> {
     let json = match self {
       Self::Manifest(path) => {
         return Ok(ResolvedManifest {
