@@ -49,6 +49,11 @@ $ hjem activate   --manifest <path> --state <path>
 lives in `$XDG_STATE_HOME/hjem/standalone`, or `~/.local/state/hjem/standalone`
 when unset; `--state-dir` overrides it.
 
+> [!NOTE]
+> For Nix inputs, both commands build uncached package and manifest dependencies
+> before validation or activation. `build` does not activate files or install a
+> package profile.
+
 The `internal` commands are the module-facing plumbing and are generally not run
 by hand, however, `manifest validate` and `manifest diff` might come handy when
 authoring manifests directly. An alternative file linker can be plugged in with
