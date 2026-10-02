@@ -34,7 +34,7 @@ users can share the same store path, and changes are instantaneous on rebuild.
 However, it is worth noting that symlinks are _immutable_ and cannot be modified
 unless your Nix store is mounted as read-write.
 
-### Example
+### Example {#symlink-example}
 
 ```nix
 {
@@ -87,7 +87,7 @@ Generators work with the copy type when they produce a **path/derivation**
 (e.g., using `pkgs.formats`). Generators that produce strings will not work
 since copy requires a source path.
 
-### Example
+### Example {#copy-example}
 
 ```nix
 {
@@ -131,7 +131,7 @@ The `delete` type removes files or directories from the home directory. This is
 useful for cleaning up old configurations or removing files that conflict with
 your setup.
 
-### Example
+### Example {#delete-example}
 
 ```nix
 {
@@ -168,7 +168,7 @@ much like the `d` argument of systemd-tmpfiles.
 The created directories are empty, and can specify `permissions`, `uid` and
 `gid`. This mode is idempotent; it is safe to run multiple times.
 
-### Example
+### Example {#directory-example}
 
 ```nix
 {
@@ -210,7 +210,7 @@ you to modify files that already exist on the system. You might use the modify
 argument to "patch" system-provided configurations,, or for modifying files
 installed by applications.
 
-### Example
+### Example {#modify-example}
 
 ```nix
 {
