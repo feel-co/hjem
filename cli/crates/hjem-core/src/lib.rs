@@ -1,5 +1,6 @@
 use std::{
   collections::{
+    BTreeMap,
     BTreeSet,
     HashMap,
   },
@@ -1006,9 +1007,64 @@ fn standalone_switch_rollback(
   Ok(())
 }
 
+// JSON alone loses the string context that tells Nix how to build store paths.
+const NIX_EVAL_WITH_CONTEXT: &str = r#"
+  value: {
+    inherit value;
+    context = builtins.getContext (builtins.toJSON value);
+  }
+"#;
+
+#[derive(Deserialize)]
+struct NixEvaluation {
+  value:   Value,
+  context: BTreeMap<String, NixStringContext>,
+}
+
+#[derive(Deserialize)]
+struct NixStringContext {
+  #[serde(default)]
+  outputs:     Vec<String>,
+  #[serde(default, rename = "allOutputs")]
+  all_outputs: bool,
+}
+
+fn realize_nix_evaluation(bytes: &[u8]) -> Result<Value, String> {
+  let evaluation: NixEvaluation = serde_json::from_slice(bytes)
+    .map_err(|e| format!("nix eval output was not valid JSON: {e}"))?;
+  if evaluation.context.is_empty() {
+    return Ok(evaluation.value);
+  }
+
+  let mut cmd = ProcCommand::new("nix");
+  cmd.args(["build", "--no-link"]);
+  for (mut path, context) in evaluation.context {
+    if context.all_outputs {
+      path.push_str("^*");
+    } else if !context.outputs.is_empty() {
+      path.push('^');
+      path.push_str(&context.outputs.join(","));
+    }
+    cmd.arg(path);
+  }
+
+  let output = cmd.output().map_err(|e| {
+    format!("failed to execute 'nix build' for standalone dependencies: {e}")
+  })?;
+  if !output.status.success() {
+    return Err(format!(
+      "nix build failed for standalone dependencies: {}",
+      String::from_utf8_lossy(&output.stderr)
+    ));
+  }
+  Ok(evaluation.value)
+}
+
 fn eval_nix_config(config_path: &Path, impure: bool) -> Result<Value, String> {
   let mut cmd = ProcCommand::new("nix");
-  cmd.arg("eval").arg("--json").arg("--file").arg(config_path);
+  cmd
+    .args(["eval", "--json", "--apply", NIX_EVAL_WITH_CONTEXT, "--file"])
+    .arg(config_path);
   if impure {
     cmd.arg("--impure");
   }
@@ -1028,7 +1084,7 @@ fn eval_nix_config(config_path: &Path, impure: bool) -> Result<Value, String> {
       String::from_utf8_lossy(&output.stderr)
     ));
   }
-  serde_json::from_slice(&output.stdout).map_err(|e| e.to_string())
+  realize_nix_evaluation(&output.stdout)
 }
 
 fn eval_nix_flake(
@@ -1042,7 +1098,9 @@ fn eval_nix_flake(
     .unwrap_or_else(|| format!("hjemConfigurations.\"{user}\""));
   let full_ref = format!("{flake_ref}#{attr}");
   let mut cmd = ProcCommand::new("nix");
-  cmd.arg("eval").arg("--json").arg(full_ref);
+  cmd
+    .args(["eval", "--json", "--apply", NIX_EVAL_WITH_CONTEXT])
+    .arg(full_ref);
   if impure {
     cmd.arg("--impure");
   }
@@ -1061,12 +1119,7 @@ fn eval_nix_flake(
       attr
     ));
   }
-  serde_json::from_slice(&output.stdout).map_err(|e| {
-    format!(
-      "nix eval output for flake '{}' was not valid JSON: {e}",
-      flake_ref
-    )
-  })
+  realize_nix_evaluation(&output.stdout)
 }
 
 fn extract_manifest_json(value: Value) -> Result<Value, String> {
