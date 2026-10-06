@@ -49,7 +49,29 @@ in {
 
     user = mkOption {
       type = strMatching "[a-zA-Z0-9_.][a-zA-Z0-9_.-]*";
-      description = "The owner of a given home directory.";
+      description = ''
+        The owner of a given home directory. This can be set to either
+        the username or unix UID.
+      '';
+    };
+
+    externalIdp = mkOption {
+      type = bool;
+      default = false;
+      example = true;
+      description = ''
+        Enable for users managed by an external identity provider like
+        Kanidm, LDAP, SSSD, etc. This option prevents Hjem from
+        associating hjem.users.<username> with users.users.<username>
+        allowing hjem-activate@<username>.service to dynamically resolve
+        network users and preventing config evaluation errors.
+
+        Make sure these users are resolvable BEFORE `hjem-activate@` services start.
+        This is already handled for Kanidm, consider opening a PR for other IDPs.
+
+        Hint: use UID for hjem.users.<username> if your IDP allows users
+        to change their own usernames.
+      '';
     };
 
     directory = mkOption {
@@ -261,6 +283,13 @@ in {
   config = {
     # for docs
     _module.args.name = lib.mkDefault "‹username›";
+
+    assertions = [
+      {
+        assertion = config.externalIdp -> config.packages == [];
+        message = "\"${config.user}\".packages must be empty when \"${config.user}\".externalIdp = true.\n";
+      }
+    ];
 
     environment = {
       sessionVariables = {
