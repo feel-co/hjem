@@ -9,9 +9,9 @@
       },
       "branch": "main",
       "submodules": false,
-      "revision": "bb5965afe646b8c1055be3646b6df39e754d03a3",
-      "url": "https://github.com/finix-community/finix/archive/bb5965afe646b8c1055be3646b6df39e754d03a3.tar.gz",
-      "hash": "sha256-zz+eqC+AhSIDSSToDcAZp6bZyGtSs9D59K6Jjh+82n4="
+      "revision": "70b73014b720c2a4c4150a590a33aef0a054fc18",
+      "url": "https://github.com/finix-community/finix/archive/70b73014b720c2a4c4150a590a33aef0a054fc18.tar.gz",
+      "hash": "sha256-GDOPW8FkOXcWoGUPpgUhzfyk5B64CzjwF3tpUakht1I="
     }
   },
   "version": 8
