@@ -29,7 +29,7 @@ you must first add Hjem as a flake input in your `flake.nix`.
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    # ↓  Add here in the 'inputs' section. The name is arbitrary.
+    # ↓  Add Hjem input here in the 'inputs' section. The name is arbitrary.
     hjem = {
       url = "github:feel-co/hjem";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -38,14 +38,17 @@ you must first add Hjem as a flake input in your `flake.nix`.
 }
 ```
 
-Then add the corresponding module for your system to your
-system configuration.
+Then add the corresponding module for your system to your system configuration.
+Hjem is currently distributed as **NixOS**, **nix-darwin** or **finix module**
+modules that you can import depending on your target platform.
 
+> [!WARNING]
+> Support for nix-darwin and finix is currently _experimental_; please report
+> any issues to [the tracker](https://github.com/feel-co/hjem/issues).
 
-Hjem is distributed as a **NixOS module**, **nix-darwin** or **finix** module
-for the time being, and you must import it as such.
-For the sake of brevity, this guide will demonstrate how to
-import it from inside the `nixosSystem` call.
+### On NixOS
+
+<!--markdownlint-disable MD013-->
 
 ```nix
 # flake.nix
@@ -72,7 +75,11 @@ import it from inside the `nixosSystem` call.
 }
 ```
 
-Alternatively, if you use nix-darwin:
+<!--markdownlint-enable MD013-->
+
+### nix-darwin
+
+<!--markdownlint-disable MD013-->
 
 ```nix
 # flake.nix
@@ -104,7 +111,9 @@ Alternatively, if you use nix-darwin:
 }
 ```
 
-or if you use finix:
+<!--markdownlint-enable MD013-->
+
+### Finix
 
 ```nix
 # flake.nix
@@ -133,10 +142,6 @@ or if you use finix:
 }
 ```
 
-> [!WARNING]
-> nix-darwin and finix support is currently experimental;
-> please report any issues to [the tracker](https://github.com/feel-co/hjem/issues).
-
 ## Usage
 
 Hjem achieves its signature simplicity and robustness by shaving off the
@@ -151,17 +156,17 @@ for Hjem. It contains several sub-options that may be used to control Hjem's
 behaviour per user. You may refer to the option documentation for more details
 on each bell and whistle. Important options to be aware of are as follows:
 
-- {option}`hjem.users.<username>.enable` allows toggling file linking for individual
-  users. Set to `true` by default, but can be used to toggle off file linking
-  for individual users on a multi-tenant system.
-- {option}`hjem.users.<username>.user` is the name of the user that will be defined.
-  Set to `<username>` by default.
+- {option}`hjem.users.<username>.enable` allows toggling file linking for
+  individual users. Set to `true` by default, but can be used to toggle off file
+  linking for individual users on a multi-tenant system.
+- {option}`hjem.users.<username>.user` is the name of the user that will be
+  defined. Set to `<username>` by default.
 - {option}`hjem.users.<username>.directory` is your home directory. Files in
   `hjem.users.<username>.files` will always be relative to this directory.
-- {option}`hjem.users.<username>.clobberFiles` decides whether Hjem should override
-  if a file already exists at a target location. This default to `false`, but
-  this can be enabled for all users by setting {option}`hjem.clobberByDefault`
-  to `true`.
+- {option}`hjem.users.<username>.clobberFiles` decides whether Hjem should
+  override if a file already exists at a target location. This default to
+  `false`, but this can be enabled for all users by setting
+  {option}`hjem.clobberByDefault` to `true`.
 
 #### Example
 
@@ -203,7 +208,8 @@ linking capabilities with some basic examples.
    ```
 
    Here, Hjem will link the store path `(pkgs.writeTextFile { ... }).outPath` to
-   `$HOME/.config/bar`, and the store path will have the contents "file contents".
+   `$HOME/.config/bar`, and the store path will have the contents "file
+   contents".
 
 3. The most recent addition to Hjem's file linking interface is the `generator`
    attribute. It allows feeding a generator by which your values will be
@@ -240,7 +246,8 @@ linking capabilities with some basic examples.
 
 Now that we have gone over individual examples, here is a more _complete_
 example to give an idea of the bigger picture. By using (or abusing, up to you)
-the `files` submodule you can write files and/or folders anywhere in your home directory.
+the `files` submodule you can write files and/or folders anywhere in your home
+directory.
 
 ```nix
 {
@@ -284,12 +291,37 @@ With such a configuration, we can expect three files and one directory:
 3. `~/.config/baz` with the contents `"{\"some\":\"contents\"}"`
 4. `~/.config/qux` with the contents of `./qux-folder`
 
-#### Using Hjem To Install Packages {#installing-packages}
+### Using Hjem To Install Packages {#installing-packages}
 
-Hjem exposes an experimental interface for managing packages of individual
+Hjem exposes an **experimental interface** for managing packages of individual
 users. At its core, `hjem.users.<username>.packages` is identical to
-`users.users.<username>.packages` as found in Nixpkgs. In fact, to avoid creating
-additional environments Hjem maps your `hjem.users.<username>.packages` to
-`users.users.<username>.packages`. This is provided as a convenient alias to manage
-users in one place, but **this may be subject to change!**. Please report any
-issues.
+`users.users.<username>.packages` as found in Nixpkgs. In fact, to avoid
+creating additional environments Hjem maps your `hjem.users.<username>.packages`
+to `users.users.<username>.packages`. This is provided as a convenient alias to
+manage users in one place, but **this may be subject to change!**. Please report
+any issues.
+
+### Environment Variables {#environment-variables}
+
+Hjem can manage user environment variables through
+`hjem.users.<username>.environment.sessionVariables`. See the
+[Environment Variables](/environment.html) page for configuration and shell
+integration examples.
+
+### XDG Directories {#xdg-directories}
+
+Hjem provides dedicated support for XDG Base Directory Specification paths. The
+[XDG Directories](/xdg.html) page goes into more details about XDG options,
+their default behaviour, and how to change it.
+
+### File Types {#file-types-overview}
+
+Hjem supports five file types for different use cases. Complete reference for
+various file types supported by Hjem are described in the
+[File Types](/file-types.html) page.
+
+### MIME Applications {#mime-apps}
+
+Hjem can manage MIME application associations through the `xdg.mime-apps`
+options. See the [MIME Applications](/mime-apps.html) page for configuration
+examples.
