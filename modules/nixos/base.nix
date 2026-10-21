@@ -7,7 +7,7 @@
   utils,
   ...
 }: let
-  inherit (builtins) attrNames attrValues concatLists concatMap concatStringsSep filter mapAttrs toJSON typeOf;
+  inherit (builtins) attrValues concatLists concatMap concatStringsSep filter mapAttrs toJSON typeOf;
   inherit (hjem-lib) fileToJson;
   inherit (lib.attrsets) filterAttrs optionalAttrs;
   inherit (lib.modules) importApply mkDefault mkIf mkMerge;
@@ -22,7 +22,6 @@
   _class = "nixos";
 
   enabledUsers = filterAttrs (_: u: u.enable) cfg.users;
-  disabledUsers = filterAttrs (_: u: !u.enable) cfg.users;
 
   userFiles = user: [
     user.files
