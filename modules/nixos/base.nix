@@ -105,17 +105,35 @@
             name,
             ...
           }: let
-            user = osConfig.users.users.${name};
+            # When an external identity provider is configured, user lookups are
+            # handled at runtime via NSS/PAM. The assertion below only requires
+            # that the OS entry or externalIdp for the user is present, not both.
+            hasExternalIdp = cfg.users.${name}.externalIdp;
+            osUserEntry = osConfig.users.users.${name} or null;
           in {
             assertions = [
               {
-                assertion = config.enable -> user.enable;
-                message = "Enabled Hjem user '${name}' must also be configured and enabled in NixOS.";
+                assertion = config.enable -> (osUserEntry != null && osUserEntry.enable) || hasExternalIdp;
+                message = ''
+                  Enabled Hjem user '${name}' must either exist and be enabled via
+                  users.users.${name}.enable, or have users.users.${name}.externalIdp
+                  active, relying on runtime lookup (e.g. services.kanidm.unix.enable).
+                '';
               }
             ];
 
-            user = mkDefault user.name;
-            directory = mkDefault user.home;
+            # When the OS entry exists, derive user/directory from it.
+            # Otherwise require explicit values from the hjem declaration.
+            user = mkDefault (
+              if osUserEntry != null
+              then osUserEntry.name
+              else name
+            );
+            directory = mkDefault (
+              if osUserEntry != null
+              then osUserEntry.home
+              else "${osConfig.users.defaultUserHome}/${name}"
+            );
             clobberFiles = mkDefault cfg.clobberByDefault;
           })
         ]
@@ -195,6 +213,8 @@ in {
             unitConfig.RefuseManualStart = true;
           };
 
+          # If using external identity management, this must
+          # start after users are resolvable.
           "hjem-activate@" = {
             description = "Link files for %i from their manifest";
             enableStrictShellChecks = true;
@@ -204,7 +224,8 @@ in {
               Type = "oneshot";
             };
             requires = ["hjem-prepare.service"];
-            after = ["hjem-prepare.service"];
+            after = ["hjem-prepare.service" "kanidm-unixd.service"];
+            wants = ["kanidm-unixd.service"];
             scriptArgs = "%i";
             script = ''
               ${checkEnabledUsers}
