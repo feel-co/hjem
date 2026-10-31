@@ -16,6 +16,8 @@
   cfg = config.hjem;
 
   enabledUsers = filterAttrs (_: u: u.enable) cfg.users;
+
+  osUsers = filterAttrs (_: u: !u.externalIdp) enabledUsers;
 in {
   inherit _class;
 
@@ -106,7 +108,7 @@ in {
   };
 
   config = {
-    users.users = (mapAttrs (_: v: {inherit (v) packages;})) enabledUsers;
+    users.users = (mapAttrs (_: v: {inherit (v) packages;})) osUsers;
 
     assertions =
       concatLists
