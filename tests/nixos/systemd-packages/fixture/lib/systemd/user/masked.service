@@ -1,0 +1,6 @@
+[Unit]
+Description=Vendor service to be masked
+
+[Service]
+Type=oneshot
+ExecStart=-true

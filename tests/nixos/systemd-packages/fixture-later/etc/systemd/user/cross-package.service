@@ -1,0 +1,6 @@
+[Unit]
+Description=Later package service
+
+[Service]
+Type=oneshot
+ExecStart=true

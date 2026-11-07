@@ -1590,15 +1590,14 @@ impl ManifestExt for Manifest {
         continue;
       }
       let old = unit_triggers(old_source);
-      let (action, reason) = if !restart.is_empty()
-        && Some(restart) != old.restart.as_deref()
-      {
-        ("restart", "restart trigger changed")
-      } else if !reload.is_empty() && Some(reload) != old.reload.as_deref() {
-        ("reload", "reload trigger changed")
-      } else {
-        continue;
-      };
+      let (action, reason) =
+        if !restart.is_empty() && Some(restart) != old.restart.as_deref() {
+          ("restart", "restart trigger changed")
+        } else if !reload.is_empty() && Some(reload) != old.reload.as_deref() {
+          ("reload", "reload trigger changed")
+        } else {
+          continue;
+        };
       actions.push(TriggerAction {
         action: action.to_string(),
         unit:   unit.to_string(),
@@ -1632,12 +1631,15 @@ fn unit_sources(manifest: &Manifest) -> BTreeMap<&str, UnitSources<'_>> {
 
     let (unit, drop_in) = if parent.ends_with("systemd/user") {
       // Aliases point back into the same home unit directory.
-      if file.follow_symlinks == Some(false) && source.parent() == Some(parent) {
+      if file.follow_symlinks == Some(false) && source.parent() == Some(parent)
+      {
         continue;
       }
       (name, None)
     } else if name.ends_with(".conf")
-      && parent.parent().is_some_and(|dir| dir.ends_with("systemd/user"))
+      && parent
+        .parent()
+        .is_some_and(|dir| dir.ends_with("systemd/user"))
       && let Some(unit) = parent
         .file_name()
         .and_then(|name| name.to_str())

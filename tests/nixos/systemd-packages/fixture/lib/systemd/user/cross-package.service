@@ -1,0 +1,6 @@
+[Unit]
+Description=First package service
+
+[Service]
+Type=oneshot
+ExecStart=false

@@ -1,0 +1,6 @@
+[Unit]
+Description=Vendor replacement fixture
+
+[Service]
+Type=oneshot
+ExecStart=false
