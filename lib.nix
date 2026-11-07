@@ -47,6 +47,7 @@ in rec {
         type
         uid
         ;
+      follow_symlinks = f.followSymlinks or null;
     };
 
   fileTypeRelativeTo = {
@@ -129,6 +130,19 @@ in rec {
           };
           default = null;
           description = "Path of the source file or directory.";
+        };
+
+        followSymlinks = mkOption {
+          internal = true;
+          type = addCheckForTypes {
+            inherit config name;
+            baseType = nullOr bool;
+            allowedFileTypes = ["symlink"];
+            isRequiredForFileTypes = false;
+            valName = "followSymlinks";
+          };
+          default = null;
+          description = "Whether the linker resolves symlinks in the source path before creating the link.";
         };
 
         permissions = mkOption {
