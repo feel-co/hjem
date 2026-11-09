@@ -65,6 +65,9 @@ $ hjem standalone switch --flake .
 $ hjem standalone switch \
   --flake . \
   --flake-attr 'hjemConfigurations."alice@laptop".manifest'
+
+# Resolve repository-relative sources at runtime.
+$ hjem standalone switch --flake . --source-base-dir /path/to/repository
 ```
 
 `hjem.nix` may evaluate to either a manifest directly or to an attribute set

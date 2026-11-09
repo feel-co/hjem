@@ -230,6 +230,8 @@ enum StandaloneCommand {
     state_dir:       Option<PathBuf>,
     #[pound(long)]
     rollback:        bool,
+    #[pound(long = "source-base-dir")]
+    source_base_dir: Option<PathBuf>,
     #[pound(long)]
     external_linker: Option<PathBuf>,
     #[pound(long = "linker-arg")]
@@ -241,17 +243,19 @@ enum StandaloneCommand {
   },
   Build {
     #[pound(long)]
-    manifest:   Option<PathBuf>,
+    manifest:        Option<PathBuf>,
     #[pound(long)]
-    config:     Option<PathBuf>,
+    config:          Option<PathBuf>,
     #[pound(long)]
-    flake:      Option<String>,
+    flake:           Option<String>,
     #[pound(long)]
-    flake_attr: Option<String>,
+    flake_attr:      Option<String>,
     #[pound(long)]
-    state_dir:  Option<PathBuf>,
+    state_dir:       Option<PathBuf>,
+    #[pound(long = "source-base-dir")]
+    source_base_dir: Option<PathBuf>,
     #[pound(long)]
-    impure:     bool,
+    impure:          bool,
   },
   Generations {
     #[pound(long)]
@@ -656,6 +660,7 @@ impl StandaloneCommand {
             source,
             None,
             None,
+            None,
             Vec::new(),
             ".backup-".to_string(),
             false,
@@ -672,11 +677,20 @@ impl StandaloneCommand {
         flake_attr,
         state_dir,
         rollback,
+        source_base_dir,
         external_linker,
         linker_args,
         prefix,
         impure,
       } => {
+        if let Some(source_base_dir) = source_base_dir.as_deref()
+          && !source_base_dir.is_absolute()
+        {
+          return Err(format!(
+            "--source-base-dir must be an absolute path, got '{}'",
+            source_base_dir.display()
+          ));
+        }
         if rollback {
           let set_count = usize::from(manifest.is_some())
             + usize::from(config.is_some())
@@ -697,11 +711,19 @@ impl StandaloneCommand {
             impure,
           )?;
         } else {
+          if manifest.is_some() && source_base_dir.is_some() {
+            return Err(
+              "--source-base-dir cannot be used with --manifest; add \
+               source_base_dir to the manifest"
+                .to_string(),
+            );
+          }
           let source =
             StandaloneSource::from_args(manifest, config, flake, flake_attr)?;
           standalone_switch_from_source(
             source,
             state_dir,
+            source_base_dir,
             external_linker,
             linker_args,
             prefix,
@@ -716,11 +738,27 @@ impl StandaloneCommand {
         flake,
         flake_attr,
         state_dir,
+        source_base_dir,
         impure,
       } => {
+        if let Some(source_base_dir) = source_base_dir.as_deref()
+          && !source_base_dir.is_absolute()
+        {
+          return Err(format!(
+            "--source-base-dir must be an absolute path, got '{}'",
+            source_base_dir.display()
+          ));
+        }
+        if manifest.is_some() && source_base_dir.is_some() {
+          return Err(
+            "--source-base-dir cannot be used with --manifest; add \
+             source_base_dir to the manifest"
+              .to_string(),
+          );
+        }
         let manifest =
           StandaloneSource::from_args(manifest, config, flake, flake_attr)?
-            .resolve(impure)?;
+            .resolve(impure, source_base_dir.as_deref())?;
         let _ = Manifest::load(&manifest.path, impure)?;
         let base = standalone_state_dir(state_dir)?;
         let builds = base.join("builds");
@@ -889,7 +927,11 @@ impl StandaloneSource {
     }
   }
 
-  fn resolve(&self, impure: bool) -> Result<ResolvedManifest, String> {
+  fn resolve(
+    &self,
+    impure: bool,
+    source_base_dir: Option<&Path>,
+  ) -> Result<ResolvedManifest, String> {
     let json = match self {
       Self::Manifest(path) => {
         return Ok(ResolvedManifest {
@@ -911,7 +953,11 @@ impl StandaloneSource {
     };
 
     let packages = extract_package_paths(&json)?;
-    let manifest = extract_manifest_json(json)?;
+    let mut manifest = extract_manifest_json(json)?;
+    if let Some(source_base_dir) = source_base_dir {
+      manifest["source_base_dir"] =
+        Value::String(source_base_dir.to_string_lossy().into_owned());
+    }
     let temp_dir = mk_temp_dir("hjem-manifest-eval")?;
     let path = temp_dir.join("manifest.json");
     fs::write(
@@ -931,13 +977,14 @@ impl StandaloneSource {
 fn standalone_switch_from_source(
   source: StandaloneSource,
   state_dir: Option<PathBuf>,
+  source_base_dir: Option<PathBuf>,
   external_linker: Option<PathBuf>,
   linker_args: Vec<String>,
   prefix: String,
   impure: bool,
 ) -> Result<(), String> {
   info!("evaluating standalone input");
-  let manifest = source.resolve(impure)?;
+  let manifest = source.resolve(impure, source_base_dir.as_deref())?;
 
   let base = standalone_state_dir(state_dir)?;
   info!("applying manifest");

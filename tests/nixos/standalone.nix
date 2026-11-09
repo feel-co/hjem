@@ -10,6 +10,11 @@
   configSource = pkgs.writeText "hjem-standalone-config-source" "Hello config!";
   alternateConfigSource = pkgs.writeText "hjem-standalone-alternate-config-source" "Hello alternate config!";
   flakeSource = pkgs.writeText "hjem-standalone-flake-source" "Hello flake!";
+  rootSource = pkgs.runCommand "hjem-standalone-root-source" {} ''
+    mkdir -p $out/dotfiles
+    echo 'Hello root!' >$out/dotfiles/source
+    echo 'Hello alternate root!' >$out/dotfiles/alternate-source
+  '';
   packageOne = pkgs.writeShellScriptBin "hjem-package-one" ''
     echo package-one
   '';
@@ -58,6 +63,34 @@
       packages = [ "${packageTwo}" ];
     }
   '';
+  rootConfigFile = pkgs.writeText "hjem-standalone-root.nix" ''
+    {
+      manifest = {
+        version = 3;
+        files = [
+          {
+            type = "symlink";
+            source = "dotfiles/source";
+            target = "${userHome}/.config/standalone-root-test";
+          }
+        ];
+      };
+    }
+  '';
+  alternateRootConfigFile = pkgs.writeText "hjem-standalone-alternate-root.nix" ''
+    {
+      manifest = {
+        version = 3;
+        files = [
+          {
+            type = "symlink";
+            source = "dotfiles/alternate-source";
+            target = "${userHome}/.config/standalone-root-test";
+          }
+        ];
+      };
+    }
+  '';
   flakeDir = pkgs.writeTextDir "flake.nix" ''
     {
       outputs = { self }: {
@@ -103,7 +136,10 @@ in
             "hjem-standalone.json".source = manifest;
             "hjem-standalone.nix".source = configFile;
             "hjem-standalone-alternate.nix".source = alternateConfigFile;
+            "hjem-standalone-root.nix".source = rootConfigFile;
+            "hjem-standalone-alternate-root.nix".source = alternateRootConfigFile;
             "hjem-standalone-flake".source = flakeDir;
+            "hjem-standalone-root-source".source = rootSource;
           };
         };
       };
@@ -134,6 +170,19 @@ in
         machine.succeed("su - ${user} -c 'test \"$(~/.local/state/hjem/standalone/current-profile/bin/hjem-package-one)\" = package-one'")
         machine.fail("su - ${user} -c 'test -e ~/.nix-profile/bin/hjem-package-one'")
         machine.fail("su - ${user} -c 'test -e ~/.local/state/nix/profile/bin/hjem-package-one'")
+
+      with subtest("Standalone switch resolves relative sources from --source-base-dir"):
+        machine.succeed("su - ${user} -c 'hjem standalone switch --config /etc/hjem-standalone-root.nix --source-base-dir /etc/hjem-standalone-root-source --state-dir ~/.local/state/hjem/root-test'")
+        machine.succeed("test -L ${userHome}/.config/standalone-root-test")
+        machine.succeed("grep -q 'Hello root!' ${userHome}/.config/standalone-root-test")
+        machine.succeed("test \"$(readlink ${userHome}/.config/standalone-root-test)\" = /etc/hjem-standalone-root-source/dotfiles/source")
+        machine.fail("su - ${user} -c 'hjem standalone switch --manifest /etc/hjem-standalone.json --source-base-dir /etc/hjem-standalone-root-source'")
+
+      with subtest("Standalone rollback reuses the generation source root"):
+        machine.succeed("su - ${user} -c 'hjem standalone switch --config /etc/hjem-standalone-alternate-root.nix --source-base-dir /etc/hjem-standalone-root-source --state-dir ~/.local/state/hjem/root-test'")
+        machine.succeed("grep -q 'Hello alternate root!' ${userHome}/.config/standalone-root-test")
+        machine.succeed("su - ${user} -c 'hjem standalone rollback --state-dir ~/.local/state/hjem/root-test'")
+        machine.succeed("grep -q 'Hello root!' ${userHome}/.config/standalone-root-test")
 
       with subtest("Standalone package generations replace package contents"):
         machine.succeed("su - ${user} -c 'hjem standalone switch --config /etc/hjem-standalone-alternate.nix'")
