@@ -9,7 +9,6 @@
 }: let
   inherit
     (builtins)
-    attrNames
     attrValues
     concatLists
     concatMap
