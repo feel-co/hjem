@@ -226,6 +226,8 @@ enum StandaloneCommand {
     #[pound(long)]
     flake_attr:      Option<String>,
     #[pound(long)]
+    store_path:      Option<PathBuf>,
+    #[pound(long)]
     state_dir:       Option<PathBuf>,
     #[pound(long)]
     rollback:        bool,
@@ -247,6 +249,8 @@ enum StandaloneCommand {
     flake:      Option<String>,
     #[pound(long)]
     flake_attr: Option<String>,
+    #[pound(long)]
+    store_path: Option<PathBuf>,
     #[pound(long)]
     state_dir:  Option<PathBuf>,
     #[pound(long)]
@@ -669,6 +673,7 @@ impl StandaloneCommand {
         config,
         flake,
         flake_attr,
+        store_path,
         state_dir,
         rollback,
         external_linker,
@@ -680,11 +685,12 @@ impl StandaloneCommand {
           let set_count = usize::from(manifest.is_some())
             + usize::from(config.is_some())
             + usize::from(flake.is_some())
-            + usize::from(flake_attr.is_some());
+            + usize::from(flake_attr.is_some())
+            + usize::from(store_path.is_some());
           if set_count != 0 {
             return Err(
               "--rollback cannot be combined with \
-               --manifest/--config/--flake/--flake-attr"
+               --manifest/--config/--flake/--flake-attr/--store-path"
                 .to_string(),
             );
           }
@@ -696,8 +702,9 @@ impl StandaloneCommand {
             impure,
           )?;
         } else {
-          let source =
-            StandaloneSource::from_args(manifest, config, flake, flake_attr)?;
+          let source = StandaloneSource::from_args(
+            manifest, config, flake, flake_attr, store_path,
+          )?;
           standalone_switch_from_source(
             source,
             state_dir,
@@ -715,11 +722,13 @@ impl StandaloneCommand {
         flake,
         flake_attr,
         state_dir,
+        store_path,
         impure,
       } => {
-        let manifest =
-          StandaloneSource::from_args(manifest, config, flake, flake_attr)?
-            .resolve(impure)?;
+        let manifest = StandaloneSource::from_args(
+          manifest, config, flake, flake_attr, store_path,
+        )?
+        .resolve(impure)?;
         let _ = Manifest::load(&manifest.path, impure)?;
         let base = standalone_state_dir(state_dir)?;
         let builds = base.join("builds");
@@ -861,6 +870,7 @@ enum StandaloneSource {
   Config(PathBuf),
   Flake(PathBuf),
   FlakeWithAttr(String, Option<String>),
+  StorePath(PathBuf),
 }
 
 impl StandaloneSource {
@@ -869,19 +879,23 @@ impl StandaloneSource {
     config: Option<PathBuf>,
     flake: Option<String>,
     flake_attr: Option<String>,
+    store_path: Option<PathBuf>,
   ) -> Result<Self, String> {
     if flake_attr.is_some() && flake.is_none() {
       return Err("--flake-attr requires --flake".to_string());
     }
 
-    match (manifest, config, flake) {
-      (Some(path), None, None) => Ok(Self::Manifest(path)),
-      (None, Some(path), None) => Ok(Self::Config(path)),
-      (None, None, Some(flake)) => Ok(Self::FlakeWithAttr(flake, flake_attr)),
+    match (manifest, config, flake, store_path) {
+      (Some(path), None, None, None) => Ok(Self::Manifest(path)),
+      (None, Some(path), None, None) => Ok(Self::Config(path)),
+      (None, None, Some(flake), None) => {
+        Ok(Self::FlakeWithAttr(flake, flake_attr))
+      },
+      (None, None, None, Some(path)) => Ok(Self::StorePath(path)),
       _ => {
         Err(
-          "Provide exactly one of --manifest, --config, or --flake for \
-           standalone commands"
+          "Provide exactly one of --manifest, --config, --flake or \
+           --store-path for standalone commands"
             .to_string(),
         )
       },
@@ -906,6 +920,13 @@ impl StandaloneSource {
       },
       Self::FlakeWithAttr(flake, attr) => {
         eval_nix_flake(flake, attr.as_deref(), impure)?
+      },
+      Self::StorePath(path) => {
+        if !path.starts_with("/nix/store") {
+          return Err("Path must be inside the nix store".to_string());
+        }
+        let file = std::fs::File::open(path).map_err(|e| e.to_string())?;
+        serde_json::from_reader(file).map_err(|e| e.to_string())?
       },
     };
 
@@ -2167,6 +2188,9 @@ fn write_last_source(
       let attr = attr.as_deref().unwrap_or_default();
       format!("flake={flake}\nflakeAttr={attr}\n")
     },
+    StandaloneSource::StorePath(path) => {
+      format!("storePath={}\n", path.display())
+    },
   };
   fs::write(path, content).map_err(|e| e.to_string())
 }
@@ -2296,6 +2320,7 @@ mod tests {
         Some("hjem.nix".into()),
         None,
         Some("hjemConfigurations.alice.manifest".to_string()),
+        None,
       )
       .is_err()
     );
