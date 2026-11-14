@@ -23,40 +23,59 @@
     "timer"
   ];
 
-  # Scan one unit directory from a package, returning a flat attrset of
-  # relative path -> absolute store path for every regular file and symlink.
-  # Subdirectories (e.g., drop-in *.d/, *.requires/, *.upholds/) are recursed one
-  # level deep. .wants/ directories are intentionally skipped.
-  # NixOS does the same, and handles them via a separate upstreamWants mechanism.
-  scanUnitDir = dir:
-    lib.optionalAttrs (pathExists dir) (
-      let
-        entries = filterAttrs (_: t: t != "unknown") (readDir dir);
-      in
-        lib.foldl' (
-          acc: name: let
-            type = entries.${name};
-            path = "${dir}/${name}";
-          in
-            if hasSuffix ".wants" name
-            then acc
-            else if type == "regular" || type == "symlink"
-            then acc // {${name} = path;}
-            else if type == "directory"
-            then
-              acc
-              // mapAttrs'
-              (sub: _: nameValuePair "${name}/${sub}" "${path}/${sub}")
-              (filterAttrs (_: t: t == "regular" || t == "symlink") (readDir path))
-            else acc
-        ) {} (lib.attrNames entries)
-    );
+  # Preserve NixOS package overrides, masks, aliases and dependency links in one
+  # generated tree, then expose each entry through Hjem's file management.
+  unitTree = utils.systemdUtils.lib.generateUnits {
+    type = "user";
+    inherit (cfg) units packages;
+    upstreamUnits = [];
+    upstreamWants = [];
+  };
 
-  # Collect all unit files exposed by a package, preferring lib/ over etc/
-  # (same precedence as NixOS: etc/ is scanned first, then lib/ may overwrite).
-  packageUnitFiles = pkg:
-    scanUnitDir "${pkg}/etc/systemd/user"
-    // scanUnitDir "${pkg}/lib/systemd/user";
+  scanUnitDir = dir: let
+    entries = lib.optionalAttrs (pathExists dir) (readDir dir);
+  in
+    lib.foldl' (
+      acc: name: let
+        type = entries.${name};
+        path = "${dir}/${name}";
+      in
+        if hasSuffix ".wants" name
+        then acc
+        else if type == "regular" || type == "symlink"
+        then acc // {${name} = path;}
+        else if type == "directory"
+        then
+          acc
+          // mapAttrs'
+          (sub: _: nameValuePair "${name}/${sub}" "${path}/${sub}")
+          (filterAttrs (_: t: t == "regular" || t == "symlink") (readDir path))
+        else acc
+    ) {} (lib.attrNames entries);
+
+  packageFiles = lib.foldl' (acc: pkg:
+    acc
+    // scanUnitDir "${pkg}/etc/systemd/user"
+    // scanUnitDir "${pkg}/lib/systemd/user") {}
+  cfg.packages;
+
+  # Enumerate managed paths without building unitTree during evaluation.
+  declaredFiles = flatten (mapAttrsToList (name: unit:
+    [
+      (
+        if
+          unit.overrideStrategy
+          == "asDropin"
+          || (unit.enable && packageFiles ? ${name} && pathExists packageFiles.${name})
+        then "${name}.d/overrides.conf"
+        else name
+      )
+    ]
+    ++ map (w: "${w}.wants/${name}") unit.wantedBy
+    ++ map (r: "${r}.requires/${name}") unit.requiredBy
+    ++ map (u: "${u}.upholds/${name}") unit.upheldBy
+    ++ unit.aliases)
+  cfg.units);
 in {
   options.systemd =
     pipe unitTypes [
@@ -84,8 +103,8 @@ in {
           {file}`~/.config/systemd/user/`. Unit files are taken from
           `$pkg/etc/systemd/user/` and `$pkg/lib/systemd/user/`.
 
-          Units declared in {option}`systemd.services` and friends take
-          precedence over package-provided units with the same name.
+          Units declared in {option}`systemd.services` and friends extend
+          package-provided units with the same name using drop-ins.
         '';
       };
 
@@ -98,31 +117,9 @@ in {
     };
 
   config = mkIf cfg.enable {
-    xdg.config.files =
-      # Package-provided units come first so that user-declared units
-      # (merged in with //) can override them.
-      lib.foldl' (
-        acc: pkg:
-          acc
-          // mapAttrs'
-          (name: path: nameValuePair "systemd/user/${name}" {source = path;})
-          (packageUnitFiles pkg)
-      ) {}
-      cfg.packages
-      // listToAttrs (
-        flatten (
-          mapAttrsToList (name: unit: let
-            src = "${utils.systemdUtils.lib.makeUnit name unit}/${name}";
-            mkEntry = path: nameValuePair path {source = src;};
-          in
-            [(mkEntry "systemd/user/${name}")]
-            ++ map (w: mkEntry "systemd/user/${w}.wants/${name}") (unit.wantedBy or [])
-            ++ map (r: mkEntry "systemd/user/${r}.requires/${name}") (unit.requiredBy or [])
-            ++ map (u: mkEntry "systemd/user/${u}.upholds/${name}") (unit.upheldBy or [])
-            ++ map (a: nameValuePair "systemd/user/${a}" {source = src;}) (unit.aliases or []))
-          cfg.units
-        )
-      );
+    xdg.config.files = listToAttrs (map (name:
+      nameValuePair "systemd/user/${name}" {source = "${unitTree}/${name}";})
+    (lib.unique (lib.attrNames packageFiles ++ declaredFiles)));
 
     systemd.units = pipe unitTypes [
       (map
