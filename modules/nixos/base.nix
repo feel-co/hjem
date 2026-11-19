@@ -99,6 +99,7 @@
       [
         [
           ../common/user.nix
+          ./dbus.nix
           ./systemd.nix
           ({
             config,
