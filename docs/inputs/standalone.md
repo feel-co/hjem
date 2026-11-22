@@ -49,6 +49,26 @@ The Nix value may be either the manifest itself or an attribute set containing
 }
 ```
 
+### Repository-relative sources
+
+Use `--source-base-dir` when a manifest contains source paths relative to a repository:
+
+```sh
+hjem standalone switch --flake . --source-base-dir /path/to/repository
+```
+
+Hjem passes this directory to smfh as `source_base_dir`. smfh then resolves
+relative source paths from that directory while leaving the manifest's logical
+source paths unchanged. Targets keep their normal Hjem and smfh behavior.
+
+`--source-base-dir` applies to `--config` and `--flake`. It cannot be combined with
+`--manifest`; a pre-generated manifest must contain its own `source_base_dir`.
+
+The runtime manifest, including `source_base_dir`, is recorded with each
+standalone generation. A rollback without `--source-base-dir` can therefore reuse the
+source base directory recorded in the selected generation. If no source base directory is
+provided or recorded, relative sources retain the usual smfh behavior.
+
 When using `--config` or `--flake`, the same value may also contain `packages`.
 Standalone packages are installed into a Hjem-managed profile for the active
 generation:
