@@ -352,3 +352,10 @@ various file types supported by Hjem are described in the
 Hjem can manage MIME application associations through the `xdg.mime-apps`
 options. See the [MIME Applications](/mime-apps.html) page for configuration
 examples.
+
+### D-Bus Services {#dbus-services}
+
+Hjem can manage user D-Bus session services through
+`hjem.users.<username>.dbus.packages`. See the
+[D-Bus Services](/dbus.html) page for how service files are linked and
+configured.
