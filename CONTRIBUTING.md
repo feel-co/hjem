@@ -79,6 +79,17 @@ fully supported.
 
 Keep documentation clear, concise and user-facing.
 
+#### Viewing Documentation
+
+To view the rendered documentation, first build it with `nix build .#docs-html`.
+Then you can use your browser or a HTTP server, e.g., Python's HTTP module to
+serve it:
+
+```bash
+# Serve the built documentation
+$ nix run nixpkgs#python3 -- -m http.server -d result/share/doc/
+```
+
 ### Formatting Code
 
 #### Treewide
