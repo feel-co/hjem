@@ -90,6 +90,11 @@ serve it:
 $ nix run nixpkgs#python3 -- -m http.server -d result/share/doc/
 ```
 
+ndg also ships an optional `serve` feature: `ndg html --serve` rebuilds the
+documentation and serves it locally, on `--serve-port` (3000 by default). The
+feature is disabled by default, and Nixpkgs' ndg package is built without it,
+so this route requires an ndg built with `--features serve`.
+
 ### Formatting Code
 
 #### Treewide
