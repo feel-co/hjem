@@ -168,6 +168,33 @@ on each bell and whistle. Important options to be aware of are as follows:
   `false`, but this can be enabled for all users by setting
   {option}`hjem.clobberByDefault` to `true`.
 
+Each `hjem.users.<username>` module is a regular NixOS module, so it accepts an
+`imports` list of its own. You can use this to split per-user configuration into
+its own files, or to consume third-party Hjem modules that set options under a
+single user. For example:
+
+```nix
+{
+  hjem.users.alice = {
+    imports = [
+      ./modules/common.nix
+    ];
+  };
+}
+```
+
+Where a Hjem module might look like this:
+
+```nix
+{
+  xdg.config.files = {
+    "foo/bar".text = ''
+      love u guys <3
+    '';
+  };
+}
+```
+
 #### Example
 
 Now, let's go over an example. In this case we have a user named "alice" whose
