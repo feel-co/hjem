@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Environment Variables</title>
+     
+    
+    <script>
+      document.documentElement.classList.remove("no-js");
+      document.documentElement.classList.add("js");
+      // Apply sidebar state immediately to prevent flash
+      (function () {
+        try {
+          if (localStorage.getItem("sidebar-collapsed") === "true") {
+            document.documentElement.classList.add("sidebar-collapsed");
+          }
+        } catch (e) {
+          // localStorage unavailable
+        }
+      })();
+    </script>
+    <link rel="stylesheet" href="assets/style.css" />
+    <script defer src="assets/main.js"></script>
+    
+    <script>
+      window.searchNamespace = window.searchNamespace || {};
+      window.searchNamespace.rootPath = "";
+    </script>
+    <script defer src="assets/search-core.js"></script>
+    <script defer src="assets/search.js"></script>
+    
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="header-left">
+          <h1 class="site-title">
+            <a href="index.html">Hjem</a>
+          </h1>
+
+          <nav class="header-nav" aria-label="Primary">
+  <ul>
+    <li >
+      <a href="options.html">Options</a>
+    </li>
+    
+    <li><a href="search.html">Search</a></li>
+    
+  </ul>
+</nav>
+
+        </div>
+        
+        <div class="search-container js-only">
+          <input type="text" id="search-input" placeholder="Search..." aria-label="Search" autocomplete="off" />
+          <div id="search-results" class="search-results"></div>
+        </div>
+        
+      </header>
+
+      <div class="layout">
+        <button
+          type="button"
+          class="sidebar-toggle js-only"
+          aria-label="Collapse sidebar"
+          aria-expanded="true"
+          aria-controls="sidebar"
+        >
+          <svg
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            width="24"
+            height="24"
+          >
+            <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path>
+          </svg>
+        </button>
+        <nav id="sidebar" class="sidebar" aria-label="Sidebar">
+          <details class="sidebar-section" data-section="docs" open>
+            <summary>Documents</summary>
+            <div class="sidebar-section-content">
+              <ul>
+                <li><a href="index.html">Index</a></li>
+<li><a href="dbus.html">D-Bus Services</a></li>
+<li><a href="environment.html">Environment Variables</a></li>
+<li><a href="extending.html">Extending Hjem</a></li>
+<li><a href="file-types.html">File Types</a></li>
+<li><a href="mime-apps.html">MIME Applications</a></li>
+<li><a href="standalone.html">Standalone CLI</a></li>
+<li><a href="xdg.html">XDG Base Directory Support</a></li>
+<li><a href="search.html">Search</a></li>
+
+              </ul>
+            </div>
+          </details>
+
+          <details class="sidebar-section" data-section="toc" open>
+            <summary>Contents</summary>
+            <div class="sidebar-section-content">
+              <ul class="toc-list">
+                <li><a href="#environment-variables">Environment Variables</a>
+<ul><li><a href="#configuration">Configuration</a>
+<li><a href="#shell-integration">Shell Integration</a>
+</li></ul></li>
+              </ul>
+            </div>
+          </details>
+        </nav>
+
+        <main class="content"><html><head></head><body><h1 id="environment-variables">Environment Variables</h1>
+<p>Hjem can manage user environment variables through the
+<code>hjem.users.&lt;username&gt;.environment.sessionVariables</code> option. Unlike Home
+Manager, Hjem does not automatically inject these into your shell; you must
+explicitly source them.</p>
+<p>This design is a deliberate choice, users are encouraged to handle as they see
+fit and document any possible converging solutions here for other users.</p>
+<h2 id="configuration">Configuration</h2>
+<p>Per-user variables come from <code>environment.sessionVariables</code> under
+<code>hjem.users.&lt;user&gt;</code>.</p>
+<pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;<span style="color:rgb(86,182,194);">hjem</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">users</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">alice</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">environment</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">sessionVariables</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">EDITOR</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">nvim</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">BROWSER</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">firefox</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(92,99,112);font-style: italic;">#&nbsp;Lists&nbsp;are&nbsp;joined&nbsp;with&nbsp;colons&nbsp;(like&nbsp;PATH)</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">PATH</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">$HOME/.local/bin</span><span style="color:rgb(152,195,121);">"</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">$HOME/bin</span><span style="color:rgb(152,195,121);">"</span>&nbsp;<span style="color:rgb(132,139,152);">]</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;<span style="color:rgb(132,139,152);">}</span><span style="color:rgb(132,139,152);">;</span><br><span style="color:rgb(132,139,152);">}</span><br></code></pre>
+<p>This attribute set is used to generate a POSIX-compliant shell script for future
+shell integration.</p>
+<h2 id="shell-integration">Shell Integration</h2>
+<p>The variables are written to a POSIX-compliant script. You must source this
+script in your shell configuration:</p>
+<p><strong>Bash</strong> (<code>~/.bashrc</code>):</p>
+<pre class="highlight"><code class="language-bash"><span style="color:rgb(86,182,194);">source</span>&nbsp;${<span style="color:rgb(171,178,191);">config</span>.hjem.users.alice.environment.loadEnv<span style="color:rgb(132,139,152);">}</span><br></code></pre>
+<p><strong>Zsh</strong> (<code>~/.zshrc</code>):</p>
+<pre><code class="language-zsh">source ${config.hjem.users.alice.environment.loadEnv}
+</code></pre>
+<p><strong>Fish</strong> (<code>~/.config/fish/config.fish</code>):</p>
+<pre><code class="language-fish">bass source ${config.hjem.users.alice.environment.loadEnv}
+</code></pre>
+</body></html></main>
+      </div>
+
+      <aside class="page-toc">
+        <nav class="page-toc-nav">
+          <h3>On this page</h3>
+          <ul class="page-toc-list">
+            <li><a href="#environment-variables">Environment Variables</a>
+<ul><li><a href="#configuration">Configuration</a>
+<li><a href="#shell-integration">Shell Integration</a>
+</li></ul></li>
+          </ul>
+        </nav>
+      </aside>
+
+      <footer>
+  <p>Generated with ndg</p>
+</footer>
+
+    </div>
+
+    
+  </body>
+</html>

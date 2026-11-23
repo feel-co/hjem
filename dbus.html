@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>D-Bus Services</title>
+     
+    
+    <script>
+      document.documentElement.classList.remove("no-js");
+      document.documentElement.classList.add("js");
+      // Apply sidebar state immediately to prevent flash
+      (function () {
+        try {
+          if (localStorage.getItem("sidebar-collapsed") === "true") {
+            document.documentElement.classList.add("sidebar-collapsed");
+          }
+        } catch (e) {
+          // localStorage unavailable
+        }
+      })();
+    </script>
+    <link rel="stylesheet" href="assets/style.css" />
+    <script defer src="assets/main.js"></script>
+    
+    <script>
+      window.searchNamespace = window.searchNamespace || {};
+      window.searchNamespace.rootPath = "";
+    </script>
+    <script defer src="assets/search-core.js"></script>
+    <script defer src="assets/search.js"></script>
+    
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="header-left">
+          <h1 class="site-title">
+            <a href="index.html">Hjem</a>
+          </h1>
+
+          <nav class="header-nav" aria-label="Primary">
+  <ul>
+    <li >
+      <a href="options.html">Options</a>
+    </li>
+    
+    <li><a href="search.html">Search</a></li>
+    
+  </ul>
+</nav>
+
+        </div>
+        
+        <div class="search-container js-only">
+          <input type="text" id="search-input" placeholder="Search..." aria-label="Search" autocomplete="off" />
+          <div id="search-results" class="search-results"></div>
+        </div>
+        
+      </header>
+
+      <div class="layout">
+        <button
+          type="button"
+          class="sidebar-toggle js-only"
+          aria-label="Collapse sidebar"
+          aria-expanded="true"
+          aria-controls="sidebar"
+        >
+          <svg
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            width="24"
+            height="24"
+          >
+            <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path>
+          </svg>
+        </button>
+        <nav id="sidebar" class="sidebar" aria-label="Sidebar">
+          <details class="sidebar-section" data-section="docs" open>
+            <summary>Documents</summary>
+            <div class="sidebar-section-content">
+              <ul>
+                <li><a href="index.html">Index</a></li>
+<li><a href="dbus.html">D-Bus Services</a></li>
+<li><a href="environment.html">Environment Variables</a></li>
+<li><a href="extending.html">Extending Hjem</a></li>
+<li><a href="file-types.html">File Types</a></li>
+<li><a href="mime-apps.html">MIME Applications</a></li>
+<li><a href="standalone.html">Standalone CLI</a></li>
+<li><a href="xdg.html">XDG Base Directory Support</a></li>
+<li><a href="search.html">Search</a></li>
+
+              </ul>
+            </div>
+          </details>
+
+          <details class="sidebar-section" data-section="toc" open>
+            <summary>Contents</summary>
+            <div class="sidebar-section-content">
+              <ul class="toc-list">
+                <li><a href="#dbus">D-Bus Services</a>
+<ul><li><a href="#configuration">Configuration</a>
+</li></ul></li>
+              </ul>
+            </div>
+          </details>
+        </nav>
+
+        <main class="content"><html><head></head><body><h1 id="dbus">D-Bus Services</h1>
+<p>Hjem can manage D-Bus sessiob services on NixOS through the
+<code>hjem.users.&lt;username&gt;.dbus.packages</code> option, following the same pattern as
+NixOS's <code>systemd.packages</code>. Packages listed in the option have their D-Bus
+service files, taken from <code>$pkg/share/dbus-1/services/</code>, linked via
+<code>hjem.users.&lt;username&gt;.xdg.data.files</code> into <code>dbus-1/services/</code> relative to
+<a class="option-reference" href="options.html#option-hjem.users._username_.xdg.data.directory"><code class="nixos-option">hjem.users.&lt;username&gt;.xdg.data.directory</code></a> (<code>$HOME/.local/share</code> by
+default).</p>
+<h2 id="configuration">Configuration</h2>
+<p>Packages shipping D-Bus-activated session services under
+<code>share/dbus-1/services/</code> are registered for the user without any extra
+configuration. Service files from Nixpkgs packages reference their binaries by
+absolute store path, so no further setup is needed for D-Bus to activate them.</p>
+<pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;<span style="color:rgb(86,182,194);">hjem</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">users</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">alice</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">dbus</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">packages</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">[</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(92,99,112);font-style: italic;">#&nbsp;e.g.&nbsp;playerctl&nbsp;ships&nbsp;'org.mpris.MediaPlayer2.playerctld.service',</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(92,99,112);font-style: italic;">#&nbsp;which&nbsp;activates&nbsp;playerctld,&nbsp;also&nbsp;shipped&nbsp;by&nbsp;the&nbsp;same&nbsp;package</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(171,178,191);">pkgs</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">playerctl</span><br>&nbsp;&nbsp;<span style="color:rgb(132,139,152);">]</span><span style="color:rgb(132,139,152);">;</span><br><span style="color:rgb(132,139,152);">}</span><br></code></pre>
+</body></html></main>
+      </div>
+
+      <aside class="page-toc">
+        <nav class="page-toc-nav">
+          <h3>On this page</h3>
+          <ul class="page-toc-list">
+            <li><a href="#dbus">D-Bus Services</a>
+<ul><li><a href="#configuration">Configuration</a>
+</li></ul></li>
+          </ul>
+        </nav>
+      </aside>
+
+      <footer>
+  <p>Generated with ndg</p>
+</footer>
+
+    </div>
+
+    
+  </body>
+</html>

@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>XDG Base Directory Support</title>
+     
+    
+    <script>
+      document.documentElement.classList.remove("no-js");
+      document.documentElement.classList.add("js");
+      // Apply sidebar state immediately to prevent flash
+      (function () {
+        try {
+          if (localStorage.getItem("sidebar-collapsed") === "true") {
+            document.documentElement.classList.add("sidebar-collapsed");
+          }
+        } catch (e) {
+          // localStorage unavailable
+        }
+      })();
+    </script>
+    <link rel="stylesheet" href="assets/style.css" />
+    <script defer src="assets/main.js"></script>
+    
+    <script>
+      window.searchNamespace = window.searchNamespace || {};
+      window.searchNamespace.rootPath = "";
+    </script>
+    <script defer src="assets/search-core.js"></script>
+    <script defer src="assets/search.js"></script>
+    
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="header-left">
+          <h1 class="site-title">
+            <a href="index.html">Hjem</a>
+          </h1>
+
+          <nav class="header-nav" aria-label="Primary">
+  <ul>
+    <li >
+      <a href="options.html">Options</a>
+    </li>
+    
+    <li><a href="search.html">Search</a></li>
+    
+  </ul>
+</nav>
+
+        </div>
+        
+        <div class="search-container js-only">
+          <input type="text" id="search-input" placeholder="Search..." aria-label="Search" autocomplete="off" />
+          <div id="search-results" class="search-results"></div>
+        </div>
+        
+      </header>
+
+      <div class="layout">
+        <button
+          type="button"
+          class="sidebar-toggle js-only"
+          aria-label="Collapse sidebar"
+          aria-expanded="true"
+          aria-controls="sidebar"
+        >
+          <svg
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            width="24"
+            height="24"
+          >
+            <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path>
+          </svg>
+        </button>
+        <nav id="sidebar" class="sidebar" aria-label="Sidebar">
+          <details class="sidebar-section" data-section="docs" open>
+            <summary>Documents</summary>
+            <div class="sidebar-section-content">
+              <ul>
+                <li><a href="index.html">Index</a></li>
+<li><a href="dbus.html">D-Bus Services</a></li>
+<li><a href="environment.html">Environment Variables</a></li>
+<li><a href="extending.html">Extending Hjem</a></li>
+<li><a href="file-types.html">File Types</a></li>
+<li><a href="mime-apps.html">MIME Applications</a></li>
+<li><a href="standalone.html">Standalone CLI</a></li>
+<li><a href="xdg.html">XDG Base Directory Support</a></li>
+<li><a href="search.html">Search</a></li>
+
+              </ul>
+            </div>
+          </details>
+
+          <details class="sidebar-section" data-section="toc" open>
+            <summary>Contents</summary>
+            <div class="sidebar-section-content">
+              <ul class="toc-list">
+                <li><a href="#xdg">XDG Base Directory Support</a>
+<ul><li><a href="#overview">Overview</a>
+<li><a href="#using-xdg-directories">Using XDG Directories</a>
+<ul><li><a href="#example">Example</a>
+</ul><li><a href="#customizing-xdg-paths">Customizing XDG Paths</a>
+<ul><li><a href="#automatic-environment-variables">Automatic Environment Variables</a>
+</ul><li><a href="#environment-variables">Environment Variables</a>
+</li></ul></li>
+              </ul>
+            </div>
+          </details>
+        </nav>
+
+        <main class="content"><html><head></head><body><h1 id="xdg">XDG Base Directory Support</h1>
+<p>Hjem provides first-class support for the <a href="https://specifications.freedesktop.org/basedir-spec/latest/">XDG Base Directory Specification</a>,
+often referred to as the "XDG Spec", which defines standard locations for
+configuration, data, cache, and state files.</p>
+<h2 id="overview">Overview</h2>
+<p>The XDG specification defines four standard directories:</p>
+<table>
+<thead>
+<tr>
+<th>Directory</th>
+<th>Default Location</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>XDG_CONFIG_HOME</code></td>
+<td><code>~/.config/</code></td>
+<td>User-specific configuration</td>
+</tr>
+<tr>
+<td><code>XDG_DATA_HOME</code></td>
+<td><code>~/.local/share/</code></td>
+<td>User-specific data files</td>
+</tr>
+<tr>
+<td><code>XDG_CACHE_HOME</code></td>
+<td><code>~/.cache/</code></td>
+<td>Non-essential cached data</td>
+</tr>
+<tr>
+<td><code>XDG_STATE_HOME</code></td>
+<td><code>~/.local/state/</code></td>
+<td>State data (logs, history)</td>
+</tr>
+</tbody>
+</table>
+<p>In the light of our goal to provide intuitive file linking primitives, Hjem
+provides dedications options each in order to make it easier to manage files in
+these directories.</p>
+<h2 id="using-xdg-directories">Using XDG Directories</h2>
+<p>Instead of writing full paths like <code>".config/app/config"</code>, use the XDG
+submodules:</p>
+<pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;<span style="color:rgb(86,182,194);">hjem</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">users</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">alice</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(92,99,112);font-style: italic;">#&nbsp;Instead&nbsp;of&nbsp;this:</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">files</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">.config/myapp/config</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">text</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">...</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(92,99,112);font-style: italic;">#&nbsp;Do&nbsp;this:</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">xdg</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">config</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">files</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">myapp/config</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">text</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">...</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;<span style="color:rgb(132,139,152);">}</span><span style="color:rgb(132,139,152);">;</span><br><span style="color:rgb(132,139,152);">}</span><br></code></pre>
+<p>Do note that Hjem lets you <em>change</em> where XDG options, e.g., <code>xdg.config</code> point
+to. For example, setting <code>hjem.users.&lt;username&gt;.xdg.config.directory</code> to
+something like <code>"$HOME/xdg/config</code> will cause files from
+<code>hjem.users.&lt;username&gt;.xdg.cache.files</code> to be placed in <code>$HOME/xdg</code> as opposed
+to the default value of <code>$HOME/.config</code>. See <a href="#customizing-xdg-paths">below</a> for
+more details.</p>
+<h3 id="example">Example</h3>
+<pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span>&nbsp;<span style="color:rgb(232,102,113);">pkgs</span><span style="color:rgb(132,139,152);">,</span>&nbsp;<span style="color:rgb(232,102,113);">lib</span><span style="color:rgb(132,139,152);">,</span>&nbsp;<span style="color:rgb(232,102,113);">...</span>&nbsp;<span style="color:rgb(132,139,152);">}</span><span style="color:rgb(132,139,152);">:</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;<span style="color:rgb(86,182,194);">hjem</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">users</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">alice</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">directory</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">/home/alice</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(92,99,112);font-style: italic;">#&nbsp;Configuration&nbsp;(~/.config/&nbsp;by&nbsp;default)</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">xdg</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">config</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">files</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">nvim/init.lua</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">source</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(232,102,113);">./nvim/init.lua</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">git/config</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">text</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(171,178,191);">lib</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">generators</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(97,175,239);">toGitINI</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><span style="color:rgb(132,139,152);">}</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">user</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">name</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">Alice</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">email</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">alice@example.com</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(132,139,152);">}</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">init</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">defaultBranch</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">main</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(132,139,152);">}</span><span style="color:rgb(132,139,152);">;</span><br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">fish/config.fish</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">text</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">''</span><span style="color:rgb(152,195,121);"></span><br><span style="color:rgb(152,195,121);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set&nbsp;-x&nbsp;EDITOR&nbsp;nvim</span><br><span style="color:rgb(152,195,121);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fish_vi_key_bindings</span><br><span style="color:rgb(152,195,121);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:rgb(152,195,121);">''</span><span style="color:rgb(132,139,152);">;</span><br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">alacritty/alacritty.toml</span><span style="color:rgb(152,195,121);">"</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">generator</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">(</span><span style="color:rgb(171,178,191);">pkgs</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">formats</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(97,175,239);">toml</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><span style="color:rgb(132,139,152);">}</span><span style="color:rgb(132,139,152);">)</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(97,175,239);">generate</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">alacritty.toml</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">value</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">font</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">normal</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">family</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">FiraCode</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">size</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(209,154,102);">12</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(132,139,152);">}</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">colors</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">primary</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">background</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">#1a1b26</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(132,139,152);">}</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(132,139,152);">}</span><span style="color:rgb(132,139,152);">;</span><br><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(132,139,152);">}</span><span style="color:rgb(132,139,152);">;</span><br><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(92,99,112);font-style: italic;">#&nbsp;Data&nbsp;(~/.local/share/&nbsp;by&nbsp;default)</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">xdg</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">data</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">files</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">fonts/CustomFont.ttf</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">source</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(232,102,113);">./fonts/CustomFont.ttf</span><span style="color:rgb(132,139,152);">;</span><br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">applications/myapp.desktop</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">text</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">''</span><span style="color:rgb(152,195,121);"></span><br><span style="color:rgb(152,195,121);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Desktop&nbsp;Entry]</span><br><span style="color:rgb(152,195,121);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Name=My&nbsp;Application</span><br><span style="color:rgb(152,195,121);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Comment=Does&nbsp;something&nbsp;useful</span><br><span style="color:rgb(152,195,121);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exec=myapp</span><br><span style="color:rgb(152,195,121);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Type=Application</span><br><span style="color:rgb(152,195,121);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Icon=myapp</span><br><span style="color:rgb(152,195,121);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:rgb(152,195,121);">''</span><span style="color:rgb(132,139,152);">;</span><br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">icons/hicolor/48x48/apps/myapp.png</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">source</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(232,102,113);">./icons/48x48.png</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">icons/hicolor/256x256/apps/myapp.png</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">source</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(232,102,113);">./icons/256x256.png</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(132,139,152);">}</span><span style="color:rgb(132,139,152);">;</span><br><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(92,99,112);font-style: italic;">#&nbsp;Cache&nbsp;(~/.cache/&nbsp;by&nbsp;default)</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">xdg</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">cache</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">files</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(92,99,112);font-style: italic;">#&nbsp;App&nbsp;cache&nbsp;directory</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">myapp</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">type</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">directory</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(92,99,112);font-style: italic;">#&nbsp;Pre-populated&nbsp;cache&nbsp;metadata</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">myapp/metadata.json</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">text</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(209,154,102);">builtins</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">toJSON</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">version</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">1.0.0</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">lastClear</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(209,154,102);">null</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(132,139,152);">}</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(132,139,152);">}</span><span style="color:rgb(132,139,152);">;</span><br><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(92,99,112);font-style: italic;">#&nbsp;State&nbsp;(~/.local/state/&nbsp;by&nbsp;default)</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">xdg</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">state</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">files</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(92,99,112);font-style: italic;">#&nbsp;App&nbsp;state</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">myapp/state.json</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">text</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(209,154,102);">builtins</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">toJSON</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">runs</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(209,154,102);">0</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">preferences</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">{</span>&nbsp;<span style="color:rgb(132,139,152);">}</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(132,139,152);">}</span><span style="color:rgb(132,139,152);">;</span><br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(92,99,112);font-style: italic;">#&nbsp;Log&nbsp;directory</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">myapp/logs</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">type</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">directory</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(132,139,152);">}</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;<span style="color:rgb(132,139,152);">}</span><span style="color:rgb(132,139,152);">;</span><br><span style="color:rgb(132,139,152);">}</span><br></code></pre>
+<h2 id="customizing-xdg-paths">Customizing XDG Paths</h2>
+<p>You can also customize the paths that XDG directories will refer to.</p>
+<pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;<span style="color:rgb(86,182,194);">hjem</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">users</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">alice</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(92,99,112);font-style: italic;">#&nbsp;Move&nbsp;config&nbsp;to&nbsp;alternate&nbsp;location</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">xdg</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">config</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">directory</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">/home/alice/dotfiles/config</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(92,99,112);font-style: italic;">#&nbsp;Move&nbsp;data&nbsp;directory</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">xdg</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">data</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">directory</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">/home/alice/my-data</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(92,99,112);font-style: italic;">#&nbsp;Cache&nbsp;on&nbsp;tmpfs&nbsp;(RAM)</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">xdg</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">cache</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">directory</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">/tmp/alice-cache</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(92,99,112);font-style: italic;">#&nbsp;State&nbsp;in&nbsp;persistent&nbsp;storage</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">xdg</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">state</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">directory</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">/persist/alice/state</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;<span style="color:rgb(132,139,152);">}</span><span style="color:rgb(132,139,152);">;</span><br><span style="color:rgb(132,139,152);">}</span><br></code></pre>
+<h3 id="automatic-environment-variables">Automatic Environment Variables</h3>
+<p>When you customize a directory path, Hjem automatically adds the corresponding
+environment variable to <code>environment.sessionVariables</code>, which you can load
+automatically by sourcing <a class="option-reference" href="options.html#option-environment.loadEnv"><code class="nixos-option">environment.loadEnv</code></a> in your shell.</p>
+<pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;<span style="color:rgb(86,182,194);">hjem</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">users</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">alice</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">xdg</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">config</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">directory</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">/home/alice/dotfiles</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(92,99,112);font-style: italic;">#&nbsp;Automatically&nbsp;sets:&nbsp;XDG_CONFIG_HOME=/home/alice/dotfiles</span><br><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">xdg</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">cache</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">directory</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">/tmp/cache</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(92,99,112);font-style: italic;">#&nbsp;Automatically&nbsp;sets:&nbsp;XDG_CACHE_HOME=/tmp/cache</span><br>&nbsp;&nbsp;<span style="color:rgb(132,139,152);">}</span><span style="color:rgb(132,139,152);">;</span><br><span style="color:rgb(132,139,152);">}</span><br></code></pre>
+<h2 id="environment-variables">Environment Variables</h2>
+<p>When you customize XDG directories, Hjem automatically sets these environment
+variables:</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Set When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>XDG_CONFIG_HOME</code></td>
+<td><code>xdg.config.directory</code> ≠ default</td>
+</tr>
+<tr>
+<td><code>XDG_DATA_HOME</code></td>
+<td><code>xdg.data.directory</code> ≠ default</td>
+</tr>
+<tr>
+<td><code>XDG_CACHE_HOME</code></td>
+<td><code>xdg.cache.directory</code> ≠ default</td>
+</tr>
+<tr>
+<td><code>XDG_STATE_HOME</code></td>
+<td><code>xdg.state.directory</code> ≠ default</td>
+</tr>
+</tbody>
+</table>
+<p>Access them in your configuration:</p>
+<pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;<span style="color:rgb(86,182,194);">hjem</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">users</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">alice</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(132,139,152);">{</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(92,99,112);font-style: italic;">#&nbsp;Custom&nbsp;config&nbsp;location</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">xdg</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">config</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">directory</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">/home/alice/etc</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">;</span><br><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(92,99,112);font-style: italic;">#&nbsp;Use&nbsp;in&nbsp;other&nbsp;files</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgb(86,182,194);">files</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">.bashrc</span><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">text</span>&nbsp;<span style="color:rgb(171,178,191);">=</span>&nbsp;<span style="color:rgb(152,195,121);">''</span><span style="color:rgb(152,195,121);"></span><br><span style="color:rgb(152,195,121);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;XDG_CONFIG_HOME&nbsp;is&nbsp;automatically&nbsp;set&nbsp;to&nbsp;/home/alice/etc</span><br><span style="color:rgb(152,195,121);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo&nbsp;"Config&nbsp;home:&nbsp;$XDG_CONFIG_HOME"</span><br><span style="color:rgb(152,195,121);">&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:rgb(152,195,121);">''</span><span style="color:rgb(132,139,152);">;</span><br>&nbsp;&nbsp;<span style="color:rgb(132,139,152);">}</span><span style="color:rgb(132,139,152);">;</span><br><span style="color:rgb(132,139,152);">}</span><br></code></pre>
+</body></html></main>
+      </div>
+
+      <aside class="page-toc">
+        <nav class="page-toc-nav">
+          <h3>On this page</h3>
+          <ul class="page-toc-list">
+            <li><a href="#xdg">XDG Base Directory Support</a>
+<ul><li><a href="#overview">Overview</a>
+<li><a href="#using-xdg-directories">Using XDG Directories</a>
+<ul><li><a href="#example">Example</a>
+</ul><li><a href="#customizing-xdg-paths">Customizing XDG Paths</a>
+<ul><li><a href="#automatic-environment-variables">Automatic Environment Variables</a>
+</ul><li><a href="#environment-variables">Environment Variables</a>
+</li></ul></li>
+          </ul>
+        </nav>
+      </aside>
+
+      <footer>
+  <p>Generated with ndg</p>
+</footer>
+
+    </div>
+
+    
+  </body>
+</html>
