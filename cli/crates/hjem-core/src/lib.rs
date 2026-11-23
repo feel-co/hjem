@@ -2026,7 +2026,7 @@ fn parse_expire_timestamp(input: &str) -> Result<u64, String> {
   if let Ok(date) = Date::strptime("%F", trimmed) {
     return timestamp_to_seconds(
       date
-        .to_zoned(TimeZone::UTC)
+        .to_zoned_datetime(TimeZone::UTC)
         .map_err(|error| format!("Invalid date: {input}: {error}"))?
         .timestamp()
         .as_second(),
