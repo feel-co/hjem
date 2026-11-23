@@ -2,7 +2,7 @@
 
 # File Types {#file-types}
 
-Hjem supports give different file types, backed by our linker, smfh, for
+Hjem supports five different file types, backed by our linker, smfh, for
 managing your `$HOME` robustly. Each type serves a specific purpose and has
 different characteristics regarding performance, mutability, and use case.
 
