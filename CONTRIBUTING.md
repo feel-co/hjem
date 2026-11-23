@@ -181,8 +181,8 @@ the flake (without `system`).
 
 > [!IMPORTANT]
 > Pull requests created or submitted by autonomous or supervised AI agents are
-> explicitly prohibited, and will be immediately closed without a review. NH, as
-> a codebase, does not welcome AI-generated contributions.
+> explicitly prohibited, and will be immediately closed without a review. Hjem,
+> as a codebase, does not welcome AI-generated contributions.
 
 This policy exists for the following reasons:
 
