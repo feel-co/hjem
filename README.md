@@ -168,9 +168,10 @@ may use to manage individual users' homes by leveraging the module system.
 
 > [!NOTE]
 > Each attribute under `hjem.users`, e.g., `hjem.users.alice` or
-> `hjem.users.jane` represent a user managed via `users.users` in NixOS. If a
-> user does not exist, then Hjem will refuse to manage their `$HOME` by
-> filtering non-existent users in file creation.
+> `hjem.users.jane` represents a user managed via `users.users` in NixOS or a user
+> that is able to be resolved at runtime via external identity managment (e.g., kanidm, LDAP, SSSD).
+> If a user does not exist and `hjem.users.<user>.externalIdp` is disabled, Hjem will
+> refuse to manage their `$HOME` by filtering non-existent users in file creation.
 
 ## Module Interface
 
