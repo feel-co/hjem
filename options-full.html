@@ -160,7 +160,7 @@
     <details class="toc-category">
       <summary title="hjem.users.&lt;username&gt;">
         <span>hjem.users.&lt;username&gt;</span>
-        <span class="toc-count">269</span>
+        <span class="toc-count">270</span>
       </summary>
       <ul>
         
@@ -169,6 +169,14 @@
         <li>
           <a href='#option-hjem.users._username_.clobberFiles' title="hjem.users.&lt;username&gt;.clobberFiles">
             clobberFiles
+            
+            
+          </a>
+        </li>
+        
+        <li>
+          <a href='#option-hjem.users._username_.dbus.packages' title="hjem.users.&lt;username&gt;.dbus.packages">
+            dbus.packages
             
             
           </a>
@@ -2547,6 +2555,27 @@ with <a class="option-reference" href="options.html#option-hjem.users._username_
     <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/common/user.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/common/user.nix&gt;</a></code></dd>
   </dl>
 </div>
+<div class="option" id="option-hjem.users._username_.dbus.packages">
+  <h3 class="option-name">
+    <a href="#option-hjem.users._username_.dbus.packages" class="option-anchor">hjem.users.&lt;username&gt;.dbus.packages</a>
+    <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
+    <span class="copy-feedback">Link copied!</span>
+  </h3>
+  <div class="option-description"><html><head></head><body><p>Packages containing D-Bus service files to be linked into
+<code class="file-path">~/.local/share/dbus-1/services/</code>. Service files are taken from
+<code>$pkg/share/dbus-1/services/</code>.</p>
+</body></html></div>
+  <dl class="option-details">
+    <dt>Type</dt><dd class="option-value"><code>list of package</code></dd>
+    <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span>&nbsp;<span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+    <dt>Example</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(132,139,152);">[</span><span style="color:rgb(171,178,191);">pkgs</span><span style="color:rgb(132,139,152);">.</span><span style="color:rgb(86,182,194);">dbus</span><span style="color:rgb(132,139,152);">]</span></code></pre></body></html>
+</body></html></dd>
+  </dl>
+  <dl class="option-details option-sources">
+    <dt>Declared in</dt><dd class="option-value"><code><a href="https://github.com/feel-co/hjem/blob/main/modules/nixos/dbus.nix" target="_blank" rel="noopener noreferrer">&lt;hjem/modules/nixos/dbus.nix&gt;</a></code></dd>
+  </dl>
+</div>
 <div class="option" id="option-hjem.users._username_.directory">
   <h3 class="option-name">
     <a href="#option-hjem.users._username_.directory" class="option-anchor">hjem.users.&lt;username&gt;.directory</a>
@@ -3450,7 +3479,7 @@ make a unit start by default at boot; if you want that, see
     <button type="button" class="copy-link" aria-label="Copy link to this option" title="Copy link to this option"></button>
     <span class="copy-feedback">Link copied!</span>
   </h3>
-  <div class="option-description"><html><head></head><body><p>Whether to append a minimal default <code class="env-var">PATH</code> environment variable to the service, containing common system utilities.</p>
+  <div class="option-description"><html><head></head><body><p>Whether to append <code class="nixos-option">systemd.defaultPath</code> to the service's <code class="env-var">PATH</code> environment variable.</p>
 </body></html></div>
   <dl class="option-details">
     <dt>Type</dt><dd class="option-value"><code>boolean</code></dd>
