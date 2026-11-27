@@ -1,0 +1,6 @@
+[Unit]
+Description=Lower precedence etc service
+
+[Service]
+Type=oneshot
+ExecStart=false

@@ -68,6 +68,22 @@
       ExecStart = "${getExe' pkgs.coreutils "sleep"} infinity";
     };
   };
+
+  package = builtins.path {
+    name = "hjem-test-user-units";
+    path = ./systemd-packages/fixture;
+  };
+
+  packagedReload = version: triggerSource: let
+    recordReload = pkgs.writeShellScript "record-packaged-reload" ''
+      printf '%s\n' '${version}' > "$1"
+    '';
+  in {
+    aliases = ["packaged-alias.service"];
+    description = "Hjem packaged override ${version}";
+    serviceConfig.ExecReload = "${recordReload} %t/hjem-packaged-reload";
+    reloadTriggers = [triggerSource];
+  };
 in
   hjemTest {
     name = "hjem-systemd-reload";
@@ -83,7 +99,18 @@ in
         password = "";
       };
 
-      hjem.users.${user}.enable = true;
+      hjem.users.${user} = {
+        enable = true;
+        systemd = {
+          packages = [package];
+          targets.packaged-worker = {};
+          services."worker@instance" = {
+            overrideStrategy = "asDropin";
+            wantedBy = ["packaged-worker.target"];
+            environment.HJEM = "instance";
+          };
+        };
+      };
 
       specialisation = {
         v1.configuration = {config, ...}: {
@@ -93,6 +120,7 @@ in
               ".config/reload-test.conf".text = "version=1";
               ".config/timer-test.conf".text = "version=1";
               ".config/socket-test.conf".text = "version=1";
+              ".config/packaged-test.conf".text = "version=1";
             };
 
             systemd = {
@@ -103,6 +131,9 @@ in
                 reload-test =
                   reloadSvc "v1"
                   config.hjem.users.${user}.files.".config/reload-test.conf".source;
+                packaged =
+                  packagedReload "v1"
+                  config.hjem.users.${user}.files.".config/packaged-test.conf".source;
                 restart-test-timer = timerCompanion;
                 restart-test-socket = socketCompanion;
               };
@@ -125,6 +156,7 @@ in
               ".config/reload-test.conf".text = "version=2";
               ".config/timer-test.conf".text = "version=2";
               ".config/socket-test.conf".text = "version=2";
+              ".config/packaged-test.conf".text = "version=2";
             };
 
             systemd = {
@@ -135,6 +167,9 @@ in
                 reload-test =
                   reloadSvc "v2"
                   config.hjem.users.${user}.files.".config/reload-test.conf".source;
+                packaged =
+                  packagedReload "v2"
+                  config.hjem.users.${user}.files.".config/packaged-test.conf".source;
                 restart-test-timer = timerCompanion;
                 restart-test-socket = socketCompanion;
               };
@@ -159,6 +194,7 @@ in
               ".config/reload-test.conf".text = "version=2";
               ".config/timer-test.conf".text = "version=2";
               ".config/socket-test.conf".text = "version=2";
+              ".config/packaged-test.conf".text = "version=2";
             };
 
             systemd = let
@@ -187,6 +223,7 @@ in
 
                   reloadTriggers = [cfg.files.".config/reload-test.conf".source];
                 };
+                packaged = packagedReload "v3" cfg.files.".config/packaged-test.conf".source;
 
                 restart-test-timer = timerCompanion;
                 restart-test-socket = socketCompanion;
@@ -248,6 +285,24 @@ in
           assert ts_timer_before  != "",  "restart-test-timer has no ActiveEnterTimestamp; timer did not start"
           assert ts_socket_before != "",  "restart-test-socket has no ActiveEnterTimestamp; socket did not start"
 
+      with subtest("Packaged alias and template instance start through home configuration"):
+          alias_name = "packaged-alias.service"
+          canonical_name = "packaged.service"
+          unit_dir = "${userHome}/.config/systemd/user"
+          assert alice(f"readlink {unit_dir}/{alias_name}").strip() == f"{unit_dir}/{canonical_name}"
+          alice(f"systemctl --user start {alias_name}")
+          assert alice_show(alias_name, "Id") == canonical_name
+          alice(f"systemctl --user is-active {canonical_name}")
+          assert alice_show(canonical_name, "Description") == "Hjem packaged override v1"
+          assert "VENDOR_OVERRIDES=preserved" in alice_show(canonical_name, "Environment").split()
+          packaged_started = alice_show(canonical_name, "ActiveEnterTimestampMonotonic")
+          reload_marker = f"{xdg}/hjem-packaged-reload"
+          alice(f"test ! -e {reload_marker}")
+
+          alice("systemctl --user start packaged-worker.target")
+          alice("systemctl --user is-active worker@instance.service")
+          assert "HJEM=instance" in alice_show("worker@instance.service", "Environment").split()
+
       with subtest("restartTriggers: service is restarted on config change"):
           node1.succeed("${specialisations}/v2/bin/switch-to-configuration test")
           alice("systemctl --user is-active restart-test.service")
@@ -267,6 +322,10 @@ in
               f"reload-test was RESTARTED instead of reloaded: PID changed {pid_before} -> {pid_after}"
           )
           assert pid_after != "0", "reload-test MainPID is 0 after reload; service died"
+
+      with subtest("Reload trigger executes the newly activated packaged drop-in"):
+          assert alice(f"cat {reload_marker}").strip() == "v2"
+          assert alice_show(canonical_name, "ActiveEnterTimestampMonotonic") == packaged_started
 
       with subtest("restartTriggers: timer is restarted on config change"):
           alice("systemctl --user is-active restart-test-timer.timer")
@@ -316,5 +375,10 @@ in
           assert ts_socket_v2 == ts_socket_v3, (
               f"restart-test-socket was restarted when it shouldn't be: timestamp changed {ts_socket_v2} -> {ts_socket_v3}"
           )
+
+      with subtest("A packaged drop-in change alone does not fire the reload trigger"):
+          assert alice_show(canonical_name, "Description") == "Hjem packaged override v3"
+          assert alice(f"cat {reload_marker}").strip() == "v2"
+          assert alice_show(canonical_name, "ActiveEnterTimestampMonotonic") == packaged_started
     '';
   }

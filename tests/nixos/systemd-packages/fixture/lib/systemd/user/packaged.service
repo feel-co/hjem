@@ -1,0 +1,7 @@
+[Unit]
+Description=Packaged test service
+
+[Service]
+Type=oneshot
+ExecStart=-true
+RemainAfterExit=yes

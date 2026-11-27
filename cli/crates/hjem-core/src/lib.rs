@@ -2,7 +2,6 @@ use std::{
   collections::{
     BTreeMap,
     BTreeSet,
-    HashMap,
   },
   fs,
   io::{
@@ -1584,35 +1583,37 @@ impl ManifestExt for Manifest {
         continue;
       };
 
-      let old_restart = trigger_value(old_source, "X-Restart-Triggers");
-      let new_restart = trigger_value(new_source, "X-Restart-Triggers");
-      let old_reload = trigger_value(old_source, "X-Reload-Triggers");
-      let new_reload = trigger_value(new_source, "X-Reload-Triggers");
-
-      if !new_restart.is_empty() && old_restart != new_restart {
-        actions.push(TriggerAction {
-          action: "restart".to_string(),
-          unit:   unit.clone(),
-          reason: "restart trigger changed".to_string(),
-        });
+      let new = unit_triggers(new_source);
+      let restart = new.restart.as_deref().unwrap_or_default();
+      let reload = new.reload.as_deref().unwrap_or_default();
+      if restart.is_empty() && reload.is_empty() {
         continue;
       }
-
-      if !new_reload.is_empty() && old_reload != new_reload {
-        actions.push(TriggerAction {
-          action: "reload".to_string(),
-          unit:   unit.clone(),
-          reason: "reload trigger changed".to_string(),
-        });
-      }
+      let old = unit_triggers(old_source);
+      let (action, reason) =
+        if !restart.is_empty() && Some(restart) != old.restart.as_deref() {
+          ("restart", "restart trigger changed")
+        } else if !reload.is_empty() && Some(reload) != old.reload.as_deref() {
+          ("reload", "reload trigger changed")
+        } else {
+          continue;
+        };
+      actions.push(TriggerAction {
+        action: action.to_string(),
+        unit:   unit.to_string(),
+        reason: reason.to_string(),
+      });
     }
 
     actions
   }
 }
 
-fn unit_sources(manifest: &Manifest) -> HashMap<String, PathBuf> {
-  let mut sources = HashMap::new();
+// The main unit sorts before the drop-ins, which apply in filename order.
+type UnitSources<'a> = BTreeMap<Option<&'a str>, &'a Path>;
+
+fn unit_sources(manifest: &Manifest) -> BTreeMap<&str, UnitSources<'_>> {
+  let mut sources = BTreeMap::<_, UnitSources<'_>>::new();
 
   for file in &manifest.files {
     if file.kind != FileKind::Symlink {
@@ -1621,45 +1622,83 @@ fn unit_sources(manifest: &Manifest) -> HashMap<String, PathBuf> {
     let Some(source) = &file.source else {
       continue;
     };
-    let target = file.target.to_string_lossy();
-    if !target.contains("/systemd/user/") {
-      continue;
-    }
-    let Some(name) = file.target.file_name() else {
+    let (Some(parent), Some(name)) = (
+      file.target.parent(),
+      file.target.file_name().and_then(|name| name.to_str()),
+    ) else {
       continue;
     };
-    let unit = name.to_string_lossy();
-    if !(unit.ends_with(".service")
-      || unit.ends_with(".timer")
-      || unit.ends_with(".socket"))
+
+    let (unit, drop_in) = if parent.ends_with("systemd/user") {
+      // Aliases point back into the same home unit directory.
+      if file.follow_symlinks == Some(false) && source.parent() == Some(parent)
+      {
+        continue;
+      }
+      (name, None)
+    } else if name.ends_with(".conf")
+      && parent
+        .parent()
+        .is_some_and(|dir| dir.ends_with("systemd/user"))
+      && let Some(unit) = parent
+        .file_name()
+        .and_then(|name| name.to_str())
+        .and_then(|name| name.strip_suffix(".d"))
     {
+      (unit, Some(name))
+    } else {
+      continue;
+    };
+    if !matches!(
+      unit.rsplit_once('.'),
+      Some((_, "service" | "socket" | "timer"))
+    ) {
       continue;
     }
 
-    sources.insert(unit.to_string(), source.clone());
+    sources.entry(unit).or_default().insert(drop_in, source);
   }
 
   sources
 }
 
-fn trigger_value(path: &Path, key: &str) -> String {
-  let file = match fs::File::open(path) {
-    Ok(file) => file,
-    Err(_) => return String::new(),
-  };
+#[derive(Default)]
+struct UnitTriggers {
+  restart: Option<String>,
+  reload:  Option<String>,
+}
 
-  let prefix = format!("{key}=");
-  let reader = BufReader::new(file);
-  for line in reader.lines() {
-    let Ok(line) = line else {
+fn unit_triggers(sources: &UnitSources<'_>) -> UnitTriggers {
+  let mut triggers = UnitTriggers::default();
+  let mut line = String::new();
+  // An explicit empty value still wins over a lower-priority assignment.
+  for source in sources.values().rev() {
+    let Ok(file) = fs::File::open(source) else {
       continue;
     };
-    if let Some(value) = line.strip_prefix(&prefix) {
-      return value.to_string();
+    let mut reader = BufReader::new(file);
+    loop {
+      line.clear();
+      match reader.read_line(&mut line) {
+        Ok(0) | Err(_) => break,
+        Ok(_) => (),
+      }
+      let entry = line.trim_end_matches(['\r', '\n']);
+      if triggers.restart.is_none()
+        && let Some(value) = entry.strip_prefix("X-Restart-Triggers=")
+      {
+        triggers.restart = Some(value.to_string());
+      } else if triggers.reload.is_none()
+        && let Some(value) = entry.strip_prefix("X-Reload-Triggers=")
+      {
+        triggers.reload = Some(value.to_string());
+      }
+      if triggers.restart.is_some() && triggers.reload.is_some() {
+        return triggers;
+      }
     }
   }
-
-  String::new()
+  triggers
 }
 
 fn atomic_copy(src: &Path, dst: &Path) -> Result<(), String> {

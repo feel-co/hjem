@@ -1,0 +1,7 @@
+[Unit]
+Description=Packaged worker template
+
+[Service]
+Type=oneshot
+ExecStart=-true
+RemainAfterExit=yes
