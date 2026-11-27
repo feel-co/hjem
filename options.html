@@ -2923,8 +2923,10 @@ will be constructed with <code>L+</code> (<em>re</em>create) instead of <code>L<
   <div class="option-description"><html><head></head><body><p>Packages containing systemd user unit files to be linked into
 <code class="file-path">~/.config/systemd/user/</code>. Unit files are taken from
 <code>$pkg/etc/systemd/user/</code> and <code>$pkg/lib/systemd/user/</code>.</p>
-<p>Units declared in <code class="nixos-option">systemd.services</code> and friends take
-precedence over package-provided units with the same name.</p>
+<p>Units declared in <code class="nixos-option">systemd.services</code> and friends extend
+package-provided units with the same name using drop-ins by default.
+Set a unit's <code>overrideStrategy</code> to <code>"asReplacement"</code> to replace its
+package-provided unit file and omit its package-provided drop-ins.</p>
 </body></html></div>
   <dl class="option-details">
     <dt>Type</dt><dd class="option-value"><code>list of package</code></dd>
@@ -3164,7 +3166,7 @@ Mainly needed to define instances for systemd template units (e.g. <code>systemd
 <p>See also <a href="https://www.freedesktop.org/software/systemd/man/systemd.unit.html" class="manpage-reference">systemd.unit(5)</a>.</p>
 </body></html></div>
   <dl class="option-details">
-    <dt>Type</dt><dd class="option-value"><code>one of "asDropinIfExists", "asDropin"</code></dd>
+    <dt>Type</dt><dd class="option-value"><code>one of "asDropinIfExists", "asDropin", "asReplacement"</code></dd>
     <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">asDropinIfExists</span><span style="color:rgb(152,195,121);">"</span></code></pre></body></html>
 </body></html></dd>
   </dl>
@@ -3749,7 +3751,7 @@ Mainly needed to define instances for systemd template units (e.g. <code>systemd
 <p>See also <a href="https://www.freedesktop.org/software/systemd/man/systemd.unit.html" class="manpage-reference">systemd.unit(5)</a>.</p>
 </body></html></div>
   <dl class="option-details">
-    <dt>Type</dt><dd class="option-value"><code>one of "asDropinIfExists", "asDropin"</code></dd>
+    <dt>Type</dt><dd class="option-value"><code>one of "asDropinIfExists", "asDropin", "asReplacement"</code></dd>
     <dt>Default</dt><dd class="option-value"><html><head></head><body><html><head></head><body><pre class="highlight"><code class="language-nix"><span style="color:rgb(152,195,121);">"</span><span style="color:rgb(152,195,121);">asDropinIfExists</span><span style="color:rgb(152,195,121);">"</span></code></pre></body></html>
 </body></html></dd>
   </dl>
