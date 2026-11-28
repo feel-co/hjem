@@ -26,6 +26,20 @@
       }
     ];
   };
+  configFileJson = (pkgs.formats.json {}).generate "hjem-standalone.json" {
+    manifest = {
+      version = 3;
+      files = [
+        {
+          type = "symlink";
+          source = "${configSource}";
+          target = "${userHome}/.config/standalone-test";
+        }
+      ];
+    };
+
+    packages = [packageOne];
+  };
   configFile = pkgs.writeText "hjem-standalone.nix" ''
     {
       manifest = {
@@ -104,6 +118,7 @@ in
             "hjem-standalone.nix".source = configFile;
             "hjem-standalone-alternate.nix".source = alternateConfigFile;
             "hjem-standalone-flake".source = flakeDir;
+            "hjem-standalone-config.json".source = configFileJson;
           };
         };
       };
@@ -203,5 +218,13 @@ in
         machine.succeed("nix-collect-garbage")
         machine.fail(f"test -e {source}")
         machine.succeed(f"test -e {next_source}")
+
+      with subtest("Standalone switch evaluates hjem.json configs from store path"):
+        machine.fail("su - ${user} -c 'hjem standalone switch --store-path /etc/hjem-standalone-config.json'")
+        machine.succeed("su - ${user} -c 'hjem standalone switch --store-path $(readlink -f /etc/hjem-standalone-config.json)'")
+        machine.succeed("grep -q 'Hello config!' ${userHome}/.config/standalone-test")
+        machine.succeed("su - ${user} -c 'test \"$(~/.local/state/hjem/standalone/current-profile/bin/hjem-package-one)\" = package-one'")
+        machine.fail("su - ${user} -c 'test -e ~/.nix-profile/bin/hjem-package-one'")
+        machine.fail("su - ${user} -c 'test -e ~/.local/state/nix/profile/bin/hjem-package-one'")
     '';
   }
