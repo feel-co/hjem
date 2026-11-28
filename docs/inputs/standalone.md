@@ -30,6 +30,7 @@ Pass `--switch` to `init` to apply the generated configuration immediately, or
 
 - `--manifest PATH` reads an already-generated manifest JSON file.
 - `--config PATH` evaluates a Nix expression such as `hjem.nix`.
+- `--store-path PATH` reads an already-generated config JSON file.
 - `--flake REF` evaluates a flake output. By default this is
   `hjemConfigurations."$USER"`; use `--flake-attr` to select another output.
 
@@ -49,7 +50,7 @@ The Nix value may be either the manifest itself or an attribute set containing
 }
 ```
 
-When using `--config` or `--flake`, the same value may also contain `packages`.
+When using `--config`, `--flake` or `--store-path`, the same value may also contain `packages`.
 Standalone packages are installed into a Hjem-managed profile for the active
 generation:
 
@@ -65,6 +66,9 @@ generation:
   ];
 }
 ```
+
+> [!NOTE]
+> `--store-path` expects a JSON file instead of a Nix expression.
 
 > [!TIP]
 > Add the current profile to your login environment to expose package binaries:
