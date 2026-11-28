@@ -110,7 +110,7 @@ in {
 
     assertions =
       concatLists
-      (mapAttrsToList (user: config:
+      (mapAttrsToList (_: config:
         map ({
           assertion,
           message,
@@ -131,7 +131,7 @@ in {
     warnings =
       concatLists
       (mapAttrsToList (
-          user: v:
+          _: v:
             map (
               warning: "${v.user} profile: ${warning}"
             )
